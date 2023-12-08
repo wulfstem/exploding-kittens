@@ -12,7 +12,6 @@ public class Game {
         this.numberOfPlayers = 1;
         players.add( p1 );
         this.isComputerPlaying = true;
-        players.add(new Player());
     }
 
     public void start(){
