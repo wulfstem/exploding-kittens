@@ -1,24 +1,30 @@
+package model;
+
 public abstract class Card {
 
 
-    public enum CARD_TYPE{DEFUSE, BOMB, SKIP, SKIP_REVERSE, TAP, DOUBLE_TAP, SEE3, SHUFFLE, DRAW_BOTTOM, STEAL}
-
-    private String name;
+    public enum CARD_TYPE{DEFUSE, BOMB, ATTACK2, FAVOR, NOPE, SHUFFLE, SKIP, SEE3, REGULAR}
     private CARD_TYPE cardType;
+    private String cardName;
+    private Deck deck;
 
-    public Card(CARD_TYPE cardType, String name){
-        this.name = name;
+    public Card(CARD_TYPE cardType, String cardName, Deck deck){
         this.cardType = cardType;
+        this.cardName = cardName;
+        this.deck = deck;
     }
 
-    public void action(){}
-
-
-    public String getName() {
-        return name;
-    }
+    public abstract void action();
 
     public CARD_TYPE getCardType() {
         return cardType;
+    }
+
+    public String getCardName() {
+        return cardName;
+    }
+
+    public Deck getDeck() {
+        return deck;
     }
 }

@@ -1,12 +1,24 @@
+package model;
+
 public class Player {
 
 
-    private String name;
-    private Hand hand;
+    private String playerName;
+    private Hand playerHand;
 
     public Player(String name){
-        this.name = name;
+        this.playerName = name;
     }
 
-    public Card draw(){return null;}
+    public void setPlayerHand(Hand playerHand) {
+        this.playerHand = playerHand;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public Hand getPlayerHand() {
+        return playerHand;
+    }
 }
