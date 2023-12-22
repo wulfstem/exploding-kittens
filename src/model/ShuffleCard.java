@@ -8,7 +8,7 @@ public class ShuffleCard extends Card{
     }
 
     @Override
-    public void action() {
+    public void action(Player player) {
         //shuffles the draw pile
     }
 }

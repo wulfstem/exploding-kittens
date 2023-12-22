@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Deck has total of 56 cards. That includes:
@@ -12,24 +13,80 @@ import java.util.ArrayList;
 public class Game {
 
 
-    private ArrayList<Player> players;
+    // Side attributes
     private int numberOfPlayers;
     private boolean computerPlayer;
+    private int current;
+    private int turns;
 
+
+    // Main attributes
+    private ArrayList<Player> players;
     private Deck deck;
 
 
-    public Game(int numberOfPlayers){
-        if (numberOfPlayers == 1){
+    public Game(int numberOfPlayers) {
+        if (numberOfPlayers == 1) {
             this.numberOfPlayers = numberOfPlayers + 1;
             computerPlayer = true;
-        }
-        else{
+        } else {
             this.numberOfPlayers = numberOfPlayers;
             computerPlayer = false;
         }
         this.players = new ArrayList<>();
-        this.setup();
+    }
+
+    public void createPlayers(boolean computerPlayer, Deck deck) {
+        if (!computerPlayer) {
+            for (int i = 0; i < getNumberOfPlayers(); i++) {
+                String playerName = "Default name";
+                players.add(new Player(playerName, this));
+            }
+        } else {
+            for (int i = 0; i < getNumberOfPlayers() - 1; i++) {
+                String playerName = "Default name";
+                players.add(new Player(playerName, this));
+            }
+            players.add(new Computer(Computer.COMPUTER_NAME, this));
+        }
+    }
+
+    public void createDeck() {
+        deck = new Deck(numberOfPlayers, this);
+    }
+
+    public void createHands() {
+        for (Player p : getPlayers()) {
+            p.setPlayerHand(new Hand(p, deck));
+        }
+    }
+
+    public void setup() {
+        createDeck();
+        createPlayers(isComputerPlayer(), getDeck());
+        createHands();
+    }
+
+    public void start(){
+        setup();
+        play();
+    }
+
+    public void play(){
+        current = selectRandomly(getPlayers().size());
+        while(!hasWinner()){
+            System.out.println(getPlayers().get(current).printHand());
+            getPlayers().get(current).makeMove();
+        }
+    }
+
+    public int selectRandomly(int size){
+        Random randomly = new Random();
+        return randomly.nextInt(size);
+    }
+
+    public boolean hasWinner(){
+        return getPlayers().size() == 1;
     }
 
     public ArrayList<Player> getPlayers() {
@@ -40,31 +97,19 @@ public class Game {
         return numberOfPlayers;
     }
 
-    public void createPlayers(){
-        for (int i = 0; i < getNumberOfPlayers(); i++){
-            // here get a name of a player one by one
-            String playerName = "Default name";
-            players.add(new Player(playerName));
-        }
+    public boolean isComputerPlayer() {
+        return computerPlayer;
     }
 
-    public void createDeck(){
-        deck = new Deck(numberOfPlayers);
+    public Deck getDeck() {
+        return deck;
     }
 
-    public void createHands(){
-        for (Player p : getPlayers()){
-            p.setPlayerHand(new Hand(p, deck));
-        }
+    public int getCurrent() {
+        return current;
     }
 
-    public void setup(){
-        createPlayers();
-        createDeck();
-        createHands();
-    }
-
-    public void start(){
-        // To be implemented
+    public int getTurns() {
+        return turns;
     }
 }

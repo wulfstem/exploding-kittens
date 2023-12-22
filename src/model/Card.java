@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 public abstract class Card {
 
 
@@ -14,7 +16,7 @@ public abstract class Card {
         this.deck = deck;
     }
 
-    public abstract void action();
+    public abstract void action(Player player);
 
     public CARD_TYPE getCardType() {
         return cardType;

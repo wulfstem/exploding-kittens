@@ -8,7 +8,7 @@ public class See3Card extends Card{
     }
 
     @Override
-    public void action() {
+    public void action(Player player) {
         // see the top 3 cards of the drawPile
     }
 }

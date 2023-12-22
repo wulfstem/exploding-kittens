@@ -8,7 +8,7 @@ public class RegularCard extends Card{
     }
 
     @Override
-    public void action() {
+    public void action(Player player) {
         // can be used as a steal when using two matching regular cards
     }
 }

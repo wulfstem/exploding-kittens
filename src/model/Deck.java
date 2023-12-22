@@ -22,10 +22,14 @@ public class Deck {
     private final String[] AVAILABLE_SEE3_NAMES = {"Goat Wizard", "Mantis Shrimp", "Pig-a-corn", "Special-ops Bunnies", "Unicorn Enchilada"};
     public final int NUMBER_OF_REGULAR = 5 * 4;
     private final String[] AVAILABLE_REGULAR_NAMES = {"Beard Cat", "Cattermelon", "Hairy Potato Cat", "Rainbow-Ralphing Cat", "Tacocat"};
+
+
     private ArrayList<Card> drawPile;
     private ArrayList<Card> discardPile;
+    private Game game;
 
-    public Deck(int numberOfPlayers){
+    public Deck(int numberOfPlayers, Game game){
+        this.game = game;
         discardPile = new ArrayList<>();
         drawPile = new ArrayList<>();
         for (int i = 0; i < NUMBER_OF_DEFUSES; i++){
@@ -55,8 +59,6 @@ public class Deck {
         for (int i = 0; i < NUMBER_OF_NOPE; i++){
             drawPile.add(new NopeCard(Card.CARD_TYPE.NOPE, AVAILABLE_NOPE_NAMES[i],this));
         }
-        // 5 stands for number of different regular card types
-        // 4 stand for number of cards each regular car type has
         for (int i = 0; i < 5; i++){
             for (int j = 0; j < 4; j++){
                 drawPile.add(new RegularCard(Card.CARD_TYPE.REGULAR, AVAILABLE_REGULAR_NAMES[i],this));

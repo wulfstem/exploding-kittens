@@ -8,7 +8,8 @@ public class DefuseCard extends Card{
     }
 
     @Override
-    public void action() {
+    public void action(Player player) {
         // defuse can be used after a bomb is drawn
+
     }
 }
