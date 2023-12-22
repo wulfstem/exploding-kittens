@@ -8,7 +8,7 @@ public class NopeCard extends Card{
     }
 
     @Override
-    public void action() {
+    public void action(Player player) {
         // deny the last card played except it's a bomb or a defuse
     }
 }

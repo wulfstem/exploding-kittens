@@ -8,8 +8,8 @@ public class Attack2Card extends Card{
     }
 
     @Override
-    public void action() {
+    public void action(Player player) {
         // tap another player to take 2 turns and skip yours
-    }
 
+    }
 }

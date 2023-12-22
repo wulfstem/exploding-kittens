@@ -8,7 +8,7 @@ public class FavorCard extends Card{
     }
 
     @Override
-    public void action() {
-        // steal a card from anyone you choose
+    public void action(Player player) {
+
     }
 }

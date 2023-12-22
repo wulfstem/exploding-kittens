@@ -1,7 +1,13 @@
 package model;
 
-public class Computer {
+import controller.GameController;
+
+public class Computer extends Player{
 
 
-    private final String NAME = "RoboTukas";
+    public static final String COMPUTER_NAME = "RoboTukas";
+
+    public Computer(String playerName, Game game) {
+        super(playerName, game);
+    }
 }

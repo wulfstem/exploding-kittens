@@ -9,7 +9,7 @@ public class BombCard extends Card{
     }
 
     @Override
-    public void action() {
-        // either defused when drawn or kills the player
+    public void action(Player player) {
+        // does not have an action
     }
 }
