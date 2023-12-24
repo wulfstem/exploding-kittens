@@ -21,4 +21,15 @@ public class Attack2Card extends Card{
         int index = player.readInputInt();
         player.getGame().setCurrent(index);
     }
+
+    @Override
+    public void undo(Player player){
+        player.setSkipTurn(false);
+        if (player.getGame().getTurns() == 2){
+            player.getGame().setTurns(1);
+        }
+        else{
+            player.getGame().setTurns(player.getGame().getTurns() - 2);
+        }
+    }
 }

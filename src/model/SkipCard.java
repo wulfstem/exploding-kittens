@@ -12,4 +12,9 @@ public class SkipCard extends Card{
         // skip your turn and go to the next player
         player.setSkipTurn(true);
     }
+
+    @Override
+    public void undo(Player player) {
+        player.setSkipTurn(false);
+    }
 }

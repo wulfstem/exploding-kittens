@@ -18,4 +18,9 @@ public class See3Card extends Card{
         }
         System.out.println(result);
     }
+
+    @Override
+    public void undo(Player player) {
+        // cannot be undone (at least I am not sure how it could)
+    }
 }
