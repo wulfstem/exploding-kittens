@@ -10,6 +10,6 @@ public class DefuseCard extends Card{
     @Override
     public void action(Player player) {
         // defuse can be used after a bomb is drawn
-
+        System.out.println("This card does not have an action.");
     }
 }

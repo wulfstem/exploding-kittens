@@ -9,6 +9,8 @@ public class FavorCard extends Card{
 
     @Override
     public void action(Player player) {
-
+        System.out.println("Which player are we asking the card from?");
+        int input1 = player.readInputInt();
+        player.steal(player.getGame().getPlayers().get(input1), player);
     }
 }
