@@ -12,4 +12,9 @@ public class BombCard extends Card{
     public void action(Player player) {
         // does not have an action
     }
+
+    @Override
+    public void undo(Player player) {
+        // does not have undo
+    }
 }

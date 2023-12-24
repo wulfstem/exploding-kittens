@@ -10,6 +10,11 @@ public class ShuffleCard extends Card{
     @Override
     public void action(Player player) {
         //shuffles the draw pile
-        player.getGame().shuffle(player.getGame().getDeck());
+        player.getGame().shuffle();
+    }
+
+    @Override
+    public void undo(Player player) {
+        player.getGame().getDeck().setDrawPile(player.getGame().getDrawPileBeforeShuffle());
     }
 }

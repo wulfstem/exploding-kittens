@@ -1,14 +1,13 @@
 package model;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
 /**
- * Deck has total of 56 cards. That includes:
- * (4) Exploding Kittens (depends on the number of players n - 1,
- * (6) Defuses (all the extra will be mixed in the deck),
- * At the beginning of the round each player receives 7 random cards + 1 Defuse,
+ * Class creating the game environment, responsible for game logic, computations in-game and back-end processes.
+ * @author Ervinas Vilkaitis and Ugnius Tulaba.
  */
 
 public class Game {
@@ -19,13 +18,15 @@ public class Game {
     private boolean computerPlayer;
     private int current;
     private int turns;
-
-
-    // Main attributes
     private ArrayList<Player> players;
     private Deck deck;
+    private Card lastCardPlayed;
+    private ArrayList<Card> drawPileBeforeShuffle;
 
-
+    /**
+     * Class constructor
+     * @param numberOfPlayers the number of players playing a game, not including the computer player.
+     */
     public Game(int numberOfPlayers) {
         if (numberOfPlayers == 1) {
             this.numberOfPlayers = numberOfPlayers + 1;
@@ -37,6 +38,14 @@ public class Game {
         this.players = new ArrayList<>();
     }
 
+    /**
+     * Method creating an array <code>players</code> with instances of class <code>Player</code>
+     * @param computerPlayer boolean set to true if computer is playing, set to false if not.
+     * @param deck instance of Class <code>Deck</code>.
+     *
+     * @requires computerPlayer != null && deck != null;
+     * @ensures players.length == getNumberOfPlayers();
+     */
     public void createPlayers(boolean computerPlayer, Deck deck) {
         if (!computerPlayer) {
             for (int i = 0; i < getNumberOfPlayers(); i++) {
@@ -52,28 +61,45 @@ public class Game {
         }
     }
 
+    /**
+     * method creates an instance of class <code>Deck</code>.
+     *
+     * @ensures number of Exploding Kittens in deck == numberOfPlayers - 1;
+     */
     public void createDeck() {
         deck = new Deck(numberOfPlayers, this);
     }
 
+    /**
+     * method creates instances of class <code>Hand</code> and assigns every one of them to a different player.
+     */
     public void createHands() {
         for (Player p : getPlayers()) {
             p.setPlayerHand(new Hand(p, deck));
         }
     }
 
+    /**
+     * method initiates other methods in this class, to prepare the game environment before it is started.
+     */
     public void setup() {
         createDeck();
         createPlayers(isComputerPlayer(), getDeck());
         createHands();
-        shuffle(getDeck());
+        shuffle();
     }
 
+    /**
+     * starts the game by first calling <code>setup()</code> to prepare the game environment.
+     */
     public void start(){
         setup();
         play();
     }
 
+    /**
+     * Starts first turn by letting a randomly chosen player start and runs the whole game until there is a winner.
+     */
     public void play(){
         setTurns(1);
         setCurrent(selectRandomly(getPlayers().size()));
@@ -84,12 +110,22 @@ public class Game {
                 getPlayers().get(getCurrent()).makeMove();
             }
         }
+        System.out.println("The winner is:\n" + getPlayers().get(0).getPlayerName() + "!");
     }
 
-    public void shuffle(Deck deck){
-        Collections.shuffle(deck.getDrawPile());
+    /**
+     * method shuffles the cards in <code>drawPile</code>.
+     */
+    public void shuffle(){
+        drawPileBeforeShuffle = getDeck().getDrawPile();
+        Collections.shuffle(getDeck().getDrawPile());
     }
 
+    /**
+     * method selects a random integer from given range starting with 0.
+     * @param size the endpoint of the range.
+     * @return integer randomly chosen number form the given range.
+     */
     public int selectRandomly(int size){
         Random randomly = new Random();
         return randomly.nextInt(size);
@@ -133,5 +169,17 @@ public class Game {
 
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
+    }
+
+    public Card getLastCardPlayed() {
+        return lastCardPlayed;
+    }
+
+    public void setLastCardPlayed(Card lastCardPlayed) {
+        this.lastCardPlayed = lastCardPlayed;
+    }
+
+    public ArrayList<Card> getDrawPileBeforeShuffle() {
+        return drawPileBeforeShuffle;
     }
 }

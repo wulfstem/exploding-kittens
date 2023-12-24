@@ -16,8 +16,18 @@ public class RegularCard extends Card{
             System.out.println("Which player are you asking the card from?");
             int input2 = player.readInputInt();
             player.steal(player.getGame().getPlayers().get(input2), player);
+            player.setLastCombo1(player.getPlayerHand().getCardsInHand().get(input1));
+            player.setLastCombo2(this);
             player.getPlayerHand().getCardsInHand().remove(input1);
             player.getPlayerHand().getCardsInHand().remove(this);
         }
+    }
+
+    @Override
+    public void undo(Player player) {
+        player.getPlayerHand().getCardsInHand().add(player.getLastCombo1());
+        player.getPlayerHand().getCardsInHand().add(player.getLastCombo2());
+        player.getPlayerHand().getCardsInHand().remove(player.getLastCardStolen());
+        player.getLastVictim().getPlayerHand().getCardsInHand().add(player.getLastCardStolen());
     }
 }

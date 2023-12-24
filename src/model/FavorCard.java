@@ -13,4 +13,10 @@ public class FavorCard extends Card{
         int input1 = player.readInputInt();
         player.steal(player.getGame().getPlayers().get(input1), player);
     }
+
+    @Override
+    public void undo(Player player) {
+        player.getPlayerHand().getCardsInHand().remove(player.getLastCardStolen());
+        player.getLastVictim().getPlayerHand().getCardsInHand().add(player.getLastCardStolen());
+    }
 }

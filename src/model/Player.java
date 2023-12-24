@@ -13,6 +13,10 @@ public class Player {
     private Hand playerHand;
     private boolean skipTurn;
     private int current;
+    private Player lastVictim;
+    private Card lastCardStolen;
+    private Card lastCombo1;
+    private Card lastCombo2;
 
     public Player(String name, Game game){
         this.playerName = name;
@@ -31,8 +35,8 @@ public class Player {
                 System.out.println("Which card would you like to play? (provide index starting with 0)");
                 int input2 = readInputInt();
                 getPlayerHand().getCardsInHand().get(input2).action(this);
+                game.setLastCardPlayed(getPlayerHand().getCardsInHand().get(input2));
                 if (isSkipTurn()){
-                    // TO BE IMPLEMENTED
                     if (game.getCurrent() == current){
                         game.setCurrent((game.getCurrent() + 1) % game.getPlayers().size());
                     }
@@ -55,6 +59,8 @@ public class Player {
         Card temp = player.getPlayerHand().getCardsInHand().get(input1);
         player.getPlayerHand().getCardsInHand().remove(temp);
         thief.getPlayerHand().getCardsInHand().add(temp);
+        lastVictim = player;
+        lastCardStolen = temp;
     }
 
     public void draw(){
@@ -67,6 +73,10 @@ public class Player {
         if(temp.getCardType().equals(Card.CARD_TYPE.BOMB)){
             dieOrDefuse(temp);
         }
+    }
+
+    public void undoUndo(){
+        game.getLastCardPlayed().action(this);
     }
 
     public void dieOrDefuse(Card bomb){
@@ -165,5 +175,29 @@ public class Player {
 
     public void setSkipTurn(boolean skipTurn) {
         this.skipTurn = skipTurn;
+    }
+
+    public Player getLastVictim() {
+        return lastVictim;
+    }
+
+    public Card getLastCardStolen() {
+        return lastCardStolen;
+    }
+
+    public Card getLastCombo1() {
+        return lastCombo1;
+    }
+
+    public void setLastCombo1(Card lastCombo1) {
+        this.lastCombo1 = lastCombo1;
+    }
+
+    public Card getLastCombo2() {
+        return lastCombo2;
+    }
+
+    public void setLastCombo2(Card lastCombo2) {
+        this.lastCombo2 = lastCombo2;
     }
 }
