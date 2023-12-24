@@ -1,7 +1,5 @@
 package model;
 
-import controller.GameController;
-
 public class Computer extends Player{
 
 

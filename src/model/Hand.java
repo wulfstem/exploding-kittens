@@ -37,7 +37,6 @@ public class Hand {
     }
 
     public ArrayList<Card> getCardsInHand() {
-
         return cardsInHand;
     }
 
