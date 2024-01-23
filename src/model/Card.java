@@ -18,8 +18,6 @@ public abstract class Card {
 
     public abstract void action(Player player);
 
-    public abstract void undo(Player player);
-
     public CARD_TYPE getCardType() {
         return cardType;
     }

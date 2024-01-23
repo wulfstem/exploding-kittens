@@ -20,8 +20,8 @@ public class Game {
     private int turns;
     private ArrayList<Player> players;
     private Deck deck;
-    private Card lastCardPlayed;
-    private ArrayList<Card> drawPileBeforeShuffle;
+    private DataOfLastCardPlayed data1;
+    private DataOfLastCardPlayed data2;
 
     /**
      * Class constructor
@@ -50,14 +50,14 @@ public class Game {
         if (!computerPlayer) {
             for (int i = 0; i < getNumberOfPlayers(); i++) {
                 String playerName = "Default name";
-                players.add(new Player(playerName, this));
+                players.add(new Player(playerName, this, i));
             }
         } else {
             for (int i = 0; i < getNumberOfPlayers() - 1; i++) {
                 String playerName = "Default name";
-                players.add(new Player(playerName, this));
+                players.add(new Player(playerName, this, i));
             }
-            players.add(new Computer(Computer.COMPUTER_NAME, this));
+            players.add(new Computer(Computer.COMPUTER_NAME, this, (getNumberOfPlayers() - 1)));
         }
     }
 
@@ -101,6 +101,8 @@ public class Game {
      * Starts first turn by letting a randomly chosen player start and runs the whole game until there is a winner.
      */
     public void play(){
+        resetData1();
+        resetData2();
         setTurns(1);
         setCurrent(selectRandomly(getPlayers().size()));
 
@@ -117,7 +119,6 @@ public class Game {
      * method shuffles the cards in <code>drawPile</code>.
      */
     public void shuffle(){
-        drawPileBeforeShuffle = getDeck().getDrawPile();
         Collections.shuffle(getDeck().getDrawPile());
     }
 
@@ -171,15 +172,24 @@ public class Game {
         this.players = players;
     }
 
-    public Card getLastCardPlayed() {
-        return lastCardPlayed;
+    public DataOfLastCardPlayed getData1() {
+        return data1;
     }
 
-    public void setLastCardPlayed(Card lastCardPlayed) {
-        this.lastCardPlayed = lastCardPlayed;
+    public void resetData1(){
+        this.data1 = new DataOfLastCardPlayed();
     }
 
-    public ArrayList<Card> getDrawPileBeforeShuffle() {
-        return drawPileBeforeShuffle;
+    public DataOfLastCardPlayed getData2() {
+        return data2;
+    }
+
+    public void resetData2(){
+        this.data2 = new DataOfLastCardPlayed();
+    }
+
+    public void updateData(){
+        getData1().mergeData(getData2().getCardUser(), getData2().getCardTarget(), getData2().getCardPlayed(), getData2().getStolenCard(), getData2().getComboPlayed(), getData2().getDrawPileBeforeTurn());
+        resetData2();
     }
 }

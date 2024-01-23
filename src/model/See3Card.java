@@ -17,10 +17,13 @@ public class See3Card extends Card{
             result.append(player.getGame().getDeck().getDrawPile().get(i).getCardName()).append(" (").append(player.getGame().getDeck().getDrawPile().get(i).getCardType()).append(") |");
         }
         System.out.println(result);
-    }
 
-    @Override
-    public void undo(Player player) {
-        // cannot be undone (at least I am not sure how it could)
+        //Manage data for NOPE card
+        player.getGame().getData2().setCardUser(player);
+        player.getGame().getData2().setCardTarget(null);
+        player.getGame().getData2().setCardPlayed(this);
+        player.getGame().getData2().setStolenCard(null);
+        player.getGame().getData2().setComboPlayed(null, null);
+        player.getGame().getData2().setDrawPileBeforeTurn(player.getGame().getDeck().getDrawPile());
     }
 }

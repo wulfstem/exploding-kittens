@@ -8,15 +8,24 @@ public class FavorCard extends Card{
     }
 
     @Override
-    public void action(Player player) {
+    public void action(Player thief) {
         System.out.println("Which player are we asking the card from?");
-        int input1 = player.readInputInt();
-        player.steal(player.getGame().getPlayers().get(input1), player);
-    }
+        int input1 = thief.readInputInt();
+        Player victim = thief.getGame().getPlayers().get(input1);
 
-    @Override
-    public void undo(Player player) {
-        player.getPlayerHand().getCardsInHand().remove(player.getLastCardStolen());
-        player.getLastVictim().getPlayerHand().getCardsInHand().add(player.getLastCardStolen());
+        System.out.println("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
+        victim.printHand();
+        int input2 = victim.readInputInt();
+        Card temp = victim.getPlayerHand().getCardsInHand().get(input2);
+        victim.getPlayerHand().getCardsInHand().remove(temp);
+        thief.getPlayerHand().getCardsInHand().add(temp);
+
+        //Manage data for NOPE card
+        thief.getGame().getData2().setCardUser(thief);
+        thief.getGame().getData2().setCardTarget(victim);
+        thief.getGame().getData2().setCardPlayed(this);
+        thief.getGame().getData2().setStolenCard(temp);
+        thief.getGame().getData2().setComboPlayed(null, null);
+        thief.getGame().getData2().setDrawPileBeforeTurn(thief.getGame().getDeck().getDrawPile());
     }
 }

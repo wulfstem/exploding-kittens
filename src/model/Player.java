@@ -12,36 +12,33 @@ public class Player {
     private Game game;
     private Hand playerHand;
     private boolean skipTurn;
-    private int current;
-    private Player lastVictim;
-    private Card lastCardStolen;
-    private Card lastCombo1;
-    private Card lastCombo2;
+    private int positionIndex;
 
-    public Player(String name, Game game){
+    public Player(String name, Game game, int positionIndex) {
         this.playerName = name;
         this.game = game;
+        this.positionIndex = positionIndex;
         playerHand = new Hand(this, game.getDeck());
+
     }
 
-    public void makeMove(){
-        current = game.getCurrent();
+    public void makeMove() {
+        int current = game.getCurrent();
         skipTurn = false;
 
         System.out.println("Do you want to play a card? ('y' or 'n')");
         String input1 = readInputString();
-        switch(input1){
+        switch (input1) {
             case "y":
                 System.out.println("Which card would you like to play? (provide index starting with 0)");
                 int input2 = readInputInt();
+                getGame().updateData();
                 getPlayerHand().getCardsInHand().get(input2).action(this);
-                game.setLastCardPlayed(getPlayerHand().getCardsInHand().get(input2));
-                if (isSkipTurn()){
-                    if (game.getCurrent() == current){
+                if (isSkipTurn()) {
+                    if (game.getCurrent() == current) {
                         game.setCurrent((game.getCurrent() + 1) % game.getPlayers().size());
                     }
-                }
-                else{
+                } else {
                     makeMove();
                 }
                 break;
@@ -52,40 +49,29 @@ public class Player {
         }
     }
 
-    public void steal(Player player, Player thief){
-        System.out.println("Player " + player.getPlayerName() + " choose a card to give as a favor:");
-        player.printHand();
-        int input1 = readInputInt();
-        Card temp = player.getPlayerHand().getCardsInHand().get(input1);
-        player.getPlayerHand().getCardsInHand().remove(temp);
-        thief.getPlayerHand().getCardsInHand().add(temp);
-        lastVictim = player;
-        lastCardStolen = temp;
-    }
-
-    public void draw(){
+    public void draw() {
         ArrayList<Card> pile = getGame().getDeck().getDrawPile();
         Card temp = pile.get(0);
         pile.remove(temp);
         getGame().getDeck().setDrawPile(pile);
         getPlayerHand().getCardsInHand().add(temp);
 
-        if(temp.getCardType().equals(Card.CARD_TYPE.BOMB)){
+        if (temp.getCardType().equals(Card.CARD_TYPE.BOMB)) {
             dieOrDefuse(temp);
         }
     }
 
-    public void undoUndo(){
-        game.getLastCardPlayed().action(this);
+    public void undoUndo() {
+
     }
 
-    public void dieOrDefuse(Card bomb){
+    public void dieOrDefuse(Card bomb) {
         System.out.println("You have drawn an Exploding Kitten!");
         printHand();
-        if (handContains(Card.CARD_TYPE.DEFUSE)){
+        if (handContains(Card.CARD_TYPE.DEFUSE)) {
             System.out.println("Use a Defuse? ('y' or 'n')");
             String input = readInputString();
-            switch(input){
+            switch (input) {
                 case "n":
                     System.out.println("Better luck next time Champ!");
                     die();
@@ -101,44 +87,43 @@ public class Player {
                     getPlayerHand().getCardsInHand().remove(bomb);
                     break;
             }
-        }
-        else{
+        } else {
             System.out.println("Better luck next time Champ!");
             die();
         }
     }
 
-    public void die(){
+    public void die() {
         ArrayList<Player> temp = getGame().getPlayers();
         temp.remove(this);
         getGame().setPlayers(temp);
     }
 
-    public boolean handContains(Card.CARD_TYPE cardType){
-        for (int i = 0; i < getPlayerHand().getCardsInHand().size(); i++){
-            if (getPlayerHand().getCardsInHand().get(i).getCardType().equals(cardType)){
+    public boolean handContains(Card.CARD_TYPE cardType) {
+        for (int i = 0; i < getPlayerHand().getCardsInHand().size(); i++) {
+            if (getPlayerHand().getCardsInHand().get(i).getCardType().equals(cardType)) {
                 return true;
             }
         }
         return false;
     }
 
-    public String readInputString(){
+    public String readInputString() {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        try{
+        try {
             return br.readLine();
-        } catch(IOException e){
+        } catch (IOException e) {
             System.out.println("Error while reading String input.");
             return null;
         }
     }
 
-    public int readInputInt(){
+    public int readInputInt() {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        try{
+        try {
             String line = br.readLine();
             return Integer.parseInt(line);
-        } catch(IOException e){
+        } catch (IOException e) {
             System.out.println("Error while reading Int input.");
             return 0;
         }
@@ -148,10 +133,10 @@ public class Player {
         return playerName;
     }
 
-    public String printHand(){
+    public String printHand() {
         StringBuilder result = new StringBuilder();
         result.append(this.getPlayerName()).append("\n");
-        for (int i = 0; i < getPlayerHand().getCardsInHand().size(); i++){
+        for (int i = 0; i < getPlayerHand().getCardsInHand().size(); i++) {
             result.append(getPlayerHand().getCardsInHand().get(i).getCardName()).append(" (").append(getPlayerHand().getCardsInHand().get(i).getCardType()).append(") | ");
         }
         return result.toString();
@@ -165,7 +150,7 @@ public class Player {
         this.playerHand = playerHand;
     }
 
-    public Game getGame(){
+    public Game getGame() {
         return game;
     }
 
@@ -177,27 +162,11 @@ public class Player {
         this.skipTurn = skipTurn;
     }
 
-    public Player getLastVictim() {
-        return lastVictim;
+    public int getPositionIndex() {
+        return positionIndex;
     }
 
-    public Card getLastCardStolen() {
-        return lastCardStolen;
-    }
-
-    public Card getLastCombo1() {
-        return lastCombo1;
-    }
-
-    public void setLastCombo1(Card lastCombo1) {
-        this.lastCombo1 = lastCombo1;
-    }
-
-    public Card getLastCombo2() {
-        return lastCombo2;
-    }
-
-    public void setLastCombo2(Card lastCombo2) {
-        this.lastCombo2 = lastCombo2;
+    public void setPositionIndex(int positionIndex) {
+        this.positionIndex = positionIndex;
     }
 }

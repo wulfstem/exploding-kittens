@@ -20,16 +20,13 @@ public class Attack2Card extends Card{
         System.out.println("Which player are you attacking? (index)");
         int index = player.readInputInt();
         player.getGame().setCurrent(index);
-    }
 
-    @Override
-    public void undo(Player player){
-        player.setSkipTurn(false);
-        if (player.getGame().getTurns() == 2){
-            player.getGame().setTurns(1);
-        }
-        else{
-            player.getGame().setTurns(player.getGame().getTurns() - 2);
-        }
+        //Manage data for NOPE card
+        player.getGame().getData2().setCardUser(player);
+        player.getGame().getData2().setCardTarget(player.getGame().getPlayers().get(index));
+        player.getGame().getData2().setCardPlayed(this);
+        player.getGame().getData2().setStolenCard(null);
+        player.getGame().getData2().setComboPlayed(null, null);
+        player.getGame().getData2().setDrawPileBeforeTurn(player.getGame().getDeck().getDrawPile());
     }
 }
