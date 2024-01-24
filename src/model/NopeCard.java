@@ -9,13 +9,7 @@ public class NopeCard extends Card{
 
     @Override
     public void action(Player player) {
-        // deny the last card played except it's a bomb or a defuse
-        Card lastCard = player.getGame().getLastCardPlayed();
-        lastCard.undo(player);
-    }
+        // Has no action
 
-    @Override
-    public void undo(Player player) {
-        player.undoUndo();
     }
 }

@@ -20,8 +20,6 @@ public class Game {
     private int turns;
     private ArrayList<Player> players;
     private Deck deck;
-    private Card lastCardPlayed;
-    private ArrayList<Card> drawPileBeforeShuffle;
 
     /**
      * Class constructor
@@ -53,14 +51,14 @@ public class Game {
         if (!computerPlayer) {
             for (int i = 0; i < getNumberOfPlayers(); i++) {
                 String playerName = "Default name";
-                players.add(new Player(playerName, this));
+                players.add(new Player(playerName, this, i));
             }
         } else {
             for (int i = 0; i < getNumberOfPlayers() - 1; i++) {
                 String playerName = "Default name";
-                players.add(new Player(playerName, this));
+                players.add(new Player(playerName, this, i));
             }
-            players.add(new Computer(Computer.COMPUTER_NAME, this));
+            players.add(new Computer(Computer.COMPUTER_NAME, this, (getNumberOfPlayers() - 1)));
         }
     }
     /**
@@ -107,6 +105,7 @@ public class Game {
         setCurrent(selectRandomly(getPlayers().size()));
 
         while(!hasWinner()){
+            updatePlayersPositions();
             System.out.println(getPlayers().get(getCurrent()).printHand());
             for (int i = 0; i < turns; i++){
                 getPlayers().get(getCurrent()).makeMove();
@@ -119,7 +118,6 @@ public class Game {
      * method shuffles the cards in <code>drawPile</code>.
      */
     public void shuffle(){
-        drawPileBeforeShuffle = getDeck().getDrawPile();
         Collections.shuffle(getDeck().getDrawPile());
     }
 
@@ -131,6 +129,22 @@ public class Game {
     public int selectRandomly(int size){
         Random randomly = new Random();
         return randomly.nextInt(size);
+    }
+
+    public boolean validateMove(Card card, Player player){
+        boolean result = true;
+        for (int i = 0; i < getPlayers().size(); i++){
+            if (i != getCurrent()){
+                for (Card cardInHand : getPlayers().get(i).getPlayerHand().getCardsInHand()) {
+                    if (cardInHand.getCardType().equals(Card.CARD_TYPE.NOPE)) {
+                        if(getPlayers().get(i).askNope(card, player)){
+                            result = false;
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     public boolean hasWinner(){
@@ -173,15 +187,9 @@ public class Game {
         this.players = players;
     }
 
-    public Card getLastCardPlayed() {
-        return lastCardPlayed;
-    }
-
-    public void setLastCardPlayed(Card lastCardPlayed) {
-        this.lastCardPlayed = lastCardPlayed;
-    }
-
-    public ArrayList<Card> getDrawPileBeforeShuffle() {
-        return drawPileBeforeShuffle;
+    public void updatePlayersPositions(){
+        for (int i = 0; i < getPlayers().size(); i++){
+            getPlayers().get(i).setPositionIndex(i);
+        }
     }
 }

@@ -12,9 +12,4 @@ public class ShuffleCard extends Card{
         //shuffles the draw pile
         player.getGame().shuffle();
     }
-
-    @Override
-    public void undo(Player player) {
-        player.getGame().getDeck().setDrawPile(player.getGame().getDrawPileBeforeShuffle());
-    }
 }

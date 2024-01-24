@@ -17,19 +17,21 @@ public class Attack2Card extends Card{
         else{
             player.getGame().setTurns(player.getGame().getTurns() + 2);
         }
-        System.out.println("Which player are you attacking? (index)");
-        int index = player.readInputInt();
-        player.getGame().setCurrent(index);
-    }
-
-    @Override
-    public void undo(Player player){
-        player.setSkipTurn(false);
-        if (player.getGame().getTurns() == 2){
-            player.getGame().setTurns(1);
+        int index = 0;
+        if (player instanceof Computer){
+            boolean valid = false;
+            while(!valid){
+                index = (int)(Math.random() * (player.getGame().getPlayers().size() - 1));
+                if(index != player.getPositionIndex()){
+                    valid = true;
+                }
+            }
+            player.getGame().setCurrent(index);
         }
         else{
-            player.getGame().setTurns(player.getGame().getTurns() - 2);
+            System.out.println("Which player are you attacking? (index)");
+            index = player.readInputInt();
+            player.getGame().setCurrent(index);
         }
     }
 }
