@@ -12,6 +12,7 @@ public class NopeCard extends Card{
         // deny the last card played except it's a bomb or a defuse
         if (player.getGame().getData1().getCardPlayed().getCardType().equals(CARD_TYPE.NOPE)){
             // WE DO SOMETHING DIFFERENT HERE CONVERTING LAST NOPE TO YES
+
         }
         else{
             Card lastCardPlayed = player.getGame().getData1().getCardPlayed();

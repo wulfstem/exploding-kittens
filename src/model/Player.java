@@ -30,15 +30,23 @@ public class Player {
         String input1 = readInputString();
         switch (input1) {
             case "y":
-                System.out.println("Which card would you like to play? (provide index starting with 0)");
-                int input2 = readInputInt();
-                getGame().updateData();
-                getPlayerHand().getCardsInHand().get(input2).action(this);
-                if (isSkipTurn()) {
-                    if (game.getCurrent() == current) {
-                        game.setCurrent((game.getCurrent() + 1) % game.getPlayers().size());
+                int index = getAnyCardChoice();
+
+                // Check if any other player wants to play a NOPE card
+                if(getGame().validateMove(getPlayerHand().getCardsInHand().get(index), this)){
+                    getGame().updateData();
+                    getPlayerHand().getCardsInHand().get(index).action(this);
+                    if (isSkipTurn()) {
+                        if (game.getCurrent() == current) {
+                            game.setCurrent((game.getCurrent() + 1) % game.getPlayers().size());
+                        }
+                    } else {
+                        makeMove();
                     }
-                } else {
+                }
+                else{
+                    System.out.println("Your card has been cancelled by another player playing a NOPE card.");
+                    getPlayerHand().getCardsInHand().remove(index);
                     makeMove();
                 }
                 break;
@@ -63,6 +71,26 @@ public class Player {
 
     public void undoUndo() {
 
+    }
+
+    public boolean askNope(Card card, Player player){
+        boolean result = false;
+        System.out.println(player.getPlayerName() + "is playing " + card.getCardName());
+        System.out.println("Do you want to use your NOPE card? (y or n)");
+        String input1 = readInputString();
+        switch (input1){
+            case "y":
+                result = true;
+                int index = getCardChoice(Card.CARD_TYPE.NOPE);
+                getPlayerHand().getCardsInHand().remove(index);
+                return result;
+            case "n":
+                return result;
+            default:
+                System.out.println("Invalid input");
+                askNope(card, player);
+        }
+        return result;
     }
 
     public void dieOrDefuse(Card bomb) {
@@ -93,6 +121,52 @@ public class Player {
         }
     }
 
+    public int getCardChoice(Card.CARD_TYPE cardType){
+        boolean isIndexValid = false;
+        int input2 = 0;
+        printHand();
+        System.out.println("Which card would you like to play? (number between 0 and " + (getPlayerHand().getCardsInHand().size() - 1) + ")");
+        while(!isIndexValid){
+            input2 = readInputInt();
+            if (input2 <= 0 || input2 > getPlayerHand().getCardsInHand().size()){
+                System.out.println("Invalid index, choose a number between 0 and" + (getPlayerHand().getCardsInHand().size() - 1));
+            }
+            isIndexValid = true;
+        }
+        if (getPlayerHand().getCardsInHand().get(input2).getCardType().equals(cardType)){
+            return input2;
+        }
+        else{
+            System.out.println("Chosen card is not of type " + cardType);
+            getCardChoice(cardType);
+        }
+        return 0;
+    }
+
+    public int getAnyCardChoice(){
+        boolean isIndexValid = false;
+        int input2 = 0;
+        printHand();
+        System.out.println("Which card would you like to play? (number between 0 and " + (getPlayerHand().getCardsInHand().size() - 1) + ")");
+        while(!isIndexValid){
+            input2 = readInputInt();
+            if (input2 <= 0 || input2 > getPlayerHand().getCardsInHand().size()){
+                System.out.println("Invalid index, choose a number between 0 and" + (getPlayerHand().getCardsInHand().size() - 1));
+            }
+            isIndexValid = true;
+        }
+        if (getPlayerHand().getCardsInHand().get(input2).getCardType().equals(Card.CARD_TYPE.DEFUSE)){
+            System.out.println("Defuse card can only be played when a bomb has been drawn.");
+
+            getAnyCardChoice();
+        }
+        else if(getPlayerHand().getCardsInHand().get(input2).getCardType().equals(Card.CARD_TYPE.NOPE)){
+            System.out.println("Nope card cannot be played at the moment.");
+            getAnyCardChoice();
+        }
+        return input2;
+    }
+
     public void die() {
         ArrayList<Player> temp = getGame().getPlayers();
         temp.remove(this);
@@ -113,9 +187,10 @@ public class Player {
         try {
             return br.readLine();
         } catch (IOException e) {
-            System.out.println("Error while reading String input.");
-            return null;
+            System.out.println("Error while reading String input. Try writing again");
+            readInputString();
         }
+        return null;
     }
 
     public int readInputInt() {
@@ -124,9 +199,24 @@ public class Player {
             String line = br.readLine();
             return Integer.parseInt(line);
         } catch (IOException e) {
-            System.out.println("Error while reading Int input.");
-            return 0;
+            System.out.println("Error while reading Int input. Try writing number again");
+            readInputInt();
         }
+        return 0;
+    }
+
+    public boolean readInputBoolean(){
+        System.out.println("Write 'y' for yes, and write 'n' for no:");
+        switch (readInputString()){
+            case "y":
+                return true;
+            case "n":
+                return false;
+            default:
+                System.out.println("Invalid input, try again:");
+                readInputBoolean();
+        }
+        return false;
     }
 
     public String getPlayerName() {
@@ -137,7 +227,7 @@ public class Player {
         StringBuilder result = new StringBuilder();
         result.append(this.getPlayerName()).append("\n");
         for (int i = 0; i < getPlayerHand().getCardsInHand().size(); i++) {
-            result.append(getPlayerHand().getCardsInHand().get(i).getCardName()).append(" (").append(getPlayerHand().getCardsInHand().get(i).getCardType()).append(") | ");
+            result.append(getPlayerHand().getCardsInHand().get(i).getCardName()).append(i).append(" | ");
         }
         return result.toString();
     }
@@ -169,4 +259,6 @@ public class Player {
     public void setPositionIndex(int positionIndex) {
         this.positionIndex = positionIndex;
     }
+
+
 }

@@ -132,6 +132,20 @@ public class Game {
         return randomly.nextInt(size);
     }
 
+    public boolean validateMove(Card card, Player player){
+        boolean result = true;
+        for (int i = 0; i < getPlayers().size(); i++){
+            if (i != getCurrent()){
+                for (Card cardInHand : getPlayers().get(i).getPlayerHand().getCardsInHand()) {
+                    if (cardInHand.getCardType().equals(Card.CARD_TYPE.NOPE)) {
+                        result = !(getPlayers().get(i).askNope(card, player));
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     public boolean hasWinner(){
         return getPlayers().size() == 1;
     }

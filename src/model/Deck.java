@@ -33,6 +33,38 @@ public class Deck {
         discardPile = new ArrayList<>();
         drawPile = new ArrayList<>();
         for (int i = 0; i < NUMBER_OF_DEFUSES; i++){
+            drawPile.add(new DefuseCard(Card.CARD_TYPE.DEFUSE, "DEFUSE", this));
+        }
+        for (int i = 0; i < numberOfPlayers - 1; i++){
+            drawPile.add(new BombCard(Card.CARD_TYPE.BOMB, "BOMB", this));
+        }
+        for (int i = 0; i < NUMBER_OF_ATTACK2; i++){
+            drawPile.add(new Attack2Card(Card.CARD_TYPE.ATTACK2, "ATTACK",this));
+        }
+        for (int i = 0; i < NUMBER_OF_FAVOR; i++){
+            drawPile.add(new FavorCard(Card.CARD_TYPE.FAVOR, "FAVOR",this));
+        }
+        for (int i = 0; i < NUMBER_OF_NOPE; i++){
+            drawPile.add(new NopeCard(Card.CARD_TYPE.NOPE, "NOPE",this));
+        }
+        for (int i = 0; i < NUMBER_OF_SHUFFLE; i++){
+            drawPile.add(new ShuffleCard(Card.CARD_TYPE.SHUFFLE, "SHUFFLE",this));
+        }
+        for (int i = 0; i < NUMBER_OF_SKIP; i++){
+            drawPile.add(new SkipCard(Card.CARD_TYPE.SKIP, "SKIP",this));
+        }
+        for (int i = 0; i < NUMBER_OF_SEE3; i++){
+            drawPile.add(new See3Card(Card.CARD_TYPE.SEE3, "SEE_AHEAD",this));
+        }
+        for (int i = 0; i < 5; i++){
+            for (int j = 0; j < 4; j++){
+                drawPile.add(new RegularCard(Card.CARD_TYPE.REGULAR, AVAILABLE_REGULAR_NAMES[i],this));
+            }
+        }
+
+        /*
+        ALTERNATIVE WAY OF NAMING CARDS
+        for (int i = 0; i < NUMBER_OF_DEFUSES; i++){
             drawPile.add(new DefuseCard(Card.CARD_TYPE.DEFUSE, AVAILABLE_DEFUSE_NAMES[i], this));
         }
         for (int i = 0; i < numberOfPlayers - 1; i++){
@@ -64,6 +96,7 @@ public class Deck {
                 drawPile.add(new RegularCard(Card.CARD_TYPE.REGULAR, AVAILABLE_REGULAR_NAMES[i],this));
             }
         }
+        */
     }
 
     public ArrayList<Card> getDrawPile() {
