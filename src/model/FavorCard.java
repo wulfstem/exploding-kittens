@@ -24,13 +24,12 @@ public class FavorCard extends Card{
             index = thief.readInputInt();
         }
         Player victim = thief.getGame().getPlayers().get(index);
-
-        victim.printHand();
         System.out.println("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
+        System.out.println(victim.printHand());
 
         int index2;
         if (victim instanceof Computer){
-            index2 = (int)(Math.random() * victim.getPlayerHand().getCardsInHand().size()) + 1;
+            index2 = (int)(Math.random() * (victim.getPlayerHand().getCardsInHand().size() - 1));
         }
         else{
             index2 = victim.readInputInt();
@@ -38,13 +37,5 @@ public class FavorCard extends Card{
         Card temp = victim.getPlayerHand().getCardsInHand().get(index2);
         victim.getPlayerHand().getCardsInHand().remove(temp);
         thief.getPlayerHand().getCardsInHand().add(temp);
-
-        //Manage data for NOPE card
-        thief.getGame().getData2().setCardUser(thief);
-        thief.getGame().getData2().setCardTarget(victim);
-        thief.getGame().getData2().setCardPlayed(this);
-        thief.getGame().getData2().setStolenCard(temp);
-        thief.getGame().getData2().setComboPlayed(null, null);
-        thief.getGame().getData2().setDrawPileBeforeTurn(thief.getGame().getDeck().getDrawPile());
     }
 }

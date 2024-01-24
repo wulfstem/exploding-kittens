@@ -20,8 +20,6 @@ public class Game {
     private int turns;
     private ArrayList<Player> players;
     private Deck deck;
-    private DataOfLastCardPlayed data1;
-    private DataOfLastCardPlayed data2;
 
     /**
      * Class constructor
@@ -101,12 +99,11 @@ public class Game {
      * Starts first turn by letting a randomly chosen player start and runs the whole game until there is a winner.
      */
     public void play(){
-        resetData1();
-        resetData2();
         setTurns(1);
         setCurrent(selectRandomly(getPlayers().size()));
 
         while(!hasWinner()){
+            updatePlayersPositions();
             System.out.println(getPlayers().get(getCurrent()).printHand());
             for (int i = 0; i < turns; i++){
                 getPlayers().get(getCurrent()).makeMove();
@@ -138,7 +135,9 @@ public class Game {
             if (i != getCurrent()){
                 for (Card cardInHand : getPlayers().get(i).getPlayerHand().getCardsInHand()) {
                     if (cardInHand.getCardType().equals(Card.CARD_TYPE.NOPE)) {
-                        result = !(getPlayers().get(i).askNope(card, player));
+                        if(getPlayers().get(i).askNope(card, player)){
+                            result = false;
+                        }
                     }
                 }
             }
@@ -186,24 +185,9 @@ public class Game {
         this.players = players;
     }
 
-    public DataOfLastCardPlayed getData1() {
-        return data1;
-    }
-
-    public void resetData1(){
-        this.data1 = new DataOfLastCardPlayed();
-    }
-
-    public DataOfLastCardPlayed getData2() {
-        return data2;
-    }
-
-    public void resetData2(){
-        this.data2 = new DataOfLastCardPlayed();
-    }
-
-    public void updateData(){
-        getData1().mergeData(getData2().getCardUser(), getData2().getCardTarget(), getData2().getCardPlayed(), getData2().getStolenCard(), getData2().getComboPlayed(), getData2().getDrawPileBeforeTurn());
-        resetData2();
+    public void updatePlayersPositions(){
+        for (int i = 0; i < getPlayers().size(); i++){
+            getPlayers().get(i).setPositionIndex(i);
+        }
     }
 }

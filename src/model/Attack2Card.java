@@ -21,7 +21,7 @@ public class Attack2Card extends Card{
         if (player instanceof Computer){
             boolean valid = false;
             while(!valid){
-                index = (int)(Math.random() * player.getGame().getPlayers().size() - 1);
+                index = (int)(Math.random() * (player.getGame().getPlayers().size() - 1));
                 if(index != player.getPositionIndex()){
                     valid = true;
                 }
@@ -33,13 +33,5 @@ public class Attack2Card extends Card{
             index = player.readInputInt();
             player.getGame().setCurrent(index);
         }
-
-        //Manage data for NOPE card
-        player.getGame().getData2().setCardUser(player);
-        player.getGame().getData2().setCardTarget(player.getGame().getPlayers().get(index));
-        player.getGame().getData2().setCardPlayed(this);
-        player.getGame().getData2().setStolenCard(null);
-        player.getGame().getData2().setComboPlayed(null, null);
-        player.getGame().getData2().setDrawPileBeforeTurn(player.getGame().getDeck().getDrawPile());
     }
 }
