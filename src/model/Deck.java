@@ -3,8 +3,6 @@ package model;
 import java.util.ArrayList;
 
 public class Deck {
-
-
     private final String[] AVAILABLE_BOMB_NAMES = {"Cat hair in Warp Core", "Dynamite Kitten & Ship", "Grenade Kitten & House", "Walking on Nuclear Launch Keyboard"};
     public final int NUMBER_OF_DEFUSES = 6;
     private final String[] AVAILABLE_DEFUSE_NAMES = {"Belly Rubs", "Capnip Sandwiches", "Kitten Therapy", "Laser Pointer", "Kitten Yoga", "3AM Flatulence"};
