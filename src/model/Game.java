@@ -3,6 +3,7 @@ package model;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -47,12 +48,12 @@ public class Game {
     public void createPlayers(boolean computerPlayer, Deck deck) {
         if (!computerPlayer) {
             for (int i = 0; i < getNumberOfPlayers(); i++) {
-                String playerName = "Default name";
+                String playerName = "Ervinas";
                 players.add(new Player(playerName, this, i));
             }
         } else {
             for (int i = 0; i < getNumberOfPlayers() - 1; i++) {
-                String playerName = "Default name";
+                String playerName = "Ervinas";
                 players.add(new Player(playerName, this, i));
             }
             players.add(new Computer(Computer.COMPUTER_NAME, this, (getNumberOfPlayers() - 1)));
@@ -99,15 +100,20 @@ public class Game {
      * Starts first turn by letting a randomly chosen player start and runs the whole game until there is a winner.
      */
     public void play(){
+        int moveCounter = 1;
         setTurns(1);
         setCurrent(selectRandomly(getPlayers().size()));
 
         while(!hasWinner()){
             updatePlayersPositions();
+            System.out.println("\nMOVE NUMBER: " + moveCounter + "\n" + "Cards left in pile: " + getDeck().getDrawPile().size() + "\nBombs left: " + getDeck().getNumberOfActiveBombs());
             System.out.println(getPlayers().get(getCurrent()).printHand());
+
             for (int i = 0; i < turns; i++){
                 getPlayers().get(getCurrent()).makeMove();
+                moveCounter++;
             }
+            System.out.println("------------------------------------------------------------------------------\n");
         }
         System.out.println("The winner is:\n" + getPlayers().get(0).getPlayerName() + "!");
     }
@@ -129,6 +135,7 @@ public class Game {
         return randomly.nextInt(size);
     }
 
+    /*
     public boolean validateMove(Card card, Player player){
         boolean result = true;
         for (int i = 0; i < getPlayers().size(); i++){
@@ -142,6 +149,27 @@ public class Game {
                 }
             }
         }
+        return result;
+    }
+     */
+
+    public boolean validateMove(Card card, Player player) {
+        boolean result = true;
+
+        for (Player otherPlayer : getPlayers()) {
+            if (otherPlayer != getPlayers().get(getCurrent())) {
+
+                for (Card cardInHand : otherPlayer.getPlayerHand().getCardsInHand()) {
+                    if (cardInHand.getCardType().equals(Card.CARD_TYPE.NOPE)) {
+                        if (otherPlayer.askNope(card, player)) {
+                            result = false;
+                            return result;
+                        }
+                    }
+                }
+            }
+        }
+
         return result;
     }
 

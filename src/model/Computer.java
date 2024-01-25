@@ -14,14 +14,27 @@ public class Computer extends Player{
         int current = super.getGame().getCurrent();
         setSkipTurn(false);
         int choiceYN = (int)(Math.random() * 1);
+        boolean allow = true;
 
         if (choiceYN == 0){
             int choiceCardToPlay = (int)(Math.random() * (getPlayerHand().getCardsInHand().size() - 1));
             if (getPlayerHand().getCardsInHand().get(choiceCardToPlay).getCardType().equals(Card.CARD_TYPE.DEFUSE)){
                 makeMove();
+                return;
             }
             else if(getPlayerHand().getCardsInHand().get(choiceCardToPlay).getCardType().equals(Card.CARD_TYPE.NOPE)){
                 makeMove();
+                return;
+            }
+            else if(getPlayerHand().getCardsInHand().get(choiceCardToPlay).getCardType().equals(Card.CARD_TYPE.REGULAR)){
+                Card tempCard = getPlayerHand().getCardsInHand().get(choiceCardToPlay);
+                for (Card card : this.getPlayerHand().getCardsInHand()){
+                    allow = card.getCardType().equals(tempCard.getCardType()) && card.getCardName().equals(tempCard.getCardName()) && !(card.equals(tempCard));
+                }
+            }
+            if (!allow){
+                makeMove();
+                return;
             }
             if(getGame().validateMove(getPlayerHand().getCardsInHand().get(choiceCardToPlay), this)) {
                 getPlayerHand().getCardsInHand().get(choiceCardToPlay).action(this);

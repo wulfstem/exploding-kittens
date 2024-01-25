@@ -23,6 +23,7 @@ public class Deck {
     public final int NUMBER_OF_REGULAR = 5 * 4;
     private final String[] AVAILABLE_REGULAR_NAMES = {"Beard Cat", "Cattermelon", "Hairy Potato Cat", "Rainbow-Ralphing Cat", "Tacocat"};
 
+    private int numberOfActiveBombs;
 
     private ArrayList<Card> drawPile;
     private ArrayList<Card> discardPile;
@@ -32,11 +33,13 @@ public class Deck {
         this.game = game;
         discardPile = new ArrayList<>();
         drawPile = new ArrayList<>();
+        numberOfActiveBombs = 0;
         for (int i = 0; i < NUMBER_OF_DEFUSES; i++){
             drawPile.add(new DefuseCard(Card.CARD_TYPE.DEFUSE, "DEFUSE", this));
         }
         for (int i = 0; i < numberOfPlayers - 1; i++){
             drawPile.add(new BombCard(Card.CARD_TYPE.BOMB, "BOMB", this));
+            numberOfActiveBombs++;
         }
         for (int i = 0; i < NUMBER_OF_ATTACK2; i++){
             drawPile.add(new Attack2Card(Card.CARD_TYPE.ATTACK2, "ATTACK",this));
@@ -105,5 +108,9 @@ public class Deck {
 
     public void setDrawPile(ArrayList<Card> drawPile) {
         this.drawPile = drawPile;
+    }
+
+    public int getNumberOfActiveBombs(){
+        return numberOfActiveBombs;
     }
 }

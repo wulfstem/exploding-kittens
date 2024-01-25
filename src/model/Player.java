@@ -60,7 +60,9 @@ public class Player {
         pile.remove(temp);
         getGame().getDeck().setDrawPile(pile);
         getPlayerHand().getCardsInHand().add(temp);
-
+        if (!(this instanceof Computer)){
+            System.out.println("\nYou drew " + temp.getCardName() + "!\n");
+        }
         if (temp.getCardType().equals(Card.CARD_TYPE.BOMB)) {
             dieOrDefuse(temp);
         }
@@ -74,7 +76,10 @@ public class Player {
         boolean answer = readInputBoolean();
         if (answer) {
             result = true;
-            int index = getCardChoice(Card.CARD_TYPE.NOPE);
+            int index = -1;
+            while (index == -1){
+                index = getCardChoice(Card.CARD_TYPE.NOPE);
+            }
             getPlayerHand().getCardsInHand().remove(index);
         }
         return result;
@@ -89,9 +94,9 @@ public class Player {
             if (answer){
                 printHand();
                 System.out.println("Which card? (index)");
-                int input2 = readInputInt();
-                getPlayerHand().getCardsInHand().remove(input2);
-                System.out.println("In which position would you like to put the Exploding Kitten? (index)");
+                int index = getCardChoice(Card.CARD_TYPE.DEFUSE);
+                getPlayerHand().getCardsInHand().remove(index);
+                System.out.println("In which position would you like to put the Exploding Kitten? (1 between " + getGame().getDeck().getDrawPile().size() + ")");
                 int input3 = readInputInt();
                 getGame().getDeck().getDrawPile().add(input3, bomb);
                 getPlayerHand().getCardsInHand().remove(bomb);
@@ -123,9 +128,8 @@ public class Player {
         }
         else{
             System.out.println("Chosen card is not of type " + cardType);
-            getCardChoice(cardType);
+            return -1;
         }
-        return 0;
     }
 
     public int getAnyCardChoice(){
@@ -142,12 +146,11 @@ public class Player {
         }
         if (getPlayerHand().getCardsInHand().get(input2).getCardType().equals(Card.CARD_TYPE.DEFUSE)){
             System.out.println("Defuse card can only be played when a bomb has been drawn.");
-
-            getAnyCardChoice();
+            return -1;
         }
         else if(getPlayerHand().getCardsInHand().get(input2).getCardType().equals(Card.CARD_TYPE.NOPE)){
             System.out.println("Nope card cannot be played at the moment.");
-            getAnyCardChoice();
+            return -1;
         }
         return input2;
     }
@@ -172,10 +175,8 @@ public class Player {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         try {
             return br.readLine();
-
         } catch (IOException e) {
-            System.out.println("Error while reading String input. Try writing again");
-            readInputString();
+            System.out.println("Error while reading String input");
         }
         return null;
     }
@@ -187,9 +188,8 @@ public class Player {
             return Integer.parseInt(line);
         } catch (Exception e) {
             System.out.println("Error while reading Int input. Try writing number again");
-            readInputInt();
+            return -1;
         }
-        return 0;
     }
 
     public boolean readInputBoolean(){
@@ -199,9 +199,6 @@ public class Player {
                 return true;
             case "n":
                 return false;
-            default:
-                System.out.println("Invalid input, try again:");
-                readInputBoolean();
         }
         return false;
     }
@@ -213,7 +210,7 @@ public class Player {
     public String printHand() {
         StringBuilder result = new StringBuilder();
         result.append("\n");
-        result.append(this.getPlayerName()).append("\n");
+        result.append(this.getPlayerName()).append("\n| ");
         for (int i = 0; i < getPlayerHand().getCardsInHand().size(); i++) {
             result.append(getPlayerHand().getCardsInHand().get(i).getCardName()).append(i).append(" | ");
         }
