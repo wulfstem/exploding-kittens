@@ -46,6 +46,9 @@ public class Game {
      * @ensures players.length == getNumberOfPlayers();
      */
     public void createPlayers(boolean computerPlayer, Deck deck) {
+        if (deck == null) {
+            throw new IllegalArgumentException("Deck cannot be null");
+        }
         if (!computerPlayer) {
             for (int i = 0; i < getNumberOfPlayers(); i++) {
                 String playerName = "Ervinas";
@@ -59,7 +62,6 @@ public class Game {
             players.add(new Computer(Computer.COMPUTER_NAME, this, (getNumberOfPlayers() - 1)));
         }
     }
-
     /**
      * method creates an instance of class <code>Deck</code>.
      *
