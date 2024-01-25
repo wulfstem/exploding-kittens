@@ -107,7 +107,7 @@ public class Game {
         while(!hasWinner()){
             updatePlayersPositions();
             System.out.println("\nMOVE NUMBER: " + moveCounter + "\n" + "Cards left in pile: " + getDeck().getDrawPile().size() + "\nBombs left: " + getDeck().getNumberOfActiveBombs());
-            System.out.println(getPlayers().get(getCurrent()).printHand());
+            getPlayers().get(getCurrent()).printHand();
 
             for (int i = 0; i < turns; i++){
                 getPlayers().get(getCurrent()).makeMove();

@@ -25,7 +25,7 @@ public class FavorCard extends Card{
         }
         Player victim = thief.getGame().getPlayers().get(index);
         System.out.println("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
-        System.out.println(victim.printHand());
+        victim.printHand();
 
         int index2;
         if (victim instanceof Computer){
@@ -37,5 +37,8 @@ public class FavorCard extends Card{
         Card temp = victim.getPlayerHand().getCardsInHand().get(index2);
         victim.getPlayerHand().getCardsInHand().remove(temp);
         thief.getPlayerHand().getCardsInHand().add(temp);
+        if (!(thief instanceof Computer)){
+            System.out.println("You got " + temp.getCardName());
+        }
     }
 }

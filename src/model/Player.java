@@ -71,7 +71,7 @@ public class Player {
     public boolean askNope(Card card, Player player){
         boolean result = false;
         System.out.println(player.getPlayerName() + " is playing " + card.getCardName());
-        System.out.println(printHand());
+        printHand();
         System.out.println("Do you want to use your NOPE card?");
         boolean answer = readInputBoolean();
         if (answer) {
@@ -114,7 +114,6 @@ public class Player {
     public int getCardChoice(Card.CARD_TYPE cardType){
         boolean isIndexValid = false;
         int input2 = 0;
-        printHand();
         System.out.println("Which card would you like to play? (number between 0 and " + (getPlayerHand().getCardsInHand().size() - 1) + ")");
         while(!isIndexValid){
             input2 = readInputInt();
@@ -135,7 +134,6 @@ public class Player {
     public int getAnyCardChoice(){
         boolean isIndexValid = false;
         int input2 = 0;
-        printHand();
         System.out.println("Which card would you like to play? (number between 0 and " + (getPlayerHand().getCardsInHand().size() - 1) + ")");
         while(!isIndexValid){
             input2 = readInputInt();
@@ -207,15 +205,50 @@ public class Player {
         return playerName;
     }
 
-    public String printHand() {
-        StringBuilder result = new StringBuilder();
-        result.append("\n");
-        result.append(this.getPlayerName()).append("\n| ");
-        for (int i = 0; i < getPlayerHand().getCardsInHand().size(); i++) {
-            result.append(getPlayerHand().getCardsInHand().get(i).getCardName()).append(i).append(" | ");
+    public void printHand() {
+        System.out.println(this.getPlayerName());
+        cardsInHandAnimation(getPlayerHand().getCardsInHand().size());
+    }
+
+    public void cardsInHandAnimation(int times){
+        for (int i = 0; i < times; i++){
+            System.out.print("|--------------------|    ");
         }
-        result.append("\n");
-        return result.toString();
+        System.out.print("\n");
+        for (int j = 0; j < 7; j++){
+            for (int i = 0; i < times; i++){
+                if (j == 2){
+                    System.out.print("|");
+                    String number = String.valueOf(i);
+                    int totalWidth = 20;
+
+                    int leftPadding = (totalWidth - number.length()) / 2;
+                    int rightPadding = totalWidth - number.length() - leftPadding;
+
+                    System.out.printf("%" + leftPadding + "s%s%" + rightPadding + "s", "", number, "");
+                    System.out.print("|");
+                    System.out.print("    ");
+                }
+                else if (j == 3){
+                    String cardName = getPlayerHand().getCardsInHand().get(i).getCardName();
+                    int totalWidth = 22;
+
+                    int leftPadding = (totalWidth - cardName.length()) / 2;
+                    int rightPadding = totalWidth - cardName.length() - leftPadding;
+
+                    System.out.printf("%" + leftPadding + "s%s%" + rightPadding + "s", "", cardName, "");
+                    System.out.print("    ");
+                }
+                else{
+                    System.out.print("|                    |    ");
+                }
+            }
+            System.out.print("\n");
+        }
+        for (int i = 0; i < times; i++){
+            System.out.print("|--------------------|    ");
+        }
+        System.out.print("\n");
     }
 
     public Hand getPlayerHand() {
