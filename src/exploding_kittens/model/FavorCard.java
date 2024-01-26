@@ -3,8 +3,8 @@ package exploding_kittens.model;
 public class FavorCard extends Card{
 
 
-    public FavorCard(CARD_TYPE cardType, String cardName, Deck deck) {
-        super(cardType, cardName, deck);
+    public FavorCard(cardType type, String cardName, Deck deck) {
+        super(type, cardName, deck);
     }
 
     @Override
@@ -20,15 +20,15 @@ public class FavorCard extends Card{
             }
         }
         else{
-            System.out.println("Which player are we asking the card from?");
-            index = thief.readInputInt();
+            thief.getTui().showMessage("Which player are we asking the card from?");
+            index = thief.getTui().readInputInt();
             if (index == -10 || index == -1){
                 return;
             }
         }
         Player victim = thief.getGame().getPlayers().get(index);
-        System.out.println("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
-        victim.printHand();
+        victim.getTui().showMessage("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
+        victim.getTui().printHand();
 
         int index2 = -1;
         if (victim instanceof Computer){
@@ -38,9 +38,9 @@ public class FavorCard extends Card{
             boolean goBack = true;
             while(goBack){
                 goBack = false;
-                index2 = victim.readInputInt();
+                index2 = victim.getTui().readInputInt();
                 if (index2 == -10 || index2 == -1){
-                    System.out.println("You cannot back out of this.");
+                    victim.getTui().showMessage("You cannot back out of this.");
                     goBack = true;
                 }
             }
@@ -49,7 +49,7 @@ public class FavorCard extends Card{
         victim.getPlayerHand().getCardsInHand().remove(temp);
         thief.getPlayerHand().getCardsInHand().add(temp);
         if (!(thief instanceof Computer)){
-            System.out.println("You got " + temp.getCardName());
+            thief.getTui().showMessage("You got " + temp.getCardName());
         }
     }
 }

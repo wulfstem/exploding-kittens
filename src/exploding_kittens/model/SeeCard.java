@@ -1,12 +1,12 @@
 package exploding_kittens.model;
 
-public class See3Card extends Card{
+public class SeeCard extends Card{
 
 
     private static final int VISION_OF_DRAW_PILE = 3;
 
-    public See3Card(CARD_TYPE cardType, String cardName, Deck deck) {
-        super(cardType, cardName, deck);
+    public SeeCard(cardType type, String cardName, Deck deck) {
+        super(type, cardName, deck);
     }
 
     @Override
@@ -24,7 +24,7 @@ public class See3Card extends Card{
                     result.append(player.getGame().getDeck().getDrawPile().get(i).getCardName()).append(" (").append(player.getGame().getDeck().getDrawPile().get(i).getCardType()).append(") |");
                 }
             }
-            System.out.println(result);
+            player.getTui().showMessage(String.valueOf(result));
         }
     }
 }

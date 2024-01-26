@@ -3,13 +3,12 @@ package exploding_kittens.model;
 public class DefuseCard extends Card{
 
 
-    public DefuseCard(CARD_TYPE cardType, String cardName, Deck deck) {
-        super(cardType, cardName, deck);
+    public DefuseCard(cardType type, String cardName, Deck deck) {
+        super(type, cardName, deck);
     }
 
     @Override
     public void action(Player player) {
         // defuse can be used after a bomb is drawn
-        System.out.println("This card does not have an action.");
     }
 }

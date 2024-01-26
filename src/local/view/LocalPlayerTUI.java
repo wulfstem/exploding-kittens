@@ -1,12 +1,11 @@
 package local.view;
 
 import exploding_kittens.view.PlayerTUI;
-import local.model.BackInputException;
-import local.model.BooleanReturnException;
-import local.model.Player;
+import exploding_kittens.model.BackInputException;
+import exploding_kittens.model.BooleanReturnException;
+import exploding_kittens.model.Player;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 

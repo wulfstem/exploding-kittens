@@ -1,5 +1,7 @@
 package exploding_kittens.model;
 
+import exploding_kittens.Controller;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -14,17 +16,20 @@ public class Game {
 
     // Side attributes
     private int numberOfPlayers;
+    private String[] nicknames;
     private boolean computerPlayer;
     private int current;
     private int turns;
+    private boolean skipTurn;
     private ArrayList<Player> players;
     private Deck deck;
+    private Controller controller;
 
     /**
      * Class constructor
      * @param numberOfPlayers the number of players playing a game, not including the computer player.
      */
-    public Game(int numberOfPlayers) {
+    public Game(int numberOfPlayers, String[] nicknames) {
         if (numberOfPlayers == 1) {
             this.numberOfPlayers = numberOfPlayers + 1;
             computerPlayer = true;
@@ -49,12 +54,12 @@ public class Game {
         }
         if (!computerPlayer) {
             for (int i = 0; i < getNumberOfPlayers(); i++) {
-                String playerName = "Ervinas";
+                String playerName = nicknames[i];
                 players.add(new Player(playerName, this, i));
             }
         } else {
             for (int i = 0; i < getNumberOfPlayers() - 1; i++) {
-                String playerName = "Ervinas";
+                String playerName = nicknames[i];
                 players.add(new Player(playerName, this, i));
             }
             players.add(new Computer(Computer.COMPUTER_NAME, this, (getNumberOfPlayers() - 1)));
@@ -67,7 +72,7 @@ public class Game {
      * @ensures number of Exploding Kittens in deck == numberOfPlayers - 1;
      */
     public void createDeck() {
-        deck = new Deck(numberOfPlayers, this);
+        deck = new Deck(numberOfPlayers);
     }
 
     /**
@@ -107,18 +112,18 @@ public class Game {
 
         while(!hasWinner()){
             updatePlayersPositions();
-            System.out.println("\nMOVE NUMBER: " + moveCounter + "\n" + "Cards left in pile: " + getDeck().getDrawPile().size() + "\nBombs left: " + getDeck().getNumberOfActiveBombs());
-            System.out.println("(In some occasions you can go back on your decision typing in 'b', when asked for input.\n");
+            getPlayers().get(getCurrent()).getTui().showMessage("\nMOVE NUMBER: " + moveCounter + "\n" + "Cards left in pile: " + getDeck().getDrawPile().size() + "\nBombs left: " + getDeck().getNumberOfActiveBombs());
+            getPlayers().get(getCurrent()).getTui().showMessage("(In some occasions you can go back on your decision typing in 'b', when asked for input.\n");
             if (!(getPlayers().get(getCurrent()) instanceof Computer)){
-                getPlayers().get(getCurrent()).printHand();
+                getPlayers().get(getCurrent()).getTui().printHand();
             }
             for (int i = 0; i < turns; i++){
-                getPlayers().get(getCurrent()).makeMove();
+                controller.makeMove();
                 moveCounter++;
             }
-            System.out.println("------------------------------------------------------------------------------\n");
+            getPlayers().get(getCurrent()).getTui().showMessage("------------------------------------------------------------------------------\n");
         }
-        System.out.println("The winner is:\n" + getPlayers().get(0).getPlayerName() + "!");
+        getPlayers().get(getCurrent()).getTui().showMessage("The winner is:\n" + getPlayers().get(0).getPlayerName() + "!");
     }
 
     /**
@@ -136,44 +141,6 @@ public class Game {
     public int selectRandomly(int size){
         Random randomly = new Random();
         return randomly.nextInt(size);
-    }
-
-    /*
-    public boolean validateMove(Card card, Player player){
-        boolean result = true;
-        for (int i = 0; i < getPlayers().size(); i++){
-            if (i != getCurrent()){
-                for (Card cardInHand : getPlayers().get(i).getPlayerHand().getCardsInHand()) {
-                    if (cardInHand.getCardType().equals(Card.CARD_TYPE.NOPE)) {
-                        if(getPlayers().get(i).askNope(card, player)){
-                            result = false;
-                        }
-                    }
-                }
-            }
-        }
-        return result;
-    }
-     */
-
-    public boolean validateMove(Card card, Player player) {
-        boolean result = true;
-
-        for (Player otherPlayer : getPlayers()) {
-            if (otherPlayer != getPlayers().get(getCurrent())) {
-
-                for (Card cardInHand : otherPlayer.getPlayerHand().getCardsInHand()) {
-                    if (cardInHand.getCardType().equals(Card.CARD_TYPE.NOPE)) {
-                        if (otherPlayer.askNope(card, player)) {
-                            result = false;
-                            return result;
-                        }
-                    }
-                }
-            }
-        }
-
-        return result;
     }
 
     public boolean hasWinner(){
@@ -216,9 +183,21 @@ public class Game {
         this.players = players;
     }
 
+    public boolean isSkipTurn(){
+        return skipTurn;
+    }
+
+    public void setSkipTurn(boolean skipTurn){
+        this.skipTurn = skipTurn;
+    }
+
     public void updatePlayersPositions(){
         for (int i = 0; i < getPlayers().size(); i++){
             getPlayers().get(i).setPositionIndex(i);
         }
+    }
+
+    public void setController(Controller controller){
+        this.controller = controller;
     }
 }

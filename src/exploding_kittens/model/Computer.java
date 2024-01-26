@@ -18,15 +18,15 @@ public class Computer extends Player{
 
         if (choiceYN == 0){
             int choiceCardToPlay = (int)(Math.random() * (getPlayerHand().getCardsInHand().size() - 1));
-            if (getPlayerHand().getCardsInHand().get(choiceCardToPlay).getCardType().equals(Card.CARD_TYPE.DEFUSE)){
+            if (getPlayerHand().getCardsInHand().get(choiceCardToPlay).getCardType().equals(Card.cardType.DEFUSE)){
                 makeMove();
                 return;
             }
-            else if(getPlayerHand().getCardsInHand().get(choiceCardToPlay).getCardType().equals(Card.CARD_TYPE.NOPE)){
+            else if(getPlayerHand().getCardsInHand().get(choiceCardToPlay).getCardType().equals(Card.cardType.NOPE)){
                 makeMove();
                 return;
             }
-            else if(getPlayerHand().getCardsInHand().get(choiceCardToPlay).getCardType().equals(Card.CARD_TYPE.REGULAR)){
+            else if(getPlayerHand().getCardsInHand().get(choiceCardToPlay).getCardType().equals(Card.cardType.REGULAR)){
                 Card tempCard = getPlayerHand().getCardsInHand().get(choiceCardToPlay);
                 for (Card card : this.getPlayerHand().getCardsInHand()){
                     allow = card.getCardType().equals(tempCard.getCardType()) && card.getCardName().equals(tempCard.getCardName()) && !(card.equals(tempCard));
@@ -65,7 +65,7 @@ public class Computer extends Player{
         boolean answer = ((int) (Math.random() * 1)) == 0;
         if (answer) {
             result = true;
-            int index = getCardChoice(Card.CARD_TYPE.NOPE);
+            int index = getCardChoice(Card.cardType.NOPE);
             getPlayerHand().getCardsInHand().remove(index);
         }
         return result;
@@ -73,10 +73,10 @@ public class Computer extends Player{
 
     @Override
     public void dieOrDefuse(Card bomb){
-        if (handContains(Card.CARD_TYPE.DEFUSE)) {
+        if (handContains(Card.cardType.DEFUSE)) {
             boolean answer = ((int) (Math.random() * 1)) == 0;
             if (answer){
-                int index = getCardChoice(Card.CARD_TYPE.DEFUSE);
+                int index = getCardChoice(Card.cardType.DEFUSE);
                 getPlayerHand().getCardsInHand().remove(index);
 
                 int answer2 = ((int) (Math.random() * (getGame().getDeck().getDrawPile().size())));
@@ -92,7 +92,7 @@ public class Computer extends Player{
     }
 
     @Override
-    public int getCardChoice(Card.CARD_TYPE cardType){
+    public int getCardChoice(Card.cardType cardType){
         boolean isValid = false;
         int choice = 0;
         while(!isValid){

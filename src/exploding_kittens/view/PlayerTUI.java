@@ -1,7 +1,7 @@
 package exploding_kittens.view;
 
-import local.model.BackInputException;
-import local.model.BooleanReturnException;
+import exploding_kittens.model.BackInputException;
+import exploding_kittens.model.BooleanReturnException;
 
 public interface PlayerTUI {
 
