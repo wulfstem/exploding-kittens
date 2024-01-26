@@ -79,11 +79,16 @@ public class RegularCard extends Card{
         }
         else{
             System.out.println("Choose a duplicate card in your hand:");
-            int input1 = thief.readInputInt();
+            int input1 = thief.getCardChoice(CARD_TYPE.REGULAR);
+            if (input1 == -10 || input1 == -1){
+                return;
+            }
             if (thief.getPlayerHand().getCardsInHand().get(input1).getCardType().equals(this.getCardType()) && thief.getPlayerHand().getCardsInHand().get(input1).getCardName().equals(this.getCardName()) && !(thief.getPlayerHand().getCardsInHand().get(input1).equals(this))){
                 System.out.println("Which player are you asking the card from?");
                 int input2 = thief.readInputInt();
-
+                if (input2 == -10 || input2 == -1){
+                    return;
+                }
                 victim = thief.getGame().getPlayers().get(input2);
                 if (victim instanceof Computer){
                     int index2 = (int)(Math.random() * (victim.getPlayerHand().getCardsInHand().size() - 1));
@@ -92,12 +97,20 @@ public class RegularCard extends Card{
                     thief.getPlayerHand().getCardsInHand().add(temp);
                 }
                 else{
-                    System.out.println("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
-                    victim.printHand();
-                    int input3 = victim.readInputInt();
-                    temp = victim.getPlayerHand().getCardsInHand().get(input3);
-                    victim.getPlayerHand().getCardsInHand().remove(temp);
-                    thief.getPlayerHand().getCardsInHand().add(temp);
+                    boolean goBack = true;
+                    while(goBack){
+                        goBack = false;
+                        System.out.println("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
+                        victim.printHand();
+                        int input3 = victim.readInputInt();
+                        if (input3 < 0 || input3 > (victim.getPlayerHand().getCardsInHand().size() - 1)){
+                            goBack = true;
+                            continue;
+                        }
+                        temp = victim.getPlayerHand().getCardsInHand().get(input3);
+                        victim.getPlayerHand().getCardsInHand().remove(temp);
+                        thief.getPlayerHand().getCardsInHand().add(temp);
+                    }
                 }
             }
             else{

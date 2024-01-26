@@ -17,7 +17,7 @@ public class Main {
      * @param args is an array list of the initial system arguments.
      */
     public static void main (String[] args){
-        System.out.println( "Welcome to Exploding Kittens!" );
+        System.out.println( "\nWelcome to Exploding Kittens!" );
         // TEMPORARILY numberOfPlayers is assigned to 1
         // the aim is to figure out the number of players for the game that is being started
         int numberOfPlayers = 1;

@@ -13,6 +13,7 @@ public class Player {
     private Hand playerHand;
     private boolean skipTurn;
     private int positionIndex;
+    private final String CANCEL_MOVE = "b";
 
     public Player(String name, Game game, int positionIndex) {
         this.playerName = name;
@@ -23,34 +24,51 @@ public class Player {
     }
 
     public void makeMove() {
-        int current = game.getCurrent();
+        int current = getGame().getCurrent();
         skipTurn = false;
 
-        System.out.println("Do you want to play a card?");
-        boolean answer = readInputBoolean();
-
-        if (answer){
-            int index = getAnyCardChoice();
-            // Check if any other player wants to play a NOPE card
-            if(getGame().validateMove(getPlayerHand().getCardsInHand().get(index), this)){
-                getPlayerHand().getCardsInHand().get(index).action(this);
-                if (isSkipTurn()) {
-                    if (game.getCurrent() == current) {
-                        game.setCurrent((game.getCurrent() + 1) % game.getPlayers().size());
+        boolean goBack = true;
+        while(goBack){
+            goBack = false;
+            boolean answer;
+            System.out.println("Do you want to play a card?");
+            try{
+                answer = readInputBoolean();
+            }catch (BooleanReturnException e){
+                System.out.println("You cannot go back without making this decision.");
+                goBack = true;
+                continue;
+            }
+            if (answer){
+                int index = getAnyCardChoice();
+                if (index == -10 || index == -1){
+                    goBack = true;
+                    continue;
+                }
+                // Check if any other player wants to play a NOPE card
+                if(getGame().validateMove(getPlayerHand().getCardsInHand().get(index), this)){
+                    getPlayerHand().getCardsInHand().get(index).action(this);
+                    getPlayerHand().getCardsInHand().remove(index);
+                    if (isSkipTurn()) {
+                        if (getGame().getCurrent() == current) {
+                            getGame().setCurrent((getGame().getCurrent() + 1) % getGame().getPlayers().size());
+                        }
+                    } else {
+                        makeMove();
                     }
-                } else {
+                }
+                else{
+                    System.out.println("Your card has been cancelled by another player playing a NOPE card.");
+                    getPlayerHand().getCardsInHand().remove(index);
                     makeMove();
                 }
             }
             else{
-                System.out.println("Your card has been cancelled by another player playing a NOPE card.");
-                getPlayerHand().getCardsInHand().remove(index);
-                makeMove();
+                draw();
+                if (getGame().getTurns() == 1){
+                    getGame().setCurrent((getGame().getCurrent() + 1) % getGame().getPlayers().size());
+                }
             }
-        }
-        else{
-            draw();
-            game.setCurrent((game.getCurrent() + 1) % game.getPlayers().size());
         }
     }
 
@@ -72,15 +90,31 @@ public class Player {
         boolean result = false;
         System.out.println(player.getPlayerName() + " is playing " + card.getCardName());
         printHand();
-        System.out.println("Do you want to use your NOPE card?");
-        boolean answer = readInputBoolean();
-        if (answer) {
-            result = true;
-            int index = -1;
-            while (index == -1){
-                index = getCardChoice(Card.CARD_TYPE.NOPE);
+        boolean goBack = true;
+        while(goBack){
+            goBack = false;
+            System.out.println("Do you want to use your NOPE card?");
+            boolean answer = false;
+            try {
+                answer = readInputBoolean();
+            } catch (BooleanReturnException e) {
+                System.out.println("You cannot go back without making this decision.");
+                goBack = true;
+                continue;
             }
-            getPlayerHand().getCardsInHand().remove(index);
+            if (answer) {
+                result = true;
+                int index = -1;
+                while (index == -1){
+                    index = getCardChoice(Card.CARD_TYPE.NOPE);
+                    if (index == -10){
+                        goBack = true;
+                    }
+                }
+                if (index >= 0){
+                    getPlayerHand().getCardsInHand().remove(index);
+                }
+            }
         }
         return result;
     }
@@ -89,21 +123,41 @@ public class Player {
         System.out.println("You have drawn an Exploding Kitten!");
         printHand();
         if (handContains(Card.CARD_TYPE.DEFUSE)) {
-            System.out.println("Use a Defuse?");
-            boolean answer = readInputBoolean();
-            if (answer){
-                printHand();
-                System.out.println("Which card? (index)");
-                int index = getCardChoice(Card.CARD_TYPE.DEFUSE);
-                getPlayerHand().getCardsInHand().remove(index);
-                System.out.println("In which position would you like to put the Exploding Kitten? (1 between " + getGame().getDeck().getDrawPile().size() + ")");
-                int input3 = readInputInt();
-                getGame().getDeck().getDrawPile().add(input3, bomb);
-                getPlayerHand().getCardsInHand().remove(bomb);
+            boolean invalid = true;
+            boolean answer = false;
+            while(invalid){
+                System.out.println("Use a Defuse?");
+                try {
+                    answer = readInputBoolean();
+                    invalid = false;
+                } catch (BooleanReturnException e) {
+                    System.out.println("You cannot go back without making this decision.");;
+                }
             }
-            else{
-                System.out.println("Better luck next time Champ!");
-                die();
+            boolean goBack = true;
+            while(goBack){
+                goBack = false;
+                if (answer){
+                    System.out.println("Which card? (index)");
+                    int index = getCardChoice(Card.CARD_TYPE.DEFUSE);
+                    if (index == -10 || index == -1){
+                        goBack = true;
+                        continue;
+                    }
+                    getPlayerHand().getCardsInHand().remove(index);
+                    System.out.println("In which position would you like to put the Exploding Kitten? (1 between " + getGame().getDeck().getDrawPile().size() + ")");
+                    int input3 = readInputInt();
+                    if (input3 == -10){
+                        goBack = true;
+                        continue;
+                    }
+                    getGame().getDeck().getDrawPile().add(input3, bomb);
+                    getPlayerHand().getCardsInHand().remove(bomb);
+                }
+                else{
+                    System.out.println("Better luck next time Champ!");
+                    die();
+                }
             }
         } else {
             System.out.println("Better luck next time Champ!");
@@ -117,6 +171,9 @@ public class Player {
         System.out.println("Which card would you like to play? (number between 0 and " + (getPlayerHand().getCardsInHand().size() - 1) + ")");
         while(!isIndexValid){
             input2 = readInputInt();
+            if (input2 == -10){
+                return -10;
+            }
             if (input2 <= 0 || input2 > getPlayerHand().getCardsInHand().size()){
                 System.out.println("Invalid index, choose a number between 0 and" + (getPlayerHand().getCardsInHand().size() - 1));
             }
@@ -137,6 +194,9 @@ public class Player {
         System.out.println("Which card would you like to play? (number between 0 and " + (getPlayerHand().getCardsInHand().size() - 1) + ")");
         while(!isIndexValid){
             input2 = readInputInt();
+            if (input2 == -10){
+                return -10;
+            }
             if (input2 < 0 || input2 > getPlayerHand().getCardsInHand().size()){
                 System.out.println("Invalid index, choose a number between 0 and" + (getPlayerHand().getCardsInHand().size() - 1));
             }
@@ -169,34 +229,57 @@ public class Player {
         return false;
     }
 
-    public String readInputString() {
+    public String readInputString() throws BackInputException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String line;
         try {
-            return br.readLine();
+            line = br.readLine();
         } catch (IOException e) {
             System.out.println("Error while reading String input");
+            return null;
         }
-        return null;
+        if (line.equals(CANCEL_MOVE)){
+            throw new BackInputException("Player has changed his mind.");
+        }
+        else{
+            return line;
+        }
     }
 
     public int readInputInt() {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String line;
         try {
-            String line = br.readLine();
+            line = readInputString();
+        }catch (BackInputException e){
+            return -10;
+        }
+        try {
             return Integer.parseInt(line);
         } catch (Exception e) {
-            System.out.println("Error while reading Int input. Try writing number again");
+            System.out.println("Input is not a valid number.");
             return -1;
         }
     }
 
-    public boolean readInputBoolean(){
-        System.out.println("Write 'y' for yes, and write 'n' for no:");
-        switch (readInputString()){
-            case "y":
-                return true;
-            case "n":
-                return false;
+    public boolean readInputBoolean() throws BooleanReturnException{
+        boolean invalid = true;
+        while(invalid){
+            invalid = false;
+            System.out.println("Write 'y' for yes, and write 'n' for no:");
+            String line;
+            try{
+                line = readInputString();
+            }catch (BackInputException e){
+                throw new BooleanReturnException("Player has changed his mind.");
+            }
+            switch (line){
+                case "y":
+                    return true;
+                case "n":
+                    return false;
+            }
+            System.out.println("Invalid input, decide ('y', 'n', or 'b'");
+            invalid = true;
         }
         return false;
     }
@@ -206,7 +289,7 @@ public class Player {
     }
 
     public void printHand() {
-        System.out.println(this.getPlayerName());
+        System.out.println("Player " + getPositionIndex() + ": " + this.getPlayerName());
         cardsInHandAnimation(getPlayerHand().getCardsInHand().size());
     }
 

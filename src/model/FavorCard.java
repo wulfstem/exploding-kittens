@@ -22,17 +22,28 @@ public class FavorCard extends Card{
         else{
             System.out.println("Which player are we asking the card from?");
             index = thief.readInputInt();
+            if (index == -10 || index == -1){
+                return;
+            }
         }
         Player victim = thief.getGame().getPlayers().get(index);
         System.out.println("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
         victim.printHand();
 
-        int index2;
+        int index2 = -1;
         if (victim instanceof Computer){
             index2 = (int)(Math.random() * (victim.getPlayerHand().getCardsInHand().size() - 1));
         }
         else{
-            index2 = victim.readInputInt();
+            boolean goBack = true;
+            while(goBack){
+                goBack = false;
+                index2 = victim.readInputInt();
+                if (index2 == -10 || index2 == -1){
+                    System.out.println("You cannot back out of this.");
+                    goBack = true;
+                }
+            }
         }
         Card temp = victim.getPlayerHand().getCardsInHand().get(index2);
         victim.getPlayerHand().getCardsInHand().remove(temp);

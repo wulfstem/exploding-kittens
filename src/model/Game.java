@@ -61,6 +61,7 @@ public class Game {
             }
             players.add(new Computer(Computer.COMPUTER_NAME, this, (getNumberOfPlayers() - 1)));
         }
+        updatePlayersPositions();
     }
     /**
      * method creates an instance of class <code>Deck</code>.
@@ -109,8 +110,10 @@ public class Game {
         while(!hasWinner()){
             updatePlayersPositions();
             System.out.println("\nMOVE NUMBER: " + moveCounter + "\n" + "Cards left in pile: " + getDeck().getDrawPile().size() + "\nBombs left: " + getDeck().getNumberOfActiveBombs());
-            getPlayers().get(getCurrent()).printHand();
-
+            System.out.println("(In some occasions you can go back on your decision typing in 'b', when asked for input.\n");
+            if (!(getPlayers().get(getCurrent()) instanceof Computer)){
+                getPlayers().get(getCurrent()).printHand();
+            }
             for (int i = 0; i < turns; i++){
                 getPlayers().get(getCurrent()).makeMove();
                 moveCounter++;

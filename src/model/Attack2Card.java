@@ -29,8 +29,16 @@ public class Attack2Card extends Card{
             player.getGame().setCurrent(index);
         }
         else{
-            System.out.println("Which player are you attacking? (index)");
-            index = player.readInputInt();
+            boolean goBack = true;
+            while(goBack){
+                goBack = false;
+                System.out.println("Which player are you attacking? (index)");
+                index = player.readInputInt();
+                if (index == -10 || index == -1){
+                    System.out.println("You cannot go back on this decision.");
+                    goBack = true;
+                }
+            }
             player.getGame().setCurrent(index);
         }
     }

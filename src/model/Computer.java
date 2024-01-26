@@ -40,6 +40,7 @@ public class Computer extends Player{
             }
             if(getGame().validateMove(getPlayerHand().getCardsInHand().get(choiceCardToPlay), this)) {
                 getPlayerHand().getCardsInHand().get(choiceCardToPlay).action(this);
+                getPlayerHand().getCardsInHand().remove(choiceCardToPlay);
                 if (isSkipTurn()) {
                     if (getGame().getCurrent() == current) {
                         getGame().setCurrent((getGame().getCurrent() + 1) % getGame().getPlayers().size());
