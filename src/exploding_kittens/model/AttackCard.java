@@ -32,10 +32,10 @@ public class AttackCard extends Card{
             boolean goBack = true;
             while(goBack){
                 goBack = false;
-                player.getTui().showMessage("Which player are you attacking? (index)");
-                index = player.getTui().readInputInt();
+                player.getController().getTui().showMessage("Which player are you attacking? (index)");
+                index = player.getController().getTui().readInputInt();
                 if (index == -10 || index == -1){
-                    player.getTui().showMessage("You cannot go back on this decision.");
+                    player.getController().getTui().showMessage("You cannot go back on this decision.");
                     goBack = true;
                 }
             }

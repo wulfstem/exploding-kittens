@@ -16,20 +16,21 @@ public class Game {
 
     // Side attributes
     private int numberOfPlayers;
-    private String[] nicknames;
+    private ArrayList<String> nicknames;
     private boolean computerPlayer;
     private int current;
     private int turns;
     private boolean skipTurn;
     private ArrayList<Player> players;
     private Deck deck;
+    private int turnCounter;
     private Controller controller;
 
     /**
      * Class constructor
      * @param numberOfPlayers the number of players playing a game, not including the computer player.
      */
-    public Game(int numberOfPlayers, String[] nicknames) {
+    public Game(int numberOfPlayers, ArrayList<String> nicknames) {
         if (numberOfPlayers == 1) {
             this.numberOfPlayers = numberOfPlayers + 1;
             computerPlayer = true;
@@ -37,7 +38,9 @@ public class Game {
             this.numberOfPlayers = numberOfPlayers;
             computerPlayer = false;
         }
+        this.nicknames = nicknames;
         this.players = new ArrayList<>();
+        turnCounter = 0;
     }
 
     /**
@@ -54,15 +57,15 @@ public class Game {
         }
         if (!computerPlayer) {
             for (int i = 0; i < getNumberOfPlayers(); i++) {
-                String playerName = nicknames[i];
-                players.add(new Player(playerName, this, i));
+                String playerName = nicknames.get(i);
+                players.add(new Player(playerName, this, i, controller));
             }
         } else {
             for (int i = 0; i < getNumberOfPlayers() - 1; i++) {
-                String playerName = nicknames[i];
-                players.add(new Player(playerName, this, i));
+                String playerName = nicknames.get(i);
+                players.add(new Player(playerName, this, i, controller));
             }
-            players.add(new Computer(Computer.COMPUTER_NAME, this, (getNumberOfPlayers() - 1)));
+            players.add(new Computer(Computer.COMPUTER_NAME, this, (getNumberOfPlayers() - 1), controller));
         }
         updatePlayersPositions();
     }
@@ -93,37 +96,18 @@ public class Game {
         createHands();
         shuffle();
     }
-
-    /**
-     * starts the game by first calling <code>setup()</code> to prepare the game environment.
-     */
-    public void start(){
-        setup();
-        play();
-    }
-
     /**
      * Starts first turn by letting a randomly chosen player start and runs the whole game until there is a winner.
      */
     public void play(){
-        int moveCounter = 1;
-        setTurns(1);
+        turns = 1;
         setCurrent(selectRandomly(getPlayers().size()));
-
+        turnCounter++;
         while(!hasWinner()){
             updatePlayersPositions();
-            getPlayers().get(getCurrent()).getTui().showMessage("\nMOVE NUMBER: " + moveCounter + "\n" + "Cards left in pile: " + getDeck().getDrawPile().size() + "\nBombs left: " + getDeck().getNumberOfActiveBombs());
-            getPlayers().get(getCurrent()).getTui().showMessage("(In some occasions you can go back on your decision typing in 'b', when asked for input.\n");
-            if (!(getPlayers().get(getCurrent()) instanceof Computer)){
-                getPlayers().get(getCurrent()).getTui().printHand();
-            }
-            for (int i = 0; i < turns; i++){
-                controller.makeMove();
-                moveCounter++;
-            }
-            getPlayers().get(getCurrent()).getTui().showMessage("------------------------------------------------------------------------------\n");
+            controller.doTurn(players.get(current));
         }
-        getPlayers().get(getCurrent()).getTui().showMessage("The winner is:\n" + getPlayers().get(0).getPlayerName() + "!");
+        controller.declareWinner(getPlayers().get(0));
     }
 
     /**
@@ -199,5 +183,13 @@ public class Game {
 
     public void setController(Controller controller){
         this.controller = controller;
+    }
+
+    public int getTurnCounter(){
+        return turnCounter;
+    }
+
+    public void setTurnCounter(int number){
+        this.turnCounter = number;
     }
 }

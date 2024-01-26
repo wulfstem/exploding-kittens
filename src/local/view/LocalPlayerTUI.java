@@ -1,5 +1,6 @@
 package local.view;
 
+import exploding_kittens.Controller;
 import exploding_kittens.view.PlayerTUI;
 import exploding_kittens.model.BackInputException;
 import exploding_kittens.model.BooleanReturnException;
@@ -12,12 +13,9 @@ import java.io.InputStreamReader;
 public class LocalPlayerTUI implements PlayerTUI {
 
 
-    private Player player;
-    private final String CANCEL_MOVE = "b";
+    private Controller controller;
 
-    public LocalPlayerTUI(Player player){
-        this.player = player;
-    }
+    public LocalPlayerTUI(){}
 
     @Override
     public void showMessage(String text) {
@@ -34,6 +32,7 @@ public class LocalPlayerTUI implements PlayerTUI {
             System.out.println("Error while reading String input");
             return null;
         }
+        String CANCEL_MOVE = "b";
         if (line.equals(CANCEL_MOVE)){
             throw new BackInputException("Player has changed his mind.");
         }
@@ -102,7 +101,7 @@ public class LocalPlayerTUI implements PlayerTUI {
                     System.out.print("    ");
                 }
                 else if (j == 3){
-                    String cardName = player.getPlayerHand().getCardsInHand().get(i).getCardName();
+                    String cardName = controller.getCurrentPlayer().getPlayerHand().getCardsInHand().get(i).getCardName();
                     int totalWidth = 22;
 
                     int leftPadding = (totalWidth - cardName.length()) / 2;
@@ -123,8 +122,13 @@ public class LocalPlayerTUI implements PlayerTUI {
         System.out.print("\n");
     }
 
+    @Override
     public void printHand() {
-        showMessage("Player " + player.getPositionIndex() + ": " + player.getPlayerName());
-        cardsInHandAnimation(player.getPlayerHand().getCardsInHand().size());
+        showMessage("Player " + controller.getCurrentPlayer().getPositionIndex() + ": " + controller.getCurrentPlayer().getPlayerName());
+        cardsInHandAnimation(controller.getCurrentPlayer().getPlayerHand().getCardsInHand().size());
+    }
+
+    public void setController(Controller controller){
+        this.controller = controller;
     }
 }

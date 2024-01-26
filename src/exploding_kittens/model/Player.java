@@ -1,6 +1,6 @@
 package exploding_kittens.model;
 
-import local.view.LocalPlayerTUI;
+import exploding_kittens.Controller;
 
 import java.util.ArrayList;
 
@@ -12,28 +12,28 @@ public class Player {
     private Hand playerHand;
     private boolean skipTurn;
     private int positionIndex;
-    private final LocalPlayerTUI tui;
+    private final Controller controller;
 
-    public Player(String name, Game game, int positionIndex) {
+    public Player(String name, Game game, int positionIndex, Controller controller) {
         this.playerName = name;
         this.game = game;
         this.positionIndex = positionIndex;
         playerHand = new Hand(this, game.getDeck());
-        tui = new LocalPlayerTUI(this);
+        this.controller = controller;
     }
 
-    public void draw() {
+    public void makeMove() {
+        game.setSkipTurn(false);
+        controller.playOrDraw(this);
+    }
+
+    public Card draw() {
         ArrayList<Card> pile = getGame().getDeck().getDrawPile();
         Card temp = pile.get(0);
         pile.remove(temp);
         getGame().getDeck().setDrawPile(pile);
         getPlayerHand().getCardsInHand().add(temp);
-        if (!(this instanceof Computer)){
-            tui.showMessage("\nYou drew " + temp.getCardName() + "!\n");
-        }
-        if (temp.getCardType().equals(Card.cardType.BOMB)) {
-            dieOrDefuse(temp);
-        }
+        return temp;
     }
 
     public void die() {
@@ -84,7 +84,7 @@ public class Player {
         this.positionIndex = positionIndex;
     }
 
-    public LocalPlayerTUI getTui(){
-        return tui;
+    public Controller getController(){
+        return controller;
     }
 }

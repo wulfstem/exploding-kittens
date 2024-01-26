@@ -24,7 +24,7 @@ public class SeeCard extends Card{
                     result.append(player.getGame().getDeck().getDrawPile().get(i).getCardName()).append(" (").append(player.getGame().getDeck().getDrawPile().get(i).getCardType()).append(") |");
                 }
             }
-            player.getTui().showMessage(String.valueOf(result));
+            player.getController().getTui().showMessage(String.valueOf(result));
         }
     }
 }

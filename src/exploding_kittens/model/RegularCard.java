@@ -38,9 +38,9 @@ public class RegularCard extends Card{
                         int index2 = (int) (Math.random() * (victim.getPlayerHand().getCardsInHand().size() - 1));
                         temp = victim.getPlayerHand().getCardsInHand().get(index2);
                     } else {
-                        victim.getTui().showMessage("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
-                        victim.getTui().printHand();
-                        int input3 = victim.getTui().readInputInt();
+                        victim.getController().getTui().showMessage("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
+                        victim.getController().getTui().printHand();
+                        int input3 = victim.getController().getTui().readInputInt();
                         temp = victim.getPlayerHand().getCardsInHand().get(input3);
                     }
                     cardIterator.remove();
@@ -49,14 +49,14 @@ public class RegularCard extends Card{
             }
         }
         else{
-            thief.getTui().showMessage("Choose a duplicate card in your hand:");
-            int input1 = thief.getCardChoice(cardType.REGULAR);
+            thief.getController().getTui().showMessage("Choose a duplicate card in your hand:");
+            int input1 = thief.getController().getCardChoice(cardType.REGULAR);
             if (input1 == -10 || input1 == -1){
                 return;
             }
             if (thief.getPlayerHand().getCardsInHand().get(input1).getCardType().equals(this.getCardType()) && thief.getPlayerHand().getCardsInHand().get(input1).getCardName().equals(this.getCardName()) && !(thief.getPlayerHand().getCardsInHand().get(input1).equals(this))){
-                thief.getTui().showMessage("Which player are you asking the card from?");
-                int input2 = thief.getTui().readInputInt();
+                thief.getController().getTui().showMessage("Which player are you asking the card from?");
+                int input2 = thief.getController().getTui().readInputInt();
                 if (input2 == -10 || input2 == -1){
                     return;
                 }
@@ -71,9 +71,9 @@ public class RegularCard extends Card{
                     boolean goBack = true;
                     while(goBack){
                         goBack = false;
-                        victim.getTui().showMessage("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
-                        victim.getTui().printHand();
-                        int input3 = victim.getTui().readInputInt();
+                        victim.getController().getTui().showMessage("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
+                        victim.getController().getTui().printHand();
+                        int input3 = victim.getController().getTui().readInputInt();
                         if (input3 < 0 || input3 > (victim.getPlayerHand().getCardsInHand().size() - 1)){
                             goBack = true;
                             continue;
@@ -85,7 +85,7 @@ public class RegularCard extends Card{
                 }
             }
             else{
-                thief.getTui().showMessage("Invalid input, choose a duplicate card but not the same one");
+                thief.getController().getTui().showMessage("Invalid input, choose a duplicate card but not the same one");
                 action(thief);
             }
         }

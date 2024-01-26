@@ -1,106 +1,21 @@
 package exploding_kittens.model;
 
+import exploding_kittens.Controller;
+
 public class Computer extends Player{
 
 
     public static final String COMPUTER_NAME = "RoboTukas";
 
-    public Computer(String playerName, Game game, int positionIndex) {
-        super(playerName, game, positionIndex);
+    public Computer(String playerName, Game game, int positionIndex, Controller controller) {
+        super(playerName, game, positionIndex, controller);
     }
 
-    @Override
-    public void makeMove(){
-        int current = super.getGame().getCurrent();
-        setSkipTurn(false);
-        int choiceYN = (int)(Math.random() * 1);
-        boolean allow = true;
+    public void compete(){
 
-        if (choiceYN == 0){
-            int choiceCardToPlay = (int)(Math.random() * (getPlayerHand().getCardsInHand().size() - 1));
-            if (getPlayerHand().getCardsInHand().get(choiceCardToPlay).getCardType().equals(Card.cardType.DEFUSE)){
-                makeMove();
-                return;
-            }
-            else if(getPlayerHand().getCardsInHand().get(choiceCardToPlay).getCardType().equals(Card.cardType.NOPE)){
-                makeMove();
-                return;
-            }
-            else if(getPlayerHand().getCardsInHand().get(choiceCardToPlay).getCardType().equals(Card.cardType.REGULAR)){
-                Card tempCard = getPlayerHand().getCardsInHand().get(choiceCardToPlay);
-                for (Card card : this.getPlayerHand().getCardsInHand()){
-                    allow = card.getCardType().equals(tempCard.getCardType()) && card.getCardName().equals(tempCard.getCardName()) && !(card.equals(tempCard));
-                }
-            }
-            if (!allow){
-                makeMove();
-                return;
-            }
-            if(getGame().validateMove(getPlayerHand().getCardsInHand().get(choiceCardToPlay), this)) {
-                getPlayerHand().getCardsInHand().get(choiceCardToPlay).action(this);
-                getPlayerHand().getCardsInHand().remove(choiceCardToPlay);
-                if (isSkipTurn()) {
-                    if (getGame().getCurrent() == current) {
-                        getGame().setCurrent((getGame().getCurrent() + 1) % getGame().getPlayers().size());
-                    }
-                }
-                else{
-                    makeMove();
-                }
-            }
-            else {
-                getPlayerHand().getCardsInHand().remove(choiceCardToPlay);
-                makeMove();
-            }
-        }
-        else {
-            draw();
-            getGame().setCurrent((getGame().getCurrent() + 1) % getGame().getPlayers().size());
-        }
     }
 
-    @Override
-    public boolean askNope(Card card, Player player){
-        boolean result = false;
-        boolean answer = ((int) (Math.random() * 1)) == 0;
-        if (answer) {
-            result = true;
-            int index = getCardChoice(Card.cardType.NOPE);
-            getPlayerHand().getCardsInHand().remove(index);
-        }
-        return result;
-    }
+    public Card pickCardFromHand(){
 
-    @Override
-    public void dieOrDefuse(Card bomb){
-        if (handContains(Card.cardType.DEFUSE)) {
-            boolean answer = ((int) (Math.random() * 1)) == 0;
-            if (answer){
-                int index = getCardChoice(Card.cardType.DEFUSE);
-                getPlayerHand().getCardsInHand().remove(index);
-
-                int answer2 = ((int) (Math.random() * (getGame().getDeck().getDrawPile().size())));
-                getGame().getDeck().getDrawPile().add(answer2, bomb);
-                getPlayerHand().getCardsInHand().remove(bomb);
-            }
-            else{
-                die();
-            }
-        } else {
-            die();
-        }
-    }
-
-    @Override
-    public int getCardChoice(Card.cardType cardType){
-        boolean isValid = false;
-        int choice = 0;
-        while(!isValid){
-            choice = (int)(Math.random() * (getPlayerHand().getCardsInHand().size() - 1));
-            if (getPlayerHand().getCardsInHand().get(choice).getCardType().equals(cardType)){
-                isValid = true;
-            }
-        }
-        return choice;
     }
 }

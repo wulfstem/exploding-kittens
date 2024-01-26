@@ -9,4 +9,5 @@ public interface PlayerTUI {
     public String readInputString() throws BackInputException;
     public int readInputInt();
     public boolean readInputBoolean() throws BooleanReturnException;
+    void printHand();
 }

@@ -2,19 +2,25 @@ package exploding_kittens;
 
 import exploding_kittens.model.Card;
 import exploding_kittens.model.Player;
+import exploding_kittens.view.PlayerTUI;
 
 public interface Controller {
 
 
-    public void makeMove();
+    void drawCard(Player player);
+    boolean validateByNope(Card card, Player player);
+    boolean validateMove(Card card, Player player);
+    int getCardChoice(Card.cardType type);
+    void bombDrawn(Card bomb);
 
-    public boolean validateByNope(Card card, Player player);
+    int getAnyCardChoice();
 
-    public void dieOrDefuse(Card bomb);
+    void doTurn(Player player);
 
-    public int getCardChoice(Card.cardType type);
+    void declareWinner(Player player);
 
-    public int getAnyCardChoice();
+    void playOrDraw(Player player);
 
-    public boolean validateMove(Card card, Player player);
+    Player getCurrentPlayer();
+    PlayerTUI getTui();
 }
