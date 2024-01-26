@@ -16,6 +16,6 @@ public class Computer extends Player{
     }
 
     public Card pickCardFromHand(){
-
+        return null;
     }
 }
