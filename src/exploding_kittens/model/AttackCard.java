@@ -1,10 +1,10 @@
-package model;
+package exploding_kittens.model;
 
-public class Attack2Card extends Card{
+public class AttackCard extends Card{
 
 
-    public Attack2Card(CARD_TYPE cardType, String cardName, Deck deck) {
-        super(cardType, cardName, deck);
+    public AttackCard(cardType type, String cardName, Deck deck) {
+        super(type, cardName, deck);
     }
 
     @Override
@@ -29,8 +29,16 @@ public class Attack2Card extends Card{
             player.getGame().setCurrent(index);
         }
         else{
-            System.out.println("Which player are you attacking? (index)");
-            index = player.readInputInt();
+            boolean goBack = true;
+            while(goBack){
+                goBack = false;
+                player.getController().getTui().showMessage("Which player are you attacking? (index)");
+                index = player.getController().getTui().readInputInt();
+                if (index == -10 || index == -1){
+                    player.getController().getTui().showMessage("You cannot go back on this decision.");
+                    goBack = true;
+                }
+            }
             player.getGame().setCurrent(index);
         }
     }

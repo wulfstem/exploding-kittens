@@ -1,10 +1,10 @@
-package model;
+package exploding_kittens.model;
 
 public class ShuffleCard extends Card{
 
 
-    public ShuffleCard(CARD_TYPE cardType, String cardName, Deck deck) {
-        super(cardType, cardName, deck);
+    public ShuffleCard(cardType type, String cardName, Deck deck) {
+        super(type, cardName, deck);
     }
 
     @Override

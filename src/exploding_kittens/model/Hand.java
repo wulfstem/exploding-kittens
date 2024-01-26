@@ -1,4 +1,4 @@
-package model;
+package exploding_kittens.model;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -18,7 +18,7 @@ public class Hand {
         while(cardsInHand.size() < STARTING_CARDS_IN_HAND - 1){
             ArrayList<Card> pile = deck.getDrawPile();
             Card temp = pile.get(random.nextInt(pile.size()));
-            if(!temp.getCardType().equals(Card.CARD_TYPE.DEFUSE) && !temp.getCardType().equals(Card.CARD_TYPE.BOMB)){
+            if(!temp.getCardType().equals(Card.cardType.DEFUSE) && !temp.getCardType().equals(Card.cardType.BOMB)){
                 cardsInHand.add(temp);
                 pile.remove(temp);
                 deck.setDrawPile(pile);
@@ -27,7 +27,7 @@ public class Hand {
         for (int i = 0; i < deck.getDrawPile().size(); i++){
             ArrayList<Card> pile = deck.getDrawPile();
             Card temp = pile.get(i);
-            if (temp.getCardType().equals(Card.CARD_TYPE.DEFUSE)){
+            if (temp.getCardType().equals(Card.cardType.DEFUSE)){
                 cardsInHand.add(temp);
                 pile.remove(temp);
                 deck.setDrawPile(pile);

@@ -1,4 +1,4 @@
-package model;
+package exploding_kittens.model;
 
 import java.util.ArrayList;
 
@@ -21,42 +21,41 @@ public class Deck {
     public final int NUMBER_OF_REGULAR = 5 * 4;
     private final String[] AVAILABLE_REGULAR_NAMES = {"Beard Cat", "Cattermelon", "Hairy Potato Cat", "Rainbow-Ralphing Cat", "Tacocat"};
 
+    private int numberOfActiveBombs;
 
     private ArrayList<Card> drawPile;
-    private ArrayList<Card> discardPile;
-    private Game game;
 
-    public Deck(int numberOfPlayers, Game game){
-        this.game = game;
-        discardPile = new ArrayList<>();
+    public Deck(int numberOfPlayers){
         drawPile = new ArrayList<>();
+        numberOfActiveBombs = 0;
         for (int i = 0; i < NUMBER_OF_DEFUSES; i++){
-            drawPile.add(new DefuseCard(Card.CARD_TYPE.DEFUSE, "DEFUSE", this));
+            drawPile.add(new DefuseCard(Card.cardType.DEFUSE, "DEFUSE", this));
         }
         for (int i = 0; i < numberOfPlayers - 1; i++){
-            drawPile.add(new BombCard(Card.CARD_TYPE.BOMB, "BOMB", this));
+            drawPile.add(new BombCard(Card.cardType.BOMB, "BOMB", this));
+            numberOfActiveBombs++;
         }
         for (int i = 0; i < NUMBER_OF_ATTACK2; i++){
-            drawPile.add(new Attack2Card(Card.CARD_TYPE.ATTACK2, "ATTACK",this));
+            drawPile.add(new AttackCard(Card.cardType.ATTACK2, "ATTACK",this));
         }
         for (int i = 0; i < NUMBER_OF_FAVOR; i++){
-            drawPile.add(new FavorCard(Card.CARD_TYPE.FAVOR, "FAVOR",this));
+            drawPile.add(new FavorCard(Card.cardType.FAVOR, "FAVOR",this));
         }
         for (int i = 0; i < NUMBER_OF_NOPE; i++){
-            drawPile.add(new NopeCard(Card.CARD_TYPE.NOPE, "NOPE",this));
+            drawPile.add(new NopeCard(Card.cardType.NOPE, "NOPE",this));
         }
         for (int i = 0; i < NUMBER_OF_SHUFFLE; i++){
-            drawPile.add(new ShuffleCard(Card.CARD_TYPE.SHUFFLE, "SHUFFLE",this));
+            drawPile.add(new ShuffleCard(Card.cardType.SHUFFLE, "SHUFFLE",this));
         }
         for (int i = 0; i < NUMBER_OF_SKIP; i++){
-            drawPile.add(new SkipCard(Card.CARD_TYPE.SKIP, "SKIP",this));
+            drawPile.add(new SkipCard(Card.cardType.SKIP, "SKIP",this));
         }
         for (int i = 0; i < NUMBER_OF_SEE3; i++){
-            drawPile.add(new See3Card(Card.CARD_TYPE.SEE3, "SEE_AHEAD",this));
+            drawPile.add(new SeeCard(Card.cardType.SEE3, "SEE_AHEAD",this));
         }
         for (int i = 0; i < 5; i++){
             for (int j = 0; j < 4; j++){
-                drawPile.add(new RegularCard(Card.CARD_TYPE.REGULAR, AVAILABLE_REGULAR_NAMES[i],this));
+                drawPile.add(new RegularCard(Card.cardType.REGULAR, AVAILABLE_REGULAR_NAMES[i],this));
             }
         }
 
@@ -104,7 +103,8 @@ public class Deck {
     public void setDrawPile(ArrayList<Card> drawPile) {
         this.drawPile = drawPile;
     }
-    public int getSize() {
-        return drawPile.size();
+
+    public int getNumberOfActiveBombs(){
+        return numberOfActiveBombs;
     }
 }

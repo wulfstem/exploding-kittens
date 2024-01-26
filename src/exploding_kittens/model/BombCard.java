@@ -1,11 +1,11 @@
-package model;
+package exploding_kittens.model;
 
 public class BombCard extends Card{
 
 
-    public BombCard(CARD_TYPE cardType, String cardName, Deck deck) {
+    public BombCard(cardType type, String cardName, Deck deck) {
 
-        super(cardType, cardName, deck);
+        super(type, cardName, deck);
     }
 
     @Override

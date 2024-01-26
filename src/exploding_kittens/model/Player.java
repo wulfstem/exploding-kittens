@@ -1,0 +1,90 @@
+package exploding_kittens.model;
+
+import exploding_kittens.Controller;
+
+import java.util.ArrayList;
+
+public class Player {
+
+
+    private String playerName;
+    private Game game;
+    private Hand playerHand;
+    private boolean skipTurn;
+    private int positionIndex;
+    private final Controller controller;
+
+    public Player(String name, Game game, int positionIndex, Controller controller) {
+        this.playerName = name;
+        this.game = game;
+        this.positionIndex = positionIndex;
+        playerHand = new Hand(this, game.getDeck());
+        this.controller = controller;
+    }
+
+    public void makeMove() {
+        game.setSkipTurn(false);
+        controller.playOrDraw(this);
+    }
+
+    public Card draw() {
+        ArrayList<Card> pile = getGame().getDeck().getDrawPile();
+        Card temp = pile.get(0);
+        pile.remove(temp);
+        getGame().getDeck().setDrawPile(pile);
+        getPlayerHand().getCardsInHand().add(temp);
+        return temp;
+    }
+
+    public void die() {
+        ArrayList<Player> temp = getGame().getPlayers();
+        temp.remove(this);
+        getGame().setPlayers(temp);
+
+    }
+
+    public boolean handContains(Card.cardType cardType) {
+        for (int i = 0; i < getPlayerHand().getCardsInHand().size(); i++) {
+            if (getPlayerHand().getCardsInHand().get(i).getCardType().equals(cardType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public Hand getPlayerHand() {
+        return playerHand;
+    }
+
+    public void setPlayerHand(Hand playerHand) {
+        this.playerHand = playerHand;
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public boolean isSkipTurn() {
+        return skipTurn;
+    }
+
+    public void setSkipTurn(boolean skipTurn) {
+        this.skipTurn = skipTurn;
+    }
+
+    public int getPositionIndex() {
+        return positionIndex;
+    }
+
+    public void setPositionIndex(int positionIndex) {
+        this.positionIndex = positionIndex;
+    }
+
+    public Controller getController(){
+        return controller;
+    }
+}
