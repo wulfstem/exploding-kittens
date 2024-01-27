@@ -1,4 +1,4 @@
-package server.model;
+package server;
 
 import exploding_kittens.model.Player;
 import server.Server;
@@ -73,7 +73,7 @@ public class ClientHandler implements Runnable {
 
                 }
             case "REQUEST_GAME_STATE":
-                sendMessage(controller.getGameState());
+                //sendMessage(controller.getGameState());
         }
     }
 

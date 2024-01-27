@@ -39,7 +39,7 @@ public class RegularCard extends Card{
                         temp = victim.getPlayerHand().getCardsInHand().get(index2);
                     } else {
                         victim.getController().getTui().showMessage("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
-                        victim.getController().getTui().printHand();
+                        victim.getController().getTui().printHand(victim);
                         int input3 = victim.getController().getTui().readInputInt();
                         temp = victim.getPlayerHand().getCardsInHand().get(input3);
                     }
@@ -50,7 +50,7 @@ public class RegularCard extends Card{
         }
         else{
             thief.getController().getTui().showMessage("Choose a duplicate card in your hand:");
-            int input1 = thief.getController().getCardChoice(cardType.REGULAR);
+            int input1 = thief.getController().getTui().getCardChoice(thief, cardType.REGULAR);
             if (input1 == -10 || input1 == -1){
                 return;
             }
@@ -72,7 +72,7 @@ public class RegularCard extends Card{
                     while(goBack){
                         goBack = false;
                         victim.getController().getTui().showMessage("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
-                        victim.getController().getTui().printHand();
+                        victim.getController().getTui().printHand(victim);
                         int input3 = victim.getController().getTui().readInputInt();
                         if (input3 < 0 || input3 > (victim.getPlayerHand().getCardsInHand().size() - 1)){
                             goBack = true;

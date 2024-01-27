@@ -3,6 +3,8 @@ package server.view;
 import exploding_kittens.Controller;
 import exploding_kittens.model.BackInputException;
 import exploding_kittens.model.BooleanReturnException;
+import exploding_kittens.model.Card;
+import exploding_kittens.model.Player;
 import exploding_kittens.view.PlayerTUI;
 
 public class ServerTUI implements PlayerTUI {
@@ -21,7 +23,22 @@ public class ServerTUI implements PlayerTUI {
     }
 
     @Override
+    public boolean askNope(Card card, Player player) {
+        return false;
+    }
+
+    @Override
     public int readInputInt() {
+        return 0;
+    }
+
+    @Override
+    public int getAnyCardChoice(Player player) {
+        return 0;
+    }
+
+    @Override
+    public int getCardChoice(Player player, Card.cardType type) {
         return 0;
     }
 
@@ -31,7 +48,7 @@ public class ServerTUI implements PlayerTUI {
     }
 
     @Override
-    public void printHand() {
+    public void printHand(Player player) {
 
     }
 }

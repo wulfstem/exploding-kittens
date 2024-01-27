@@ -1,12 +1,7 @@
 package server;
 
-import exploding_kittens.Controller;
 import exploding_kittens.model.Card;
-import exploding_kittens.model.Computer;
 import exploding_kittens.model.Game;
-import exploding_kittens.model.Player;
-import exploding_kittens.view.PlayerTUI;
-import server.model.ClientHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -14,7 +9,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServerController implements Server, Controller {
+public class ServerController implements Server {
 
 
     private int port;
@@ -82,21 +77,18 @@ public class ServerController implements Server, Controller {
             }
         }
         game = new Game(numberOfPlayers, usernames);
-        game.setController(this);
+        //game.setController(this);
         game.setup();
         broadcastMessage(ServerAction.GS.command);
         game.play();
     }
 
-
+    /*
     public String getGameState(){
-        String result = game.getPlayers() + "|" +
-                (game.getPlayers().get(game.getCurrent())).toString() + "|" +
-                game.getPlayers().size() + "|" +
-                game.getDeck().getDiscardPile() + "|" +
-                game.getDeck().getDrawPile();
-        return result;
+        return game.provideGameState();
     }
+
+     */
 
 
     @Override
@@ -157,55 +149,5 @@ public class ServerController implements Server, Controller {
 
         int numberOfPlayers = Integer.parseInt(args[0]);
         new ServerController(numberOfPlayers, port);
-    }
-
-    @Override
-    public boolean validateByNope(Card card, Player player) {
-        return false;
-    }
-
-    @Override
-    public boolean validateMove(Card card, Player player) {
-        return false;
-    }
-
-    @Override
-    public int getCardChoice(Card.cardType type) {
-        return 0;
-    }
-
-    @Override
-    public void bombDrawn(Card bomb) {
-
-    }
-
-    @Override
-    public int getAnyCardChoice() {
-        return 0;
-    }
-
-    @Override
-    public void doTurn(Player player) {
-
-    }
-
-    @Override
-    public void declareWinner(Player player) {
-
-    }
-
-    @Override
-    public void playOrDraw(Player player) {
-
-    }
-
-    @Override
-    public Player getCurrentPlayer() {
-        return null;
-    }
-
-    @Override
-    public PlayerTUI getTui() {
-        return null;
     }
 }

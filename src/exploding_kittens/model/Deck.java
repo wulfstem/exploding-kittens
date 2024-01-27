@@ -110,6 +110,10 @@ public class Deck {
         this.drawPile = drawPile;
     }
 
+    public void setDiscardPile(ArrayList<Card> discardPile) {
+        this.discardPile = discardPile;
+    }
+
     public int getNumberOfActiveBombs(){
         return numberOfActiveBombs;
     }

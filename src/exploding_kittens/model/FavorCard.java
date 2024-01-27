@@ -20,15 +20,22 @@ public class FavorCard extends Card{
             }
         }
         else{
-            thief.getController().getTui().showMessage("Which player are we asking the card from?");
-            index = thief.getController().getTui().readInputInt();
+            boolean validp = false;
+            while(!validp){
+                thief.getController().getTui().showMessage("Which player are we asking the card from?");
+                validp = true;
+                index = thief.getController().getTui().readInputInt();
+                if (index < 0 || index >= thief.getGame().getPlayers().size()){
+                    validp = false;
+                }
+            }
             if (index == -10 || index == -1){
                 return;
             }
         }
         Player victim = thief.getGame().getPlayers().get(index);
         victim.getController().getTui().showMessage("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
-        victim.getController().getTui().printHand();
+        victim.getController().getTui().printHand(victim);
 
         int index2 = -1;
         if (victim instanceof Computer){
