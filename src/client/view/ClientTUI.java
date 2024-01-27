@@ -1,15 +1,10 @@
-package server.view;
+package client.view;
 
-import exploding_kittens.Controller;
 import exploding_kittens.model.BackInputException;
 import exploding_kittens.model.BooleanReturnException;
 import exploding_kittens.view.PlayerTUI;
 
-public class ServerTUI implements PlayerTUI {
-
-
-    public ServerTUI(){}
-
+public class ClientTUI implements PlayerTUI {
     @Override
     public void showMessage(String text) {
         System.out.println(text);

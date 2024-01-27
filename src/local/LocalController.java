@@ -6,6 +6,7 @@ import exploding_kittens.view.PlayerTUI;
 import local.view.LocalPlayerTUI;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class LocalController implements Controller {
 
@@ -25,9 +26,7 @@ public class LocalController implements Controller {
     public void doTurn(Player player){
         tui.showMessage("\nMOVE NUMBER: " + game.getTurnCounter() + "\n" + "Cards left in pile: " + game.getDeck().getDrawPile().size() + "\nBombs left: " + game.getDeck().getNumberOfActiveBombs());
         tui.showMessage("(In some occasions you can go back on your decision typing in 'b', when asked for input.\n");
-        if (!(player instanceof Computer)){
-            tui.printHand();
-        }
+        tui.printHand();
         for (int i = 0; i < game.getTurns(); i++){
             player.makeMove();
             game.setTurnCounter(game.getTurnCounter() + 1);
@@ -43,68 +42,60 @@ public class LocalController implements Controller {
 
     @Override
     public void playOrDraw(Player player) {
-        if (!(player instanceof Computer)) {
-            boolean goBack = true;
-            while (goBack) {
-                goBack = false;
-                boolean answer;
-                tui.showMessage("Do you want to play a card?");
-                try {
-                    answer = tui.readInputBoolean();
-                } catch (BooleanReturnException e) {
-                    tui.showMessage("You cannot go back without making this decision.");
+        boolean goBack = true;
+        while (goBack) {
+            goBack = false;
+            boolean answer;
+            tui.showMessage("Do you want to play a card?");
+            try {
+                answer = tui.readInputBoolean();
+            } catch (BooleanReturnException e) {
+                tui.showMessage("You cannot go back without making this decision.");
+                goBack = true;
+                continue;
+            }
+            if (answer) {
+                int index = getAnyCardChoice();
+                if (index == -10 || index == -1) {
                     goBack = true;
                     continue;
                 }
-                if (answer) {
-                    int index = getAnyCardChoice();
-                    if (index == -10 || index == -1) {
-                        goBack = true;
-                        continue;
-                    }
-                    // Check if any other player wants to play a NOPE card
-                    if (validateMove(player.getPlayerHand().getCardsInHand().get(index), player)) {
-                        player.getPlayerHand().getCardsInHand().get(index).action(player);
-                        player.getPlayerHand().getCardsInHand().remove(index);
-                        if (game.isSkipTurn()) {
-                            if (game.getCurrent() == player.getPositionIndex()) {
-                                if (player.getPositionIndex() == (game.getPlayers().size() - 1)) {
-                                    game.setCurrent(0);
-                                } else {
-                                    game.setCurrent((game.getCurrent() + 1));
-                                }
+                // Check if any other player wants to play a NOPE card
+                if (validateMove(player.getPlayerHand().getCardsInHand().get(index), player)) {
+                    player.getPlayerHand().getCardsInHand().get(index).action(player);
+                    player.getPlayerHand().getCardsInHand().remove(index);
+                    if (game.isSkipTurn()) {
+                        if (game.getCurrent() == player.getPositionIndex()) {
+                            if (player.getPositionIndex() == (game.getPlayers().size() - 1)) {
+                                game.setCurrent(0);
+                            } else {
+                                game.setCurrent((game.getCurrent() + 1));
                             }
-                        } else {
-                            playOrDraw(player);
                         }
                     } else {
-                        tui.showMessage("Your card has been cancelled by another player playing a NOPE card.");
-                        player.getPlayerHand().getCardsInHand().remove(index);
                         playOrDraw(player);
                     }
                 } else {
-                    player.draw();
-                    if (game.getTurns() == 1 && game.getCurrent() == player.getPositionIndex()) {
-                        if (player.getPositionIndex() == (game.getPlayers().size() - 1)) {
-                            game.setCurrent(0);
-                        } else {
-                            game.setCurrent((game.getCurrent() + 1));
-                        }
+                    tui.showMessage("Your card has been cancelled by another player playing a NOPE card.");
+                    player.getPlayerHand().getCardsInHand().remove(index);
+                    playOrDraw(player);
+                }
+            } else {
+                player.draw();
+                if (game.getTurns() == 1 && game.getCurrent() == player.getPositionIndex()) {
+                    if (player.getPositionIndex() == (game.getPlayers().size() - 1)) {
+                        game.setCurrent(0);
+                    } else {
+                        game.setCurrent((game.getCurrent() + 1));
                     }
                 }
             }
         }
-        else{
-            ((Computer) player).compete();
-        }
     }
 
-    @Override
     public void drawCard(Player player){
         Card drawn = player.draw();
-        if (!(player instanceof Computer)){
-            tui.showMessage("\nYou drew " + drawn.getCardName() + "!\n");
-        }
+        tui.showMessage("\nYou drew " + drawn.getCardName() + "!\n");
         if (drawn.getCardType().equals(Card.cardType.BOMB)) {
             bombDrawn(drawn);
         }
@@ -273,10 +264,7 @@ public class LocalController implements Controller {
     public static void main (String[] args){
         System.out.println( "\nWelcome to Exploding Kittens!" );
         int numberOfPlayers = Integer.parseInt(args[0]);
-        ArrayList<String> nicknames = new ArrayList<>();
-        for (int i = 1; i <= numberOfPlayers; i++){
-            nicknames.add(args[i]);
-        }
+        ArrayList<String> nicknames = new ArrayList<>(Arrays.asList(args).subList(1, numberOfPlayers + 1));
         new LocalController(new Game(numberOfPlayers, nicknames), new LocalPlayerTUI());
     }
 }

@@ -1,6 +1,7 @@
 package server.model;
 
 import exploding_kittens.model.Player;
+import server.Server;
 import server.ServerController;
 
 import java.io.*;
@@ -30,6 +31,7 @@ public class ClientHandler implements Runnable {
         try {
             String line;
             while ((line = in.readLine()) != null) {
+                System.out.println("Received from client: " + line);
                 processClientMessage(line);
             }
         } catch (IOException e) {
@@ -64,16 +66,20 @@ public class ClientHandler implements Runnable {
 
         switch (keyword) {
             case "DO_MOVE":
-                break;
-            case "REQUEST_GAME_STATE":
+                switch(parts[1]){
+                    case "PLAY":
 
+                    case "END_TURN":
+
+                }
+            case "REQUEST_GAME_STATE":
+                sendMessage(controller.getGameState());
         }
     }
 
     private void handleHello(String username) {
         System.out.println("Received ANNOUNCE from " + username);
-        controller.addNickname(username);
-        sendMessage("WELCOME");
+        controller.addUsername(username);
     }
 
     public void sendMessage(String message) {

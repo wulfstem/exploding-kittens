@@ -24,8 +24,10 @@ public class Deck {
     private int numberOfActiveBombs;
 
     private ArrayList<Card> drawPile;
+    private ArrayList<Card> discardPile;
 
     public Deck(int numberOfPlayers){
+        discardPile = new ArrayList<>();
         drawPile = new ArrayList<>();
         numberOfActiveBombs = 0;
         for (int i = 0; i < NUMBER_OF_DEFUSES; i++){
@@ -98,6 +100,10 @@ public class Deck {
 
     public ArrayList<Card> getDrawPile() {
         return drawPile;
+    }
+
+    public ArrayList<Card> getDiscardPile() {
+        return discardPile;
     }
 
     public void setDrawPile(ArrayList<Card> drawPile) {
