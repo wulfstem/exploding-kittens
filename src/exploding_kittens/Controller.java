@@ -7,7 +7,7 @@ import exploding_kittens.view.PlayerTUI;
 public interface Controller {
 
 
-    boolean validateByNope(Card card, Player player);
+    boolean validateByNope(Card card, Player player, Player otherPlayer);
     boolean validateMove(Card card, Player player);
     void bombDrawn(Player player, Card bomb);
     void showHand(Player player);

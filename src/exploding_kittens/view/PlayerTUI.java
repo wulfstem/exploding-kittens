@@ -9,7 +9,7 @@ public interface PlayerTUI {
 
     public void showMessage(String text);
     public String readInputString() throws BackInputException;
-    boolean askNope(Card card, Player player);
+    boolean askNope(Card card, Player player, Player otherPlayer);
     public int readInputInt();
     int getAnyCardChoice(Player player);
     int getCardChoice(Player player, Card.cardType type);

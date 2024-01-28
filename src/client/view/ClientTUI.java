@@ -18,7 +18,7 @@ public class ClientTUI implements PlayerTUI {
     }
 
     @Override
-    public boolean askNope(Card card, Player player) {
+    public boolean askNope(Card card, Player player, Player otherPlayer) {
         return false;
     }
 
