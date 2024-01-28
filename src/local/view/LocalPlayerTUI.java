@@ -43,9 +43,9 @@ public class LocalPlayerTUI implements PlayerTUI {
     }
 
     @Override
-    public boolean askNope(Card card, Player player) {
+    public boolean askNope(Card card, Player player, Player other) {
         showMessage(player.getPlayerName() + " is playing " + card.getCardName());
-        printHand(player);
+        printHand(other);
         boolean valid = false;
         while(!valid){
             valid = true;

@@ -160,9 +160,9 @@ public class LocalController implements Controller {
     }
 
     @Override
-    public boolean validateByNope(Card card, Player player) {
+    public boolean validateByNope(Card card, Player player, Player otherPlayer) {
         boolean result = false;
-        boolean answer = tui.askNope(card, player);
+        boolean answer = tui.askNope(card, player, otherPlayer);
         if (answer) {
             while(true) {
                 int index = tui.getCardChoice(player, Card.cardType.NOPE);
@@ -230,7 +230,7 @@ public class LocalController implements Controller {
             if (otherPlayer != player) { // Check other players, not the current player
                 for (Card cardInHand : otherPlayer.getPlayerHand().getCardsInHand()) {
                     if (cardInHand.getCardType().equals(Card.cardType.NOPE)) {
-                        if (validateByNope(card, player)) { // If a Nope card is used
+                        if (validateByNope(card, player, otherPlayer)) { // If a Nope card is used
                             return false; // Stop checking further
                         }
                     }
