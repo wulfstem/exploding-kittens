@@ -6,6 +6,7 @@ import exploding_kittens.view.PlayerTUI;
 import local.view.LocalPlayerTUI;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class LocalController implements Controller {
 
@@ -23,11 +24,6 @@ public class LocalController implements Controller {
     }
 
     public void doTurn(Player player){
-        tui.showMessage("\nMOVE NUMBER: " + game.getTurnCounter() + "\n" + "Cards left in pile: " + game.getDeck().getDrawPile().size() + "\nBombs left: " + game.getDeck().getNumberOfActiveBombs());
-        tui.showMessage("(In some occasions you can go back on your decision typing in 'b', when asked for input.\n");
-        if (!(player instanceof Computer)){
-            tui.printHand();
-        }
         for (int i = 0; i < game.getTurns(); i++){
             player.makeMove();
             game.setTurnCounter(game.getTurnCounter() + 1);
@@ -41,103 +37,138 @@ public class LocalController implements Controller {
         System.exit(0);
     }
 
-    @Override
-    public void playOrDraw(Player player) {
-        if (!(player instanceof Computer)) {
-            boolean goBack = true;
-            while (goBack) {
-                goBack = false;
-                boolean answer;
-                tui.showMessage("Do you want to play a card?");
-                try {
-                    answer = tui.readInputBoolean();
-                } catch (BooleanReturnException e) {
-                    tui.showMessage("You cannot go back without making this decision.");
-                    goBack = true;
-                    continue;
-                }
-                if (answer) {
-                    int index = getAnyCardChoice();
-                    if (index == -10 || index == -1) {
-                        goBack = true;
-                        continue;
-                    }
-                    // Check if any other player wants to play a NOPE card
-                    if (validateMove(player.getPlayerHand().getCardsInHand().get(index), player)) {
-                        player.getPlayerHand().getCardsInHand().get(index).action(player);
-                        player.getPlayerHand().getCardsInHand().remove(index);
-                        if (game.isSkipTurn()) {
-                            if (game.getCurrent() == player.getPositionIndex()) {
-                                if (player.getPositionIndex() == (game.getPlayers().size() - 1)) {
-                                    game.setCurrent(0);
-                                } else {
-                                    game.setCurrent((game.getCurrent() + 1));
-                                }
-                            }
-                        } else {
-                            playOrDraw(player);
-                        }
-                    } else {
-                        tui.showMessage("Your card has been cancelled by another player playing a NOPE card.");
-                        player.getPlayerHand().getCardsInHand().remove(index);
-                        playOrDraw(player);
-                    }
-                } else {
-                    player.draw();
-                    if (game.getTurns() == 1 && game.getCurrent() == player.getPositionIndex()) {
-                        if (player.getPositionIndex() == (game.getPlayers().size() - 1)) {
-                            game.setCurrent(0);
-                        } else {
-                            game.setCurrent((game.getCurrent() + 1));
-                        }
-                    }
-                }
+    public void showHand(Player player){
+        tui.showMessage("\nMOVE NUMBER: " + game.getTurnCounter() + "\n" + "Cards left in pile: " + game.getDeck().getDrawPile().size() + "\nBombs left: " + game.getDeck().getNumberOfActiveBombs());
+        tui.showMessage("(In some occasions you can go back on your decision typing in 'b', when asked for input.\n");
+        tui.printHand(player);
+    }
+
+    public boolean isCardBeingPlayed(){
+        boolean result = false;
+        boolean goBack = true;
+        while(goBack){
+            goBack = false;
+            tui.showMessage("Do you want to play a card?");
+            try {
+                result = tui.readInputBoolean();
+            } catch (BooleanReturnException e) {
+                tui.showMessage("You cannot go back without making this decision.");
+                goBack = true;
             }
         }
-        else{
-            ((Computer) player).compete();
+        return result;
+    }
+
+    public void moveCanceled(Player player){
+        tui.showMessage("Your card has been cancelled by another player playing a NOPE card.");
+    }
+
+    @Override
+    public int getCardForFavor(Player player) {
+        int result = 0;
+        tui.showMessage("Player " + player.getPlayerName() + " choose a card to give as a favor:");
+        tui.printHand(player);
+        boolean goBack = true;
+        while(goBack){
+            goBack = false;
+            result = tui.readInputInt();
+            if (result == -10 || result == -1){
+                tui.showMessage("You cannot back out of this.");
+                goBack = true;
+            }
+            if (result < 0 || result >= player.getPlayerHand().getCardsInHand().size()){
+                tui.showMessage("Invalid input. Chose a card to give as a favor:");
+                goBack = true;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public void informStolenCard(Player player, Card card) {
+        tui.showMessage("You got " + card.getCardName());
+    }
+
+    @Override
+    public int getMatchingCard(Player player, Card card) {
+        int result = 0;
+        tui.showMessage("Choose a duplicate card in your hand:");
+        boolean valid = false;
+        while(!valid){
+            valid = true;
+            result = tui.getCardChoice(player, card.getCardType());
+            if (result == -10){
+                tui.showMessage("You cannot go back this decision.");
+                valid = false;
+            }
+            if (player.getPlayerHand().getCardsInHand().get(result).equals(card)){
+                tui.showMessage("You cannot pick the same card.");
+                valid = false;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public void draw(Player player){
+        ArrayList<Card> pile = game.getDeck().getDrawPile();
+        Card temp = pile.get(0);
+        pile.remove(temp);
+        ArrayList<Card> pile2 = game.getDeck().getDiscardPile();
+        pile2.add(temp);
+        game.getDeck().setDrawPile(pile);
+        game.getDeck().setDiscardPile(pile2);
+        player.getPlayerHand().add(temp);
+        tui.showMessage("You have drawn " + temp.getCardName());
+        if (temp.getCardType().equals(Card.cardType.BOMB)) {
+            bombDrawn(player, temp);
         }
     }
 
     @Override
-    public void drawCard(Player player){
-        Card drawn = player.draw();
-        if (!(player instanceof Computer)){
-            tui.showMessage("\nYou drew " + drawn.getCardName() + "!\n");
+    public int getOtherPlayerChoice(Player player) {
+        int index = 0;
+        boolean goBack = true;
+        while(goBack){
+            goBack = false;
+            tui.showMessage("Which player? (index of other player)");
+            index = tui.readInputInt();
+            if (index == -10 || index == -1) {
+                tui.showMessage("You cannot go back on this decision.");
+                goBack = true;
+            }
+            if (index == player.getPositionIndex()){
+                boolean valid = false;
+                while(!valid){
+                    tui.showMessage("You cannot pick yourself. Which player? (index of other player)");
+                    index = tui.readInputInt();
+                    if(index != player.getPositionIndex()){
+                        valid = true;
+                    }
+                }
+            }
         }
-        if (drawn.getCardType().equals(Card.cardType.BOMB)) {
-            bombDrawn(drawn);
+        return index;
+    }
+
+    public int whichCardIsPlayed(){
+        int result = tui.getAnyCardChoice(getCurrentPlayer());
+        if (result == -10 || result == -1) {
+            return -1;
         }
+        return result;
     }
 
     @Override
     public boolean validateByNope(Card card, Player player) {
         boolean result = false;
-        tui.showMessage(player.getPlayerName() + " is playing " + card.getCardName());
-        tui.printHand();
-        boolean goBack = true;
-        while(goBack){
-            goBack = false;
-            tui.showMessage("Do you want to use your NOPE card?");
-            boolean answer = false;
-            try {
-                answer = tui.readInputBoolean();
-            } catch (BooleanReturnException e) {
-                tui.showMessage("You cannot go back without making this decision.");
-                goBack = true;
-                continue;
-            }
-            if (answer) {
-                result = true;
-                int index = -1;
-                while (index == -1){
-                    index = getCardChoice(Card.cardType.NOPE);
-                    if (index == -10){
-                        goBack = true;
-                    }
-                }
-                if (index >= 0){
-                    getCurrentPlayer().getPlayerHand().getCardsInHand().remove(index);
+        boolean answer = tui.askNope(card, player);
+        if (answer) {
+            while(true) {
+                int index = tui.getCardChoice(player, Card.cardType.NOPE);
+                if (index >= 0 && index < player.getPlayerHand().getCardsInHand().size()) {
+                    player.getPlayerHand().remove(player.getPlayerHand().getCardsInHand().get(index));
+                    return true;
                 }
             }
         }
@@ -145,10 +176,10 @@ public class LocalController implements Controller {
     }
 
     @Override
-    public void bombDrawn(Card bomb) {
+    public void bombDrawn(Player player, Card bomb) {
         tui.showMessage("You have drawn an Exploding Kitten!");
-        tui.printHand();
-        if (getCurrentPlayer().handContains(Card.cardType.DEFUSE)) {
+        tui.printHand(player);
+        if (player.handContains(Card.cardType.DEFUSE)) {
             boolean invalid = true;
             boolean answer = false;
             while(invalid){
@@ -165,100 +196,48 @@ public class LocalController implements Controller {
                 goBack = false;
                 if (answer){
                     tui.showMessage("Which card? (index)");
-                    int index = getCardChoice(Card.cardType.DEFUSE);
+                    int index = tui.getCardChoice(player, Card.cardType.DEFUSE);
                     if (index == -10 || index == -1){
                         goBack = true;
                         continue;
                     }
-                    getCurrentPlayer().getPlayerHand().getCardsInHand().remove(index);
+                    player.getPlayerHand().getCardsInHand().remove(index);
                     tui.showMessage("In which position would you like to put the Exploding Kitten? (1 between " + game.getDeck().getDrawPile().size() + ")");
                     int input3 = (tui.readInputInt())  - 1;
                     if (input3 == -10){
                         goBack = true;
                         continue;
                     }
-                    game.getDeck().getDrawPile().add(input3, bomb);
-                    getCurrentPlayer().getPlayerHand().getCardsInHand().remove(bomb);
+                    ArrayList<Card> temp = new ArrayList<>(game.getDeck().getDrawPile());
+                    temp.add(input3, bomb);
+                    game.getDeck().setDrawPile(temp);
+                    player.getPlayerHand().remove(bomb);
                 }
                 else{
                     tui.showMessage("Better luck next time Champ!");
-                    getCurrentPlayer().die();
+                    player.die();
                 }
             }
         } else {
             System.out.println("Better luck next time Champ!");
-            getCurrentPlayer().die();
+            player.die();
         }
     }
 
     @Override
-    public int getCardChoice(Card.cardType type) {
-        boolean isIndexValid = false;
-        int input2 = 0;
-        tui.showMessage("Which card would you like to play? (number between 0 and " + (getCurrentPlayer().getPlayerHand().getCardsInHand().size() - 1) + ")");
-        while(!isIndexValid){
-            input2 = tui.readInputInt();
-            if (input2 == -10){
-                return -10;
-            }
-            if (input2 <= 0 || input2 > getCurrentPlayer().getPlayerHand().getCardsInHand().size()){
-                tui.showMessage("Invalid index, choose a number between 0 and" + (getCurrentPlayer().getPlayerHand().getCardsInHand().size() - 1));
-            }
-            isIndexValid = true;
-        }
-        if (getCurrentPlayer().getPlayerHand().getCardsInHand().get(input2).getCardType().equals(type)){
-            return input2;
-        }
-        else{
-            tui.showMessage("Chosen card is not of type " + type);
-            return -1;
-        }
-    }
-
-    @Override
-    public int getAnyCardChoice() {
-        boolean isIndexValid = false;
-        int input2 = 0;
-        tui.showMessage("Which card would you like to play? (number between 0 and " + (getCurrentPlayer().getPlayerHand().getCardsInHand().size() - 1) + ")");
-        while(!isIndexValid){
-            input2 = tui.readInputInt();
-            if (input2 == -10){
-                return -10;
-            }
-            if (input2 < 0 || input2 > getCurrentPlayer().getPlayerHand().getCardsInHand().size()){
-                tui.showMessage("Invalid index, choose a number between 0 and" + (getCurrentPlayer().getPlayerHand().getCardsInHand().size() - 1));
-            }
-            isIndexValid = true;
-        }
-        if (getCurrentPlayer().getPlayerHand().getCardsInHand().get(input2).getCardType().equals(Card.cardType.DEFUSE)){
-            tui.showMessage("Defuse card can only be played when a bomb has been drawn.");
-            return -1;
-        }
-        else if(getCurrentPlayer().getPlayerHand().getCardsInHand().get(input2).getCardType().equals(Card.cardType.NOPE)){
-            tui.showMessage("Nope card cannot be played at the moment.");
-            return -1;
-        }
-        return input2;
-    }
-
-    @Override
-    public boolean validateMove(Card card, Player player){
-        boolean result = true;
-
+    public boolean validateMove(Card card, Player player) {
         for (Player otherPlayer : game.getPlayers()) {
-            if (otherPlayer != getCurrentPlayer()) {
-
+            if (otherPlayer != player) { // Check other players, not the current player
                 for (Card cardInHand : otherPlayer.getPlayerHand().getCardsInHand()) {
                     if (cardInHand.getCardType().equals(Card.cardType.NOPE)) {
-                        if (validateByNope(card, player)) {
-                            result = false;
-                            return result;
+                        if (validateByNope(card, player)) { // If a Nope card is used
+                            return false; // Stop checking further
                         }
                     }
                 }
             }
         }
-        return result;
+        return true; // No Nope card was used, proceed with the move
     }
 
     public Player getCurrentPlayer(){
@@ -273,10 +252,7 @@ public class LocalController implements Controller {
     public static void main (String[] args){
         System.out.println( "\nWelcome to Exploding Kittens!" );
         int numberOfPlayers = Integer.parseInt(args[0]);
-        ArrayList<String> nicknames = new ArrayList<>();
-        for (int i = 1; i <= numberOfPlayers; i++){
-            nicknames.add(args[i]);
-        }
+        ArrayList<String> nicknames = new ArrayList<>(Arrays.asList(args).subList(1, numberOfPlayers + 1));
         new LocalController(new Game(numberOfPlayers, nicknames), new LocalPlayerTUI());
     }
 }

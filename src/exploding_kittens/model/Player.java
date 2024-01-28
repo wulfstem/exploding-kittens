@@ -24,16 +24,47 @@ public class Player {
 
     public void makeMove() {
         game.setSkipTurn(false);
-        controller.playOrDraw(this);
+        controller.showHand(this);
+        playOrDraw();
     }
 
-    public Card draw() {
-        ArrayList<Card> pile = getGame().getDeck().getDrawPile();
-        Card temp = pile.get(0);
-        pile.remove(temp);
-        getGame().getDeck().setDrawPile(pile);
-        getPlayerHand().getCardsInHand().add(temp);
-        return temp;
+    public void playOrDraw() {
+        if (controller.isCardBeingPlayed()) {
+            int index = controller.whichCardIsPlayed();
+            if (index == -1){
+                playOrDraw();
+                return;
+            }
+            if(controller.validateMove(getPlayerHand().getCardsInHand().get(index), this)){
+                getPlayerHand().getCardsInHand().get(index).action(this);
+                getPlayerHand().remove(getPlayerHand().getCardsInHand().get(index));
+                if (game.isSkipTurn()) {
+                    if (game.getCurrent() == getPositionIndex()) {
+                        if (getPositionIndex() == (game.getPlayers().size() - 1)) {
+                            game.setCurrent(0);
+                        } else {
+                            game.setCurrent((game.getCurrent() + 1));
+                        }
+                    }
+                } else {
+                    playOrDraw();
+                }
+            }
+            else {
+                controller.moveCanceled(this);
+                getPlayerHand().remove(getPlayerHand().getCardsInHand().get(index));
+                playOrDraw();
+            }
+        } else {
+            controller.draw(this);
+            if (game.getTurns() == 1 && game.getCurrent() == this.getPositionIndex()) {
+                if (this.getPositionIndex() == (game.getPlayers().size() - 1)) {
+                    game.setCurrent(0);
+                } else {
+                    game.setCurrent((game.getCurrent() + 1));
+                }
+            }
+        }
     }
 
     public void die() {

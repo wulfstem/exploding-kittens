@@ -20,36 +20,23 @@ public class FavorCard extends Card{
             }
         }
         else{
-            thief.getController().getTui().showMessage("Which player are we asking the card from?");
-            index = thief.getController().getTui().readInputInt();
-            if (index == -10 || index == -1){
-                return;
-            }
+            index = thief.getController().getOtherPlayerChoice(thief);
         }
         Player victim = thief.getGame().getPlayers().get(index);
-        victim.getController().getTui().showMessage("Player " + victim.getPlayerName() + " choose a card to give as a favor:");
-        victim.getController().getTui().printHand();
+        int cardIndex = 0;
 
-        int index2 = -1;
         if (victim instanceof Computer){
-            index2 = (int)(Math.random() * (victim.getPlayerHand().getCardsInHand().size() - 1));
+            cardIndex = (int)(Math.random() * (victim.getPlayerHand().getCardsInHand().size() - 1));
         }
         else{
-            boolean goBack = true;
-            while(goBack){
-                goBack = false;
-                index2 = victim.getController().getTui().readInputInt();
-                if (index2 == -10 || index2 == -1){
-                    victim.getController().getTui().showMessage("You cannot back out of this.");
-                    goBack = true;
-                }
-            }
+            cardIndex = victim.getController().getCardForFavor(victim);
         }
-        Card temp = victim.getPlayerHand().getCardsInHand().get(index2);
-        victim.getPlayerHand().getCardsInHand().remove(temp);
-        thief.getPlayerHand().getCardsInHand().add(temp);
+        Card temp = victim.getPlayerHand().getCardsInHand().get(cardIndex);
+        victim.getPlayerHand().remove(temp);
+        thief.getPlayerHand().add(temp);
+
         if (!(thief instanceof Computer)){
-            thief.getController().getTui().showMessage("You got " + temp.getCardName());
+            thief.getController().informStolenCard(thief, temp);
         }
     }
 }

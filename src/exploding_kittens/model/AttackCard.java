@@ -29,16 +29,7 @@ public class AttackCard extends Card{
             player.getGame().setCurrent(index);
         }
         else{
-            boolean goBack = true;
-            while(goBack){
-                goBack = false;
-                player.getController().getTui().showMessage("Which player are you attacking? (index)");
-                index = player.getController().getTui().readInputInt();
-                if (index == -10 || index == -1){
-                    player.getController().getTui().showMessage("You cannot go back on this decision.");
-                    goBack = true;
-                }
-            }
+            index = player.getController().getOtherPlayerChoice(player);
             player.getGame().setCurrent(index);
         }
     }
