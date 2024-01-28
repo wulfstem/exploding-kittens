@@ -20,7 +20,6 @@ public class Game {
     private boolean computerPlayer;
     private int current;
     private int turns;
-    private boolean skipTurn;
     private ArrayList<Player> players;
     private Deck deck;
     private int turnCounter;
@@ -165,14 +164,6 @@ public class Game {
 
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
-    }
-
-    public boolean isSkipTurn(){
-        return skipTurn;
-    }
-
-    public void setSkipTurn(boolean skipTurn){
-        this.skipTurn = skipTurn;
     }
 
     public void updatePlayersPositions(){
