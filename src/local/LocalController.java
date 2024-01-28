@@ -39,6 +39,7 @@ public class LocalController implements Controller {
 
     public void showHand(Player player){
         tui.showMessage("\nMOVE NUMBER: " + game.getTurnCounter() + "\n" + "Cards left in pile: " + game.getDeck().getDrawPile().size() + "\nBombs left: " + game.getDeck().getNumberOfActiveBombs());
+        tui.showMessage("Moves you have to make: " + player.getGame().getTurns() + "\n");
         tui.showMessage("(In some occasions you can go back on your decision typing in 'b', when asked for input.\n");
         tui.printHand(player);
     }
@@ -98,12 +99,14 @@ public class LocalController implements Controller {
             valid = true;
             result = tui.getCardChoice(player, card.getCardType());
             if (result == -10){
-                tui.showMessage("You cannot go back this decision.");
+                tui.showMessage("You cannot go back on this decision.");
                 valid = false;
+                continue;
             }
             if (player.getPlayerHand().getCardsInHand().get(result).equals(card)){
                 tui.showMessage("You cannot pick the same card.");
                 valid = false;
+
             }
         }
         return result;
@@ -165,9 +168,9 @@ public class LocalController implements Controller {
         boolean answer = tui.askNope(card, player, otherPlayer);
         if (answer) {
             while(true) {
-                int index = tui.getCardChoice(player, Card.cardType.NOPE);
-                if (index >= 0 && index < player.getPlayerHand().getCardsInHand().size()) {
-                    player.getPlayerHand().remove(player.getPlayerHand().getCardsInHand().get(index));
+                int index = tui.getCardChoice(otherPlayer, Card.cardType.NOPE);
+                if (index >= 0 && index < otherPlayer.getPlayerHand().getCardsInHand().size()) {
+                    otherPlayer.getPlayerHand().remove(otherPlayer.getPlayerHand().getCardsInHand().get(index));
                     return true;
                 }
             }

@@ -46,18 +46,14 @@ public class LocalPlayerTUI implements PlayerTUI {
     public boolean askNope(Card card, Player player, Player other) {
         showMessage(player.getPlayerName() + " is playing " + card.getCardName());
         printHand(other);
-        boolean valid = false;
-        while(!valid){
-            valid = true;
+        while(true){
             showMessage("Do you want to use your NOPE card?");
             try {
                 return readInputBoolean();
             } catch (BooleanReturnException e) {
                 showMessage("You cannot go back without making this decision.");
-                valid = false;
             }
         }
-        return false;
     }
 
     public int getCardChoice(Player player, Card.cardType type){
@@ -152,7 +148,7 @@ public class LocalPlayerTUI implements PlayerTUI {
         return false;
     }
 
-    public void cardsInHandAnimation(int times){
+    public void cardsInHandAnimation(int times, Player player){
         for (int i = 0; i < times; i++){
             System.out.print("|--------------------|    ");
         }
@@ -172,7 +168,7 @@ public class LocalPlayerTUI implements PlayerTUI {
                     System.out.print("    ");
                 }
                 else if (j == 3){
-                    String cardName = controller.getCurrentPlayer().getPlayerHand().getCardsInHand().get(i).getCardName();
+                    String cardName = player.getPlayerHand().getCardsInHand().get(i).getCardName();
                     int totalWidth = 22;
 
                     int leftPadding = (totalWidth - cardName.length()) / 2;
@@ -196,7 +192,7 @@ public class LocalPlayerTUI implements PlayerTUI {
     @Override
     public void printHand(Player player) {
         showMessage("Player " + player.getPositionIndex() + ": " + player.getPlayerName());
-        cardsInHandAnimation(player.getPlayerHand().getCardsInHand().size());
+        cardsInHandAnimation(player.getPlayerHand().getCardsInHand().size(), player);
     }
 
     public void setController(Controller controller){

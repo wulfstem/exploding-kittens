@@ -23,12 +23,12 @@ public class Player {
     }
 
     public void makeMove() {
-        game.setSkipTurn(false);
-        controller.showHand(this);
+        setSkipTurn(false);
         playOrDraw();
     }
 
     public void playOrDraw() {
+        controller.showHand(this);
         if (controller.isCardBeingPlayed()) {
             int index = controller.whichCardIsPlayed();
             if (index == -1){
@@ -38,7 +38,7 @@ public class Player {
             if(controller.validateMove(getPlayerHand().getCardsInHand().get(index), this)){
                 getPlayerHand().getCardsInHand().get(index).action(this);
                 getPlayerHand().remove(getPlayerHand().getCardsInHand().get(index));
-                if (game.isSkipTurn()) {
+                if (isSkipTurn()) {
                     if (game.getCurrent() == getPositionIndex()) {
                         if (getPositionIndex() == (game.getPlayers().size() - 1)) {
                             game.setCurrent(0);
