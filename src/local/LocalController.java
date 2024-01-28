@@ -54,7 +54,6 @@ public class LocalController implements Controller {
             } catch (BooleanReturnException e) {
                 tui.showMessage("You cannot go back without making this decision.");
                 goBack = true;
-                continue;
             }
         }
         return result;
@@ -62,6 +61,52 @@ public class LocalController implements Controller {
 
     public void moveCanceled(Player player){
         tui.showMessage("Your card has been cancelled by another player playing a NOPE card.");
+    }
+
+    @Override
+    public int getCardForFavor(Player player) {
+        int result = 0;
+        tui.showMessage("Player " + player.getPlayerName() + " choose a card to give as a favor:");
+        tui.printHand(player);
+        boolean goBack = true;
+        while(goBack){
+            goBack = false;
+            result = tui.readInputInt();
+            if (result == -10 || result == -1){
+                tui.showMessage("You cannot back out of this.");
+                goBack = true;
+            }
+            if (result < 0 || result >= player.getPlayerHand().getCardsInHand().size()){
+                tui.showMessage("Invalid input. Chose a card to give as a favor:");
+                goBack = true;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public void informStolenCard(Player player, Card card) {
+        tui.showMessage("You got " + card.getCardName());
+    }
+
+    @Override
+    public int getMatchingCard(Player player, Card card) {
+        int result = 0;
+        tui.showMessage("Choose a duplicate card in your hand:");
+        boolean valid = false;
+        while(!valid){
+            valid = true;
+            result = tui.getCardChoice(player, card.getCardType());
+            if (result == -10){
+                tui.showMessage("You cannot go back this decision.");
+                valid = false;
+            }
+            if (player.getPlayerHand().getCardsInHand().get(result).equals(card)){
+                tui.showMessage("You cannot pick the same card.");
+                valid = false;
+            }
+        }
+        return result;
     }
 
     @Override
@@ -73,23 +118,43 @@ public class LocalController implements Controller {
         pile2.add(temp);
         game.getDeck().setDrawPile(pile);
         game.getDeck().setDiscardPile(pile2);
-        player.getPlayerHand().getCardsInHand().add(temp);
+        player.getPlayerHand().add(temp);
         tui.showMessage("You have drawn " + temp.getCardName());
         if (temp.getCardType().equals(Card.cardType.BOMB)) {
             bombDrawn(player, temp);
         }
     }
 
-    public int whichCardIsPlayed(){
-        int result = 0;
+    @Override
+    public int getOtherPlayerChoice(Player player) {
+        int index = 0;
         boolean goBack = true;
         while(goBack){
             goBack = false;
-            result = tui.getAnyCardChoice(getCurrentPlayer());
-            if (result == -10 || result == -1) {
+            tui.showMessage("Which player? (index of other player)");
+            index = tui.readInputInt();
+            if (index == -10 || index == -1) {
+                tui.showMessage("You cannot go back on this decision.");
                 goBack = true;
-                continue;
             }
+            if (index == player.getPositionIndex()){
+                boolean valid = false;
+                while(!valid){
+                    tui.showMessage("You cannot pick yourself. Which player? (index of other player)");
+                    index = tui.readInputInt();
+                    if(index != player.getPositionIndex()){
+                        valid = true;
+                    }
+                }
+            }
+        }
+        return index;
+    }
+
+    public int whichCardIsPlayed(){
+        int result = tui.getAnyCardChoice(getCurrentPlayer());
+        if (result == -10 || result == -1) {
+            return -1;
         }
         return result;
     }
@@ -97,30 +162,13 @@ public class LocalController implements Controller {
     @Override
     public boolean validateByNope(Card card, Player player) {
         boolean result = false;
-        result = tui.askNope(card, player);
-        boolean goBack = true;
-        while(goBack){
-            goBack = false;
-            tui.showMessage("Do you want to use your NOPE card?");
-            boolean answer = false;
-            try {
-                answer = tui.readInputBoolean();
-            } catch (BooleanReturnException e) {
-                tui.showMessage("You cannot go back without making this decision.");
-                goBack = true;
-                continue;
-            }
-            if (answer) {
-                result = true;
-                int index = -1;
-                while (index == -1){
-                    index = tui.getCardChoice(player, Card.cardType.NOPE);
-                    if (index == -10){
-                        goBack = true;
-                    }
-                }
-                if (index >= 0){
-                    getCurrentPlayer().getPlayerHand().getCardsInHand().remove(index);
+        boolean answer = tui.askNope(card, player);
+        if (answer) {
+            while(true) {
+                int index = tui.getCardChoice(player, Card.cardType.NOPE);
+                if (index >= 0 && index < player.getPlayerHand().getCardsInHand().size()) {
+                    player.getPlayerHand().remove(player.getPlayerHand().getCardsInHand().get(index));
+                    return true;
                 }
             }
         }
@@ -160,8 +208,10 @@ public class LocalController implements Controller {
                         goBack = true;
                         continue;
                     }
-                    game.getDeck().getDrawPile().add(input3, bomb);
-                    player.getPlayerHand().getCardsInHand().remove(bomb);
+                    ArrayList<Card> temp = new ArrayList<>(game.getDeck().getDrawPile());
+                    temp.add(input3, bomb);
+                    game.getDeck().setDrawPile(temp);
+                    player.getPlayerHand().remove(bomb);
                 }
                 else{
                     tui.showMessage("Better luck next time Champ!");

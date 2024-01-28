@@ -106,6 +106,19 @@ public class Deck {
         return discardPile;
     }
 
+    public void toDiscard(Card card){
+        ArrayList<Card> temp = new ArrayList<>(getDiscardPile());
+        temp.add(card);
+        setDiscardPile(temp);
+    }
+
+    public void removeFromDrawPile(Card card){
+        ArrayList<Card> temp = new ArrayList<>(getDrawPile());
+        temp.remove(card);
+        setDrawPile(temp);
+        toDiscard(card);
+    }
+
     public void setDrawPile(ArrayList<Card> drawPile) {
         this.drawPile = drawPile;
     }

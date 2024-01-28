@@ -40,6 +40,22 @@ public class Hand {
         return cardsInHand;
     }
 
+    public void setCardsInHand(ArrayList<Card> cardsInHand) {
+        this.cardsInHand = cardsInHand;
+    }
+
+    public void remove(Card card){
+        ArrayList<Card> temp = new ArrayList<>(getCardsInHand());
+        temp.remove(card);
+        setCardsInHand(temp);
+    }
+
+    public void add(Card card){
+        ArrayList<Card> temp = new ArrayList<>(getCardsInHand());
+        temp.add(card);
+        setCardsInHand(temp);
+    }
+
     public Player getPlayer() {
         return player;
     }

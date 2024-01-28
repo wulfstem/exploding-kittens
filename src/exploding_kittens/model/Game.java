@@ -192,4 +192,5 @@ public class Game {
     public void setTurnCounter(int number){
         this.turnCounter = number;
     }
+
 }

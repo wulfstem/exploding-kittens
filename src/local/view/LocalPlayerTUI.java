@@ -42,86 +42,48 @@ public class LocalPlayerTUI implements PlayerTUI {
         }
     }
 
-    /*
-    @Override
-    public boolean askNope(Card card, Player player){
-        boolean result = false;
-        showMessage(player.getPlayerName() + " is playing " + card.getCardName());
-        printHand(player);
-        boolean goBack = true;
-        while(goBack){
-            goBack = false;
-            showMessage("Do you want to use your NOPE card?");
-            boolean answer = false;
-            try {
-                answer = readInputBoolean();
-            } catch (BooleanReturnException e) {
-                showMessage("You cannot go back without making this decision.");
-                goBack = true;
-                continue;
-            }
-            if (answer) {
-                result = true;
-                int index = -1;
-                while (index == -1){
-                    index = getCardChoice(player, Card.cardType.NOPE);
-                    if (index == -10 || index == -1){
-                        goBack = true;
-                    }
-                }
-                if (index >= 0){
-                    player.getPlayerHand().getCardsInHand().remove(index);
-                }
-            }
-        }
-        return result;
-    }
-     */
-
     @Override
     public boolean askNope(Card card, Player player) {
         showMessage(player.getPlayerName() + " is playing " + card.getCardName());
         printHand(player);
-        showMessage("Do you want to use your NOPE card?");
-        try {
-            if (readInputBoolean()) {
-                int index = getCardChoice(player, Card.cardType.NOPE);
-                if (index >= 0 && index < player.getPlayerHand().getCardsInHand().size()) {
-                    player.getPlayerHand().getCardsInHand().remove(index);
-                    return true; // Valid Nope card used
-                }
+        boolean valid = false;
+        while(!valid){
+            valid = true;
+            showMessage("Do you want to use your NOPE card?");
+            try {
+                return readInputBoolean();
+            } catch (BooleanReturnException e) {
+                showMessage("You cannot go back without making this decision.");
+                valid = false;
             }
-        } catch (BooleanReturnException e) {
-            showMessage("You cannot go back without making this decision.");
         }
-        return false; // No valid Nope card was used or player chose not to use it
+        return false;
     }
 
     public int getCardChoice(Player player, Card.cardType type){
         boolean isIndexValid = false;
         int input2 = 0;
-        showMessage("Which card would you like to play? (number between 0 and " + (player.getPlayerHand().getCardsInHand().size() - 1) + ")");
+        showMessage("Which card? (number between 0 and " + (player.getPlayerHand().getCardsInHand().size() - 1) + ")");
         while(!isIndexValid){
             input2 = readInputInt();
             if (input2 == -10){
                 return -10;
             }
             if (input2 == -1){
-                return -1;
+                continue;
             }
-            if (input2 <= 0 || input2 > player.getPlayerHand().getCardsInHand().size()){
+            if (input2 < 0 || input2 >= player.getPlayerHand().getCardsInHand().size()){
                 showMessage("Invalid index, choose a number between 0 and" + (player.getPlayerHand().getCardsInHand().size() - 1));
                 continue;
             }
-            isIndexValid = true;
+            if (player.getPlayerHand().getCardsInHand().get(input2).getCardType().equals(type)){
+                return input2;
+            }
+            else{
+                showMessage("Chosen card is not of type " + type);
+            }
         }
-        if (player.getPlayerHand().getCardsInHand().get(input2).getCardType().equals(type)){
-            return input2;
-        }
-        else{
-            showMessage("Chosen card is not of type " + type);
-            return -1;
-        }
+        return input2;
     }
 
     public int getAnyCardChoice(Player player) {
