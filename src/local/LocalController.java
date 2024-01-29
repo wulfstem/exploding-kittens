@@ -190,8 +190,18 @@ public class LocalController implements Controller {
             while(true) {
                 int index = tui.getCardChoice(otherPlayer, Card.cardType.NOPE);
                 if (index >= 0 && index < otherPlayer.getPlayerHand().getCardsInHand().size()) {
+                    Card temp = otherPlayer.getPlayerHand().getCardsInHand().get(index);
                     otherPlayer.getPlayerHand().remove(otherPlayer.getPlayerHand().getCardsInHand().get(index));
-                    return true;
+                    // THIS iS IMPORTANT
+                    if(validateMove(temp, otherPlayer)){
+                        moveCanceled(player);
+                        return true;
+                    }
+                    else{
+                        moveCanceled(otherPlayer);
+                        return false;
+                    }
+                    // THIS IS IMPORTANT
                 }
             }
         }
@@ -218,14 +228,13 @@ public class LocalController implements Controller {
             while(goBack){
                 goBack = false;
                 if (answer){
-                    tui.showMessage("Which card? (index)");
                     int index = tui.getCardChoice(player, Card.cardType.DEFUSE);
                     if (index == -10 || index == -1){
                         goBack = true;
                         continue;
                     }
                     player.getPlayerHand().getCardsInHand().remove(index);
-                    tui.showMessage("In which position would you like to put the Exploding Kitten? (1 between " + game.getDeck().getDrawPile().size() + ")");
+                    tui.showMessage("In which position would you like to put the Exploding Kitten? (1 between " + (game.getDeck().getDrawPile().size() + 1) + ")");
                     int input3 = (tui.readInputInt())  - 1;
                     if (input3 == -10){
                         goBack = true;
@@ -251,11 +260,9 @@ public class LocalController implements Controller {
     public boolean validateMove(Card card, Player player) {
         for (Player otherPlayer : game.getPlayers()) {
             if (otherPlayer != player) { // Check other players, not the current player
-                for (Card cardInHand : otherPlayer.getPlayerHand().getCardsInHand()) {
-                    if (cardInHand.getCardType().equals(Card.cardType.NOPE)) {
-                        if (validateByNope(card, player, otherPlayer)) { // If a Nope card is used
-                            return false; // Stop checking further
-                        }
+                if (otherPlayer.handContains(Card.cardType.NOPE)) {
+                    if (validateByNope(card, player, otherPlayer)) { // If a Nope card is used
+                        return false; // Stop checking further
                     }
                 }
             }

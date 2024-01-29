@@ -11,6 +11,9 @@ public class SkipCard extends Card{
     public void action(Player player) {
         // skip your turn and go to the next player
         player.setSkipTurn(true);
+        if (player.getGame().getTurns() != 1){
+            player.getGame().setTurns(player.getGame().getTurns() - 1);
+        }
         if (player.getGame().getTurns() == 1 && player.getGame().getCurrent() == player.getPositionIndex()) {
             if (player.getPositionIndex() == (player.getGame().getPlayers().size() - 1)) {
                 player.getGame().setCurrent(0);

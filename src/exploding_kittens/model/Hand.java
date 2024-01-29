@@ -6,7 +6,7 @@ import java.util.Random;
 public class Hand {
 
 
-    private final int STARTING_CARDS_IN_HAND = 7 + 1;
+    private final int STARTING_CARDS_IN_HAND = 8;
     private ArrayList<Card> cardsInHand;
     private Player player;
 
