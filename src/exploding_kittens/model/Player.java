@@ -18,7 +18,6 @@ public class Player {
         this.playerName = name;
         this.game = game;
         this.positionIndex = positionIndex;
-        playerHand = new Hand(this, game.getDeck());
         this.controller = controller;
     }
 
