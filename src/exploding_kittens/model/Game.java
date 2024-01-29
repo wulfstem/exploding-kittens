@@ -104,7 +104,7 @@ public class Game {
         turnCounter++;
         while(!hasWinner()){
             updatePlayersPositions();
-            controller.doTurn(players.get(current));
+            controller.doTurn(players.get(current), turns);
         }
         controller.declareWinner(getPlayers().get(0));
     }
