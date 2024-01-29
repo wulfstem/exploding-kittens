@@ -23,8 +23,9 @@ public class LocalController implements Controller {
         game.play();
     }
 
-    public void doTurn(Player player){
-        for (int i = 0; i < game.getTurns(); i++){
+    @Override
+    public void doTurn(Player player, int turns){
+        for (int i = turns; i > 0; i--){
             player.makeMove();
             game.setTurnCounter(game.getTurnCounter() + 1);
         }
@@ -86,6 +87,22 @@ public class LocalController implements Controller {
     }
 
     @Override
+    public void showFuture(Player player) {
+        StringBuilder result = new StringBuilder();
+        if (player.getGame().getDeck().getDrawPile().size() >= 3){
+            for (int i = 0; i < SeeCard.VISION_OF_DRAW_PILE; i++){
+                result.append(player.getGame().getDeck().getDrawPile().get(i).getCardName()).append(" (").append(player.getGame().getDeck().getDrawPile().get(i).getCardType()).append(") |");
+            }
+        }
+        else{
+            for (int i = 0; i < player.getGame().getDeck().getDrawPile().size(); i++){
+                result.append(player.getGame().getDeck().getDrawPile().get(i).getCardName()).append(" (").append(player.getGame().getDeck().getDrawPile().get(i).getCardType()).append(") |");
+            }
+        }
+        tui.showMessage(String.valueOf(result));
+    }
+
+    @Override
     public void informStolenCard(Player player, Card card) {
         tui.showMessage("You got " + card.getCardName());
     }
@@ -125,6 +142,9 @@ public class LocalController implements Controller {
         tui.showMessage("You have drawn " + temp.getCardName());
         if (temp.getCardType().equals(Card.cardType.BOMB)) {
             bombDrawn(player, temp);
+        }
+        if (game.getTurns() != 1){
+            game.setTurns(game.getTurns() - 1);
         }
     }
 

@@ -21,7 +21,7 @@ public class AttackCard extends Card{
         if (player instanceof Computer){
             boolean valid = false;
             while(!valid){
-                index = (int)(Math.random() * (player.getGame().getPlayers().size() - 1));
+                index = (int)(Math.random() * (player.getGame().getPlayers().size()));
                 if(index != player.getPositionIndex()){
                     valid = true;
                 }

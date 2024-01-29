@@ -13,13 +13,14 @@ public interface Controller {
     void showHand(Player player);
     void moveCanceled(Player player);
     int getCardForFavor(Player player);
+    void showFuture(Player player);
     void informStolenCard(Player player, Card card);
     int getMatchingCard(Player player, Card card);
     void draw(Player player);
     int getOtherPlayerChoice(Player player);
     boolean isCardBeingPlayed();
     public int whichCardIsPlayed();
-    void doTurn(Player player);
+    void doTurn(Player player, int turns);
     void declareWinner(Player player);
     Player getCurrentPlayer();
     PlayerTUI getTui();
