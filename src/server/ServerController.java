@@ -1,6 +1,7 @@
 package server;
 
 import exploding_kittens.Controller;
+import exploding_kittens.model.BooleanReturnException;
 import exploding_kittens.model.Card;
 import exploding_kittens.model.Game;
 import exploding_kittens.model.Player;
@@ -13,6 +14,10 @@ public class ServerController implements Controller {
     private ExplodingKittensServer server;
     private ArrayList<ClientHandler> clientHandlers;
     private volatile int draw;
+    private volatile int defuseIndex;
+    private volatile int indexOfPlayerPlayingNope;
+    private volatile int nopeAnswerCounter;
+    private  int expectedNopeAnswer;
     private Game game;
     private int readyCounter;
 
@@ -26,17 +31,138 @@ public class ServerController implements Controller {
 
     @Override
     public boolean validateByNope(Card card, Player player, Player otherPlayer) {
+        /*
+        boolean result = false;
+        boolean answer = tui.askNope(card, player, otherPlayer);
+        if (answer) {
+            while(true) {
+                int index = tui.getCardChoice(otherPlayer, Card.cardType.NOPE);
+                if (index >= 0 && index < otherPlayer.getPlayerHand().getCardsInHand().size()) {
+                    Card temp = otherPlayer.getPlayerHand().getCardsInHand().get(index);
+                    otherPlayer.getPlayerHand().remove(otherPlayer.getPlayerHand().getCardsInHand().get(index));
+                    // THIS iS IMPORTANT
+                    if(validateMove(temp, otherPlayer)){
+                        moveCanceled(player);
+                        return true;
+                    }
+                    else{
+                        moveCanceled(otherPlayer);
+                        return false;
+                    }
+                    // THIS IS IMPORTANT
+                }
+            }
+        }
+
+         */
         return false;
     }
 
     @Override
     public boolean validateMove(Card card, Player player) {
-        return false;
+        ArrayList<String> playersWithNope = new ArrayList<>();
+        for (Player otherPlayer : game.getPlayers()) {
+            if (otherPlayer != player) { // Check other players, not the current player
+                if (otherPlayer.handContains(Card.cardType.NOPE)) {
+                    playersWithNope.add(otherPlayer.getPlayerName());
+                }
+            }
+        }
+        if (!playersWithNope.isEmpty()){
+            indexOfPlayerPlayingNope = -1;
+            expectedNopeAnswer = 0;
+            nopeAnswerCounter = 0;
+            for (ClientHandler clientHandler: clientHandlers){
+                if (playersWithNope.contains(clientHandler.getPlayerName())){
+                    clientHandler.sendMessage("NOPE|" + player.getPlayerName() + "|" + card.getCardName());
+                    expectedNopeAnswer++;
+                }
+            }
+            while(nopeAnswerCounter != expectedNopeAnswer){
+                System.out.println(indexOfPlayerPlayingNope);
+                try {
+                    wait(1000);
+                } catch (InterruptedException e) {
+                    System.out.println("Error in wait");
+                }
+            }
+            if(indexOfPlayerPlayingNope != -1){
+                Player playerOfNope = game.getPlayers().get(indexOfPlayerPlayingNope);
+                Card nopeCard = null;
+                for (Card cardN: playerOfNope.getPlayerHand().getCardsInHand()){
+                    if (cardN.getCardType().equals(Card.cardType.NOPE)){
+                        nopeCard = cardN;
+                        break;
+                    }
+                }
+                System.out.println(playerOfNope.getPlayerName() + " is playing NOPE");
+                playerOfNope.getPlayerHand().getCardsInHand().remove(nopeCard);
+                // IMPLEMENT SO THAT EVERYONE KNOWS WHO CANCELLED AND ETC.
+                return !validateMove(nopeCard, playerOfNope);
+            }
+            else{
+                return true;
+            }
+        }
+        else{
+            return true;
+        }
+    }
+
+    @Override
+    public void draw(Player player) {
+        ArrayList<Card> pile = game.getDeck().getDrawPile();
+        Card temp = pile.get(0);
+        pile.remove(temp);
+        game.getDeck().setDrawPile(pile);
+        player.getPlayerHand().add(temp);
+        if (temp.getCardType().equals(Card.cardType.BOMB)) {
+            bombDrawn(player, temp);
+        }
+        else{
+            getCurrentClientHandler().sendMessage(Server.ServerAction.DC.command +  "|" + temp.getCardName());
+        }
+        if (game.getTurns() != 1){
+            game.setTurns(game.getTurns() - 1);
+        }
     }
 
     @Override
     public void bombDrawn(Player player, Card bomb) {
-
+        defuseIndex = -1;
+        if (player.handContains(Card.cardType.DEFUSE)){
+            getCurrentClientHandler().sendMessage("DIFFUSE_CHECK|T");
+            while(defuseIndex == -1){
+                System.out.println(defuseIndex);
+                try {
+                    wait(1000);
+                } catch (InterruptedException e) {
+                    System.out.println("Error in wait");
+                }
+            }
+            System.out.println(defuseIndex);
+            if (defuseIndex == -10){
+                player.die();
+                getCurrentClientHandler().closeResources();
+            }
+            else{
+                player.getPlayerHand().remove(bomb);
+                ArrayList<Card> pile = game.getDeck().getDrawPile();
+                pile.add(defuseIndex, bomb);
+                game.getDeck().setDrawPile(pile);
+                for (Card card: player.getPlayerHand().getCardsInHand()){
+                    if (card.getCardType().equals(Card.cardType.DEFUSE)){
+                        player.getPlayerHand().remove(card);
+                        return;
+                    }
+                }
+            }
+        }
+        else{
+            getCurrentClientHandler().sendMessage("DIFFUSE_CHECK|F");
+            player.die();
+            getCurrentClientHandler().closeResources();
+        }
     }
 
     @Override
@@ -70,31 +196,13 @@ public class ServerController implements Controller {
     }
 
     @Override
-    public void draw(Player player) {
-        ArrayList<Card> pile = game.getDeck().getDrawPile();
-        Card temp = pile.get(0);
-        pile.remove(temp);
-        ArrayList<Card> pile2 = game.getDeck().getDiscardPile();
-        pile2.add(temp);
-        game.getDeck().setDrawPile(pile);
-        game.getDeck().setDiscardPile(pile2);
-        player.getPlayerHand().add(temp);
-        getCurrentClientHandler().sendMessage(Server.ServerAction.DC.command +  "|" + temp.getCardName());
-        if (temp.getCardType().equals(Card.cardType.BOMB)) {
-            bombDrawn(player, temp);
-        }
-        if (game.getTurns() != 1){
-            game.setTurns(game.getTurns() - 1);
-        }
-    }
-
-    @Override
     public int getOtherPlayerChoice(Player player) {
         return 0;
     }
 
     @Override
     public boolean isCardBeingPlayed() {
+        draw = -1;
         getCurrentClientHandler().sendMessage("SEND_DECISION");
         while(draw == -1){
             System.out.println(draw);
@@ -111,11 +219,15 @@ public class ServerController implements Controller {
     @Override
     public int whichCardIsPlayed() {
         String card = getCurrentClientHandler().getCardBeingPlayed();
-        return (Integer.parseInt(card.substring(card.lastIndexOf(card))));
+        System.out.println(card + " is being played");
+        char lastChar = card.charAt(card.length() - 1);
+        System.out.println(Integer.parseInt(String.valueOf(lastChar)));
+        return (Integer.parseInt(String.valueOf(lastChar)));
     }
 
     @Override
     public void doTurn(Player player, int turns) {
+        updateHandlersIndex();
         System.out.println("Starting doTurn for player " + player.getPlayerName() + " with turns: " + turns);
         draw = -1;
         game.setAttack(false);
@@ -124,6 +236,7 @@ public class ServerController implements Controller {
             if (game.isAttack()){
                 break;
             }
+            System.out.println("End of turn for " + player.getPlayerName());
             game.setTurnCounter(game.getTurnCounter() + 1);
             for (ClientHandler clientHandler: clientHandlers){
                 getGameState(clientHandler);
@@ -221,8 +334,34 @@ public class ServerController implements Controller {
         this.draw = number;
     }
 
+    public void setDefuseIndex(int number){
+        this.defuseIndex = number;
+    }
+
+    public synchronized void setIndexOfPlayerPlayingNope(int number){
+        this.indexOfPlayerPlayingNope = number;
+    }
+
+    public synchronized int getIndexOfPlayerPlayingNope(){
+        return indexOfPlayerPlayingNope;
+    }
+
+    public synchronized void increaseNopeAnswerCounter(){
+        this.nopeAnswerCounter++;
+    }
+
     public ExplodingKittensServer getServer(){
         return this.server;
+    }
+
+    public void updateHandlersIndex(){
+        for (ClientHandler clientHandler: clientHandlers){
+            for (Player player: game.getPlayers()){
+                if (player.getPlayerName().equals(clientHandler.getPlayerName())){
+                    clientHandler.setPlayerIndex(game.getPlayers().indexOf(player));
+                }
+            }
+        }
     }
 
     public ClientHandler getCurrentClientHandler(){

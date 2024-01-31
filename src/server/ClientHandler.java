@@ -12,6 +12,7 @@ public class ClientHandler implements Runnable {
     private BufferedReader in;
     private BufferedWriter out;
     private String playerName;
+    private int playerIndex;
     private String cardBeingPlayed;
 
     public ClientHandler(Socket clientSocket, ServerController controller) {
@@ -70,10 +71,18 @@ public class ClientHandler implements Runnable {
         String keyword = parts[0];
 
         switch (keyword) {
+            case "DEFUSE":
+                if(parts[1].equals("N")){
+                    controller.setDefuseIndex(-10);
+                }
+                else{
+                    controller.setDefuseIndex(Integer.parseInt(parts[1]));
+                }
+                break;
             case "DO_MOVE":
                 switch(parts[1]){
                     case "PLAY":
-                        cardBeingPlayed = parts[2];
+                        cardBeingPlayed = parts[3];
                         controller.setDraw(0);
                         break;
                     case "END_TURN":
@@ -85,7 +94,12 @@ public class ClientHandler implements Runnable {
                 controller.getGameState(this);
                 break;
             case "NOPE":
-                // Handle NOPE command
+                if(parts[1].equals("T")){
+                    if(controller.getIndexOfPlayerPlayingNope() == -1){
+                        controller.setIndexOfPlayerPlayingNope(playerIndex);
+                    }
+                }
+                controller.increaseNopeAnswerCounter();
                 break;
         }
     }
@@ -107,6 +121,10 @@ public class ClientHandler implements Runnable {
 
     public String getPlayerName(){
         return this.playerName;
+    }
+
+    public void setPlayerIndex(int number){
+        this.playerIndex = number;
     }
 
     public String getCardBeingPlayed() {

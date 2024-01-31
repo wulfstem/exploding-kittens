@@ -71,7 +71,7 @@ public class ClientTUI{
             if (input2 == -10){
                 continue;
             }
-            if (input2 < 0 || input2 > cardsInHand.size()){
+            if (input2 < 0 || input2 >= cardsInHand.size()){
                 showMessage("Invalid index, choose a number between 0 and" + (cardsInHand.size() - 1));
                 continue;
             }
@@ -88,10 +88,10 @@ public class ClientTUI{
         return input2;
     }
 
-    public int getCardChoice(Player player, Card.cardType type) {
+    public int getCardChoice(String type, ArrayList<String> cards) {
         boolean isIndexValid = false;
         int input2 = 0;
-        showMessage("Which card? (number between 0 and " + (player.getPlayerHand().getCardsInHand().size() - 1) + ")");
+        showMessage("Which card? (number between 0 and " + (cards.size() - 1) + ")");
         while(!isIndexValid){
             input2 = readInputInt();
             if (input2 == -10){
@@ -100,11 +100,11 @@ public class ClientTUI{
             if (input2 == -1){
                 continue;
             }
-            if (input2 < 0 || input2 >= player.getPlayerHand().getCardsInHand().size()){
-                showMessage("Invalid index, choose a number between 0 and" + (player.getPlayerHand().getCardsInHand().size() - 1));
+            if (input2 < 0 || input2 >= cards.size()){
+                showMessage("Invalid index, choose a number between 0 and" + (cards.size() - 1));
                 continue;
             }
-            if (player.getPlayerHand().getCardsInHand().get(input2).getCardType().equals(type)){
+            if (cards.get(input2).equals(type)){
                 return input2;
             }
             else{

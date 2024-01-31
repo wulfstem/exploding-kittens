@@ -27,6 +27,7 @@ public class Player {
     }
 
     public void playOrDraw() {
+        System.out.println("Starting playOrDraw");
         setSkipTurn(false);
         controller.showHand(this);
         if (controller.isCardBeingPlayed()) {
@@ -38,11 +39,13 @@ public class Player {
             if(controller.validateMove(getPlayerHand().getCardsInHand().get(index), this)){
                 getPlayerHand().getCardsInHand().get(index).action(this);
                 getPlayerHand().remove(getPlayerHand().getCardsInHand().get(index));
+                System.out.println("validate True");
                 if (!isSkipTurn()) {
                     playOrDraw();
                 }
             }
             else {
+                System.out.println("validate False");
                 controller.moveCanceled(this);
                 getPlayerHand().remove(getPlayerHand().getCardsInHand().get(index));
                 playOrDraw();
