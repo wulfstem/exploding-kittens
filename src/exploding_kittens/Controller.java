@@ -1,8 +1,12 @@
 package exploding_kittens;
 
 import exploding_kittens.model.Card;
+import exploding_kittens.model.Game;
 import exploding_kittens.model.Player;
-import exploding_kittens.view.PlayerTUI;
+import server.ClientHandler;
+import server.ExplodingKittensServer;
+
+import java.util.ArrayList;
 
 public interface Controller {
 
@@ -23,5 +27,10 @@ public interface Controller {
     void doTurn(Player player, int turns);
     void declareWinner(Player player);
     Player getCurrentPlayer();
-    PlayerTUI getTui();
+    void addClientHandler(ClientHandler clientHandler);
+    ArrayList<ClientHandler> getClientHandlers();
+    void createGame(Game game);
+    ExplodingKittensServer getServer();
+    void getGameState(ClientHandler client);
+    void startGame();
 }

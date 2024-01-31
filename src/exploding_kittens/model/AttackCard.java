@@ -11,6 +11,7 @@ public class AttackCard extends Card{
     public void action(Player player) {
         // tap another player to take 2 turns and skip yours
         player.setSkipTurn(true);
+        player.getGame().setAttack(true);
         if (player.getGame().getTurns() == 1){
             player.getGame().setTurns(player.getGame().getTurns() + 1);
         }

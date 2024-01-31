@@ -4,46 +4,185 @@ import exploding_kittens.model.BackInputException;
 import exploding_kittens.model.BooleanReturnException;
 import exploding_kittens.model.Card;
 import exploding_kittens.model.Player;
-import exploding_kittens.view.PlayerTUI;
 
-public class ClientTUI implements PlayerTUI {
-    @Override
-    public void showMessage(String text) {
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
+public class ClientTUI{
+
+    public synchronized void showMessage(String text) {
         System.out.println(text);
     }
 
-    @Override
     public String readInputString() throws BackInputException {
-        return null;
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String line;
+        try {
+            line = br.readLine();
+        } catch (IOException e) {
+            System.out.println("Error while reading String input");
+            return null;
+        }
+        String CANCEL_MOVE = "b";
+        if (line.equals(CANCEL_MOVE)){
+            throw new BackInputException("Player has changed his mind.");
+        }
+        else{
+            return line;
+        }
     }
 
-    @Override
     public boolean askNope(Card card, Player player, Player otherPlayer) {
-        return false;
+        showMessage(player.getPlayerName() + " is playing " + card.getCardName());
+        //printHand(otherPlayer);
+        while(true){
+            showMessage("Do you want to use your NOPE card?");
+            try {
+                return readInputBoolean();
+            } catch (BooleanReturnException e) {
+                showMessage("You cannot go back without making this decision.");
+            }
+        }
     }
 
-    @Override
     public int readInputInt() {
-        return 0;
+        String line;
+        try {
+            line = readInputString();
+        }catch (BackInputException e){
+            return -10;
+        }
+        try {
+            return Integer.parseInt(line);
+        } catch (Exception e) {
+            System.out.println("Input is not a valid number.");
+            return -1;
+        }
     }
 
-    @Override
-    public int getAnyCardChoice(Player player) {
-        return 0;
+    public int getAnyCardChoice(ArrayList<String> cardsInHand) {
+        boolean isIndexValid = false;
+        int input2 = 0;
+        while(!isIndexValid){
+            showMessage("Which card would you like to play? (number between 0 and " + (cardsInHand.size() - 1) + ")");
+            input2 = readInputInt();
+            if (input2 == -10){
+                continue;
+            }
+            if (input2 < 0 || input2 > cardsInHand.size()){
+                showMessage("Invalid index, choose a number between 0 and" + (cardsInHand.size() - 1));
+                continue;
+            }
+            if (cardsInHand.get(input2).equals("DEFUSE")){
+                showMessage("Defuse card can only be played when a bomb has been drawn.");
+                continue;
+            }
+            else if(cardsInHand.get(input2).equals("NOPE")){
+                showMessage("Nope card cannot be played at the moment.");
+                continue;
+            }
+            isIndexValid = true;
+        }
+        return input2;
     }
 
-    @Override
     public int getCardChoice(Player player, Card.cardType type) {
-        return 0;
+        boolean isIndexValid = false;
+        int input2 = 0;
+        showMessage("Which card? (number between 0 and " + (player.getPlayerHand().getCardsInHand().size() - 1) + ")");
+        while(!isIndexValid){
+            input2 = readInputInt();
+            if (input2 == -10){
+                return -10;
+            }
+            if (input2 == -1){
+                continue;
+            }
+            if (input2 < 0 || input2 >= player.getPlayerHand().getCardsInHand().size()){
+                showMessage("Invalid index, choose a number between 0 and" + (player.getPlayerHand().getCardsInHand().size() - 1));
+                continue;
+            }
+            if (player.getPlayerHand().getCardsInHand().get(input2).getCardType().equals(type)){
+                return input2;
+            }
+            else{
+                showMessage("Chosen card is not of type " + type);
+            }
+        }
+        return input2;
     }
 
-    @Override
     public boolean readInputBoolean() throws BooleanReturnException {
+        boolean invalid = true;
+        while(invalid){
+            invalid = false;
+            System.out.println("Write 'y' for yes, and write 'n' for no:");
+            String line;
+            try{
+                line = readInputString();
+            }catch (BackInputException e){
+                throw new BooleanReturnException("Player has changed his mind.");
+            }
+            switch (line){
+                case "y":
+                    return true;
+                case "n":
+                    return false;
+            }
+            System.out.println("Invalid input, decide ('y', 'n', or 'b'");
+            invalid = true;
+        }
         return false;
     }
 
-    @Override
-    public void printHand(Player player) {
+    public void printHand(ArrayList<String> cards, int sizeOfDrawPile, int bombs) {
+        showMessage("Your turn");
+        showMessage("Cards left in pile: " + sizeOfDrawPile);
+        showMessage("Exploding Kittens left: " + bombs + "\n");
+        cardsInHandAnimation(cards);
+        showMessage("");
+    }
 
+    public void cardsInHandAnimation(ArrayList<String> cards){
+        for (int i = 0; i < cards.size(); i++){
+            System.out.print("|--------------------|    ");
+        }
+        System.out.print("\n");
+        for (int j = 0; j < 7; j++){
+            for (int i = 0; i < cards.size(); i++){
+                if (j == 2){
+                    System.out.print("|");
+                    String number = String.valueOf(i);
+                    int totalWidth = 20;
+
+                    int leftPadding = (totalWidth - number.length()) / 2;
+                    int rightPadding = totalWidth - number.length() - leftPadding;
+
+                    System.out.printf("%" + leftPadding + "s%s%" + rightPadding + "s", "", number, "");
+                    System.out.print("|");
+                    System.out.print("    ");
+                }
+                else if (j == 3){
+                    String cardName = cards.get(i);
+                    int totalWidth = 22;
+
+                    int leftPadding = (totalWidth - cardName.length()) / 2;
+                    int rightPadding = totalWidth - cardName.length() - leftPadding;
+
+                    System.out.printf("%" + leftPadding + "s%s%" + rightPadding + "s", "", cardName, "");
+                    System.out.print("    ");
+                }
+                else{
+                    System.out.print("|                    |    ");
+                }
+            }
+            System.out.print("\n");
+        }
+        for (int i = 0; i < cards.size(); i++){
+            System.out.print("|--------------------|    ");
+        }
+        System.out.print("\n");
     }
 }

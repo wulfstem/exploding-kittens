@@ -34,7 +34,7 @@ public interface Server {
         EG("END_GAME", "Ends the current game"),
         AW("ANNOUNCE_WINNER", "Announces the game winner");
 
-        final String command;
+        public final String command;
         private final String description;
 
         ServerAction(String command, String description) {
