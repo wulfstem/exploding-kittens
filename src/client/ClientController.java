@@ -3,6 +3,7 @@ package client;
 import client.view.ClientTUI;
 import exploding_kittens.model.BackInputException;
 import exploding_kittens.model.BooleanReturnException;
+import exploding_kittens.model.Card;
 import exploding_kittens.view.PlayerTUI;
 
 import java.util.ArrayList;
@@ -60,17 +61,16 @@ public class ClientController{
         String[] splitUp = gameState.split("\\|");
         this.numberOfPlayers = Integer.parseInt(splitUp[1]);
         String[] info = splitUp[2].split(",");
-        if(!(alivePlayers.size() == numberOfPlayers)){
-            alivePlayers = new ArrayList<>();
-            for (int i = 0; i < (numberOfPlayers + numberOfPlayers); i += 2){
-                alivePlayers.add(info[i]);
-                infoOtherPlayers.put(info[i], Integer.parseInt(info[i+1]));
-            }
+        alivePlayers = new ArrayList<>();
+        for (int i = 0; i < (numberOfPlayers + numberOfPlayers); i += 2){
+            alivePlayers.add(info[i]);
+            infoOtherPlayers.put(info[i], Integer.parseInt(info[i+1]));
         }
         this.current = splitUp[3];
         this.isCurrent = (current.equals(username));
         this.sizeOfDrawPile = Integer.parseInt(splitUp[4]);
         String[] cards = splitUp[5].split(",");
+        this.cardsInHand = new ArrayList<>();
         this.cardsInHand.addAll(Arrays.asList(cards));
         StringBuilder result = new StringBuilder();
         result.append("\nAlive players: ");
@@ -94,6 +94,72 @@ public class ClientController{
     public void drawCard(String card){
         tui.showMessage("You have drawn " + card);
         cardsInHand.add(card);
+        endTurn();
+    }
+
+    public void askNope(String player, String card){
+        tui.showMessage(player + " is playing " + card);
+        tui.printHand(cardsInHand, sizeOfDrawPile, numberOfPlayers - 1);
+        boolean answer;
+        while(true){
+            tui.showMessage("Do you want to use your NOPE card?");
+            try {
+                answer = tui.readInputBoolean();
+                break;
+            } catch (BooleanReturnException e) {
+                tui.showMessage("You cannot go back without making this decision.");
+            }
+        }
+        if(answer){
+            client.sendMessage("NOPE|T");
+            cardsInHand.remove("NOPE");
+        }
+        else{
+            client.sendMessage("NOPE|N");
+        }
+    }
+
+    public void checkForDefuse(String sym){
+        if (sym.equals("T")) {
+            tui.showMessage("You have drawn an Exploding Kitten!");
+            cardsInHand.add("BOMB");
+            tui.printHand(cardsInHand, sizeOfDrawPile - 1, numberOfPlayers - 2);
+            boolean invalid = true;
+            boolean answer = false;
+            while (invalid) {
+                tui.showMessage("Use a Defuse?");
+                try {
+                    answer = tui.readInputBoolean();
+                    invalid = false;
+                } catch (BooleanReturnException e) {
+                    tui.showMessage("You cannot go back without making this decision.");
+                }
+            }
+            boolean goBack = true;
+            while (goBack) {
+                goBack = false;
+                if (answer) {
+                    int index = tui.getCardChoice("DEFUSE", cardsInHand);
+                    cardsInHand.remove(index);
+                    tui.showMessage("In which position would you like to put the Exploding Kitten? (1 between " + (sizeOfDrawPile - 1) + ")");
+                    int input3 = (tui.readInputInt()) - 1;
+                    if (input3 == -10) {
+                        goBack = true;
+                        continue;
+                    }
+                    client.sendMessage("DEFUSE|" + input3);
+                    cardsInHand.remove("BOMB");
+                } else {
+                    client.sendMessage("DEFUSE|N");
+                    tui.showMessage("Better luck next time Champ!");
+                    //close client
+                }
+            }
+        }
+        else{
+            System.out.println("Better luck next time Champ!");
+            //close client
+        }
         endTurn();
     }
 

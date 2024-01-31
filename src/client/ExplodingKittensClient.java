@@ -40,8 +40,10 @@ public class ExplodingKittensClient implements Client{
                 controller.drawCard(inputs[1]);
                 break;
             case "DIFFUSE_CHECK":
-
+                controller.checkForDefuse(inputs[1]);
                 break;
+            case "NOPE":
+                controller.askNope(inputs[1], inputs[2]);
             case "ELIMINATE_CLIENT":
 
                 break;
