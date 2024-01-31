@@ -79,6 +79,15 @@ public class ClientHandler implements Runnable {
                     controller.setDefuseIndex(Integer.parseInt(parts[1]));
                 }
                 break;
+            case "TARGET":
+                controller.setTargetPlayer(Integer.parseInt(parts[1]));
+                break;
+            case "FAVOR":
+                controller.setCardToBeStolen(Integer.parseInt(parts[1]));
+                break;
+            case "MATCH":
+                controller.setMatchingCard(Integer.parseInt(parts[1]));
+                break;
             case "DO_MOVE":
                 switch(parts[1]){
                     case "PLAY":
@@ -125,6 +134,10 @@ public class ClientHandler implements Runnable {
 
     public void setPlayerIndex(int number){
         this.playerIndex = number;
+    }
+
+    public int getPlayerIndex(){
+        return playerIndex;
     }
 
     public String getCardBeingPlayed() {

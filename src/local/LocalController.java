@@ -148,6 +148,13 @@ public class LocalController implements Controller {
         if (temp.getCardType().equals(Card.cardType.BOMB)) {
             bombDrawn(player, temp);
         }
+        if (game.getTurns() == 1 && game.getCurrent() == player.getPositionIndex()) {
+            if (player.getPositionIndex() == (game.getPlayers().size() - 1)) {
+                game.setCurrent(0);
+            } else {
+                game.setCurrent((game.getCurrent() + 1));
+            }
+        }
         if (game.getTurns() != 1){
             game.setTurns(game.getTurns() - 1);
         }

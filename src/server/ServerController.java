@@ -1,10 +1,7 @@
 package server;
 
 import exploding_kittens.Controller;
-import exploding_kittens.model.BooleanReturnException;
-import exploding_kittens.model.Card;
-import exploding_kittens.model.Game;
-import exploding_kittens.model.Player;
+import exploding_kittens.model.*;
 
 import java.util.ArrayList;
 
@@ -17,6 +14,9 @@ public class ServerController implements Controller {
     private volatile int defuseIndex;
     private volatile int indexOfPlayerPlayingNope;
     private volatile int nopeAnswerCounter;
+    private volatile int targetPlayer;
+    private volatile int cardToBeStolen;
+    private volatile int matchingCard;
     private  int expectedNopeAnswer;
     private Game game;
     private int readyCounter;
@@ -31,30 +31,7 @@ public class ServerController implements Controller {
 
     @Override
     public boolean validateByNope(Card card, Player player, Player otherPlayer) {
-        /*
-        boolean result = false;
-        boolean answer = tui.askNope(card, player, otherPlayer);
-        if (answer) {
-            while(true) {
-                int index = tui.getCardChoice(otherPlayer, Card.cardType.NOPE);
-                if (index >= 0 && index < otherPlayer.getPlayerHand().getCardsInHand().size()) {
-                    Card temp = otherPlayer.getPlayerHand().getCardsInHand().get(index);
-                    otherPlayer.getPlayerHand().remove(otherPlayer.getPlayerHand().getCardsInHand().get(index));
-                    // THIS iS IMPORTANT
-                    if(validateMove(temp, otherPlayer)){
-                        moveCanceled(player);
-                        return true;
-                    }
-                    else{
-                        moveCanceled(otherPlayer);
-                        return false;
-                    }
-                    // THIS IS IMPORTANT
-                }
-            }
-        }
-
-         */
+        // Not used by network gameplay
         return false;
     }
 
@@ -98,7 +75,13 @@ public class ServerController implements Controller {
                 System.out.println(playerOfNope.getPlayerName() + " is playing NOPE");
                 playerOfNope.getPlayerHand().getCardsInHand().remove(nopeCard);
                 // IMPLEMENT SO THAT EVERYONE KNOWS WHO CANCELLED AND ETC.
-                return !validateMove(nopeCard, playerOfNope);
+                if(validateMove(nopeCard, playerOfNope)){
+                    return false;
+                }
+                else{
+                    moveCanceled(playerOfNope);
+                    return true;
+                }
             }
             else{
                 return true;
@@ -121,6 +104,13 @@ public class ServerController implements Controller {
         }
         else{
             getCurrentClientHandler().sendMessage(Server.ServerAction.DC.command +  "|" + temp.getCardName());
+        }
+        if (game.getTurns() == 1 && game.getCurrent() == player.getPositionIndex()) {
+            if (player.getPositionIndex() == (game.getPlayers().size() - 1)) {
+                game.setCurrent(0);
+            } else {
+                game.setCurrent((game.getCurrent() + 1));
+            }
         }
         if (game.getTurns() != 1){
             game.setTurns(game.getTurns() - 1);
@@ -172,17 +162,61 @@ public class ServerController implements Controller {
 
     @Override
     public void moveCanceled(Player player) {
-
+        for (ClientHandler clientHandler: clientHandlers){
+            if (clientHandler.getPlayerName().equals(player.getPlayerName())){
+                clientHandler.sendMessage("CANCELLED");
+            }
+        }
     }
 
     @Override
-    public int getCardForFavor(Player player) {
-        return 0;
+    public int getCardForFavor(Player victim) {
+        for(ClientHandler clientHandler: clientHandlers){
+            if (clientHandler.getPlayerName().equals(victim.getPlayerName())){
+                clientHandler.sendMessage("FAVOR|" + getCurrentPlayer().getPlayerName());
+            }
+        }
+        cardToBeStolen = -1;
+        while(cardToBeStolen == -1){
+            try {
+                wait(1000);
+            } catch (InterruptedException e) {
+                System.out.println("Error in wait");
+            }
+        }
+        return cardToBeStolen;
     }
 
     @Override
     public void showFuture(Player player) {
+        StringBuilder result = new StringBuilder();
+        result.append("FUTURE|");
+        if (player.getGame().getDeck().getDrawPile().size() >= 3){
+            for (int i = 0; i < SeeCard.VISION_OF_DRAW_PILE; i++){
+                if(i == 2){
+                    result.append(player.getGame().getDeck().getDrawPile().get(i).getCardName());
+                }
+                else{
+                    result.append(player.getGame().getDeck().getDrawPile().get(i).getCardName()).append(",");
+                }
+            }
+        }
+        else{
+            for (int i = 0; i < player.getGame().getDeck().getDrawPile().size(); i++){
+                if(i == player.getGame().getDeck().getDrawPile().size() - 1){
+                    result.append(player.getGame().getDeck().getDrawPile().get(i).getCardName());
+                }
+                else{
+                    result.append(player.getGame().getDeck().getDrawPile().get(i).getCardName()).append(",");
+                }
+            }
+        }
 
+        for(ClientHandler clientHandler: clientHandlers){
+            if (clientHandler.getPlayerName().equals(player.getPlayerName())){
+                clientHandler.sendMessage(String.valueOf(result));
+            }
+        }
     }
 
     @Override
@@ -191,13 +225,37 @@ public class ServerController implements Controller {
     }
 
     @Override
-    public int getMatchingCard(Player player, Card card) {
-        return 0;
+    public int getMatchingCard(Player thief, Card card) {
+        for(ClientHandler clientHandler: clientHandlers){
+            if (clientHandler.getPlayerName().equals(thief.getPlayerName())){
+                clientHandler.sendMessage("MATCH");
+            }
+        }
+        matchingCard = -1;
+        while(matchingCard == -1){
+            try {
+                wait(1000);
+            } catch (InterruptedException e) {
+                System.out.println("Error in wait");
+            }
+        }
+        return matchingCard;
     }
 
     @Override
     public int getOtherPlayerChoice(Player player) {
-        return 0;
+        targetPlayer = -1;
+        getCurrentClientHandler().sendMessage("INDICATE_PLAYER");
+
+        while(targetPlayer == -1){
+            System.out.println(targetPlayer);
+            try {
+                wait(1000);
+            } catch (InterruptedException e) {
+                System.out.println("Error in wait");
+            }
+        }
+        return targetPlayer;
     }
 
     @Override
@@ -228,18 +286,23 @@ public class ServerController implements Controller {
     @Override
     public void doTurn(Player player, int turns) {
         updateHandlersIndex();
+        for (ClientHandler clientHandler: clientHandlers){
+            getGameState(clientHandler);
+        }
         System.out.println("Starting doTurn for player " + player.getPlayerName() + " with turns: " + turns);
         draw = -1;
         game.setAttack(false);
         for (int i = turns; i > 0; i--){
+            System.out.println("Current player " + game.getPlayers().get(game.getCurrent()).getPlayerName());
             player.makeMove();
+            game.setTurnCounter(game.getTurnCounter() + 1);
+            if(turns > 1){
+                for (ClientHandler clientHandler: clientHandlers){
+                    getGameState(clientHandler);
+                }
+            }
             if (game.isAttack()){
                 break;
-            }
-            System.out.println("End of turn for " + player.getPlayerName());
-            game.setTurnCounter(game.getTurnCounter() + 1);
-            for (ClientHandler clientHandler: clientHandlers){
-                getGameState(clientHandler);
             }
         }
     }
@@ -261,6 +324,8 @@ public class ServerController implements Controller {
     public synchronized void getGameState(ClientHandler client){
         StringBuilder result = new StringBuilder();
         result.append("GAME_STATE|");
+        result.append(client.getPlayerIndex()).append("|");
+        result.append(game.getTurns()).append("|");
         result.append(game.getPlayers().size()).append("|");
         for (int i = 0; i < game.getPlayers().size(); i++){
             if (i == game.getPlayers().size() - 1){
@@ -271,26 +336,6 @@ public class ServerController implements Controller {
             }
         }
         result.append(game.getPlayers().get(game.getCurrent()).getPlayerName()).append("|");
-        /*
-        for (int i = 0; i < game.getDeck().getDiscardPile().size(); i++){
-            if (i == game.getDeck().getDiscardPile().size() - 1){
-                result.append(game.getDeck().getDiscardPile().get(i).getCardName());
-            }
-            else{
-                result.append(game.getDeck().getDiscardPile().get(i).getCardName()).append(",");
-            }
-        }
-        result.append("|");
-        for (int i = 0; i < game.getDeck().getDrawPile().size(); i++){
-            if (i == game.getDeck().getDrawPile().size() - 1){
-                result.append(game.getDeck().getDrawPile().get(i).getCardName());
-            }
-            else{
-                result.append(game.getDeck().getDrawPile().get(i).getCardName()).append(",");
-            }
-        }
-        result.append("|");
-         */
         result.append(game.getDeck().getDrawPile().size()).append("|");
         for (Player player : game.getPlayers()){
             if (player.getPlayerName().equals(client.getPlayerName())){
@@ -348,6 +393,17 @@ public class ServerController implements Controller {
 
     public synchronized void increaseNopeAnswerCounter(){
         this.nopeAnswerCounter++;
+    }
+
+    public void setTargetPlayer(int number){
+        this.targetPlayer = number;
+    }
+    public void setCardToBeStolen(int number){
+        this.cardToBeStolen = number;
+    }
+
+    public void setMatchingCard(int number){
+        this.matchingCard = number;
     }
 
     public ExplodingKittensServer getServer(){

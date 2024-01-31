@@ -98,6 +98,7 @@ public class Game {
         createHands();
         shuffle();
         setCurrent(selectRandomly(getPlayers().size()));
+        turns = 1;
     }
     /**
      * Starts first turn by letting a randomly chosen player start and runs the whole game until there is a winner.

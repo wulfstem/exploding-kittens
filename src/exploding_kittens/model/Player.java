@@ -22,11 +22,13 @@ public class Player {
     }
 
     public void makeMove() {
+        System.out.println("Current player " + game.getPlayers().get(game.getCurrent()).getPlayerName());
         System.out.println("makeMove called for player " + getPlayerName());
         playOrDraw();
     }
 
     public void playOrDraw() {
+        System.out.println("Current player " + game.getPlayers().get(game.getCurrent()));
         System.out.println("Starting playOrDraw");
         setSkipTurn(false);
         controller.showHand(this);
@@ -52,13 +54,6 @@ public class Player {
             }
         } else {
             controller.draw(this);
-            if (game.getTurns() == 1 && game.getCurrent() == this.getPositionIndex()) {
-                if (this.getPositionIndex() == (game.getPlayers().size() - 1)) {
-                    game.setCurrent(0);
-                } else {
-                    game.setCurrent((game.getCurrent() + 1));
-                }
-            }
         }
     }
 
