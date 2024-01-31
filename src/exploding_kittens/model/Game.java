@@ -24,6 +24,7 @@ public class Game {
     private Deck deck;
     private int turnCounter;
     private Controller controller;
+    private boolean isAttack;
 
     /**
      * Class constructor
@@ -40,6 +41,7 @@ public class Game {
         this.nicknames = nicknames;
         this.players = new ArrayList<>();
         turnCounter = 1;
+        setAttack(false);
     }
 
     /**
@@ -95,13 +97,13 @@ public class Game {
         createPlayers(isComputerPlayer(), getDeck());
         createHands();
         shuffle();
+        setCurrent(selectRandomly(getPlayers().size()));
     }
     /**
      * Starts first turn by letting a randomly chosen player start and runs the whole game until there is a winner.
      */
     public void play(){
         turns = 1;
-        setCurrent(selectRandomly(getPlayers().size()));
         turnCounter++;
         while(!hasWinner()){
             updatePlayersPositions();
@@ -185,4 +187,11 @@ public class Game {
         this.turnCounter = number;
     }
 
+    public boolean isAttack() {
+        return isAttack;
+    }
+
+    public void setAttack(boolean attack) {
+        isAttack = attack;
+    }
 }

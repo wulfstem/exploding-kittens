@@ -4,6 +4,8 @@ import exploding_kittens.Controller;
 import exploding_kittens.model.*;
 import exploding_kittens.view.PlayerTUI;
 import local.view.LocalPlayerTUI;
+import server.ClientHandler;
+import server.ExplodingKittensServer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,7 +19,6 @@ public class LocalController implements Controller {
     public LocalController(Game game, LocalPlayerTUI tui){
         this.game = game;
         this.tui = tui;
-        tui.setController(this);
         game.setController(this);
         game.setup();
         game.play();
@@ -25,8 +26,12 @@ public class LocalController implements Controller {
 
     @Override
     public void doTurn(Player player, int turns){
+        game.setAttack(false);
         for (int i = turns; i > 0; i--){
             player.makeMove();
+            if (game.isAttack()){
+                break;
+            }
             game.setTurnCounter(game.getTurnCounter() + 1);
         }
         tui.showMessage("---------------------------------------------------------------------------------------------------------------------\n");
@@ -275,8 +280,35 @@ public class LocalController implements Controller {
     }
 
     @Override
-    public PlayerTUI getTui() {
-        return tui;
+    public void addClientHandler(ClientHandler clientHandler) {
+        //Not used in local gameplay
+    }
+
+    @Override
+    public ArrayList<ClientHandler> getClientHandlers() {
+        //Not used in local gameplay
+        return null;
+    }
+
+    @Override
+    public void createGame(Game game) {
+        //Not used in local gameplay
+    }
+
+    @Override
+    public ExplodingKittensServer getServer() {
+        //Not used in local gameplay
+        return null;
+    }
+
+    @Override
+    public void getGameState(ClientHandler client) {
+        //Not used in local gameplay
+    }
+
+    @Override
+    public void startGame() {
+        //Not used in local gameplay
     }
 
     public static void main (String[] args){

@@ -22,6 +22,7 @@ public class Player {
     }
 
     public void makeMove() {
+        System.out.println("makeMove called for player " + getPlayerName());
         playOrDraw();
     }
 

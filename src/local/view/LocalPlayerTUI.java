@@ -14,8 +14,6 @@ import java.io.InputStreamReader;
 public class LocalPlayerTUI implements PlayerTUI {
 
 
-    private Controller controller;
-
     public LocalPlayerTUI(){}
 
     @Override
@@ -193,9 +191,5 @@ public class LocalPlayerTUI implements PlayerTUI {
     public void printHand(Player player) {
         showMessage("Player " + player.getPositionIndex() + ": " + player.getPlayerName());
         cardsInHandAnimation(player.getPlayerHand().getCardsInHand().size(), player);
-    }
-
-    public void setController(Controller controller){
-        this.controller = controller;
     }
 }

@@ -1,18 +1,18 @@
 package server;
 
-import exploding_kittens.model.Player;
-import server.Server;
-import server.ServerController;
-
 import java.io.*;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ClientHandler implements Runnable {
-    private Player player;
+
     private Socket clientSocket;
     private ServerController controller;
     private BufferedReader in;
     private BufferedWriter out;
+    private String playerName;
+    private String cardBeingPlayed;
 
     public ClientHandler(Socket clientSocket, ServerController controller) {
         this.clientSocket = clientSocket;
@@ -31,8 +31,12 @@ public class ClientHandler implements Runnable {
         try {
             String line;
             while ((line = in.readLine()) != null) {
-                System.out.println("Received from client: " + line);
-                processClientMessage(line);
+                System.out.println(playerName + ">" + "Received from " + playerName + ": " + line);
+
+                // Create a new thread to process the client's request concurrently
+                ExecutorService executor = Executors.newCachedThreadPool();
+                String finalLine = line;
+                executor.execute(() -> processClientMessage(finalLine));
             }
         } catch (IOException e) {
             // Handle exception
@@ -50,7 +54,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void closeResources() {
+    public void closeResources() {
         try {
             if (in != null) in.close();
             if (out != null) out.close();
@@ -61,6 +65,7 @@ public class ClientHandler implements Runnable {
     }
 
     private void handleCommand(String command) {
+        cardBeingPlayed = null;
         String[] parts = command.split("\\|");
         String keyword = parts[0];
 
@@ -68,18 +73,27 @@ public class ClientHandler implements Runnable {
             case "DO_MOVE":
                 switch(parts[1]){
                     case "PLAY":
-
+                        cardBeingPlayed = parts[2];
+                        controller.setDraw(0);
+                        break;
                     case "END_TURN":
-
+                        controller.setDraw(1);
+                        break;
                 }
+                break;
             case "REQUEST_GAME_STATE":
-                //sendMessage(controller.getGameState());
+                controller.getGameState(this);
+                break;
+            case "NOPE":
+                // Handle NOPE command
+                break;
         }
     }
 
     private void handleHello(String username) {
         System.out.println("Received ANNOUNCE from " + username);
-        controller.addUsername(username);
+        this.playerName = username;
+        controller.getServer().addUsername(username);
     }
 
     public void sendMessage(String message) {
@@ -91,11 +105,11 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public Player getPlayer() {
-        return player;
+    public String getPlayerName(){
+        return this.playerName;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
+    public String getCardBeingPlayed() {
+        return this.cardBeingPlayed;
     }
 }
