@@ -54,11 +54,8 @@ public class ExplodingKittensClient implements Client{
             case "DEATH":
                 controller.announceDeath(inputs[1]);
                 break;
-            case "END_GAME":
-
-                break;
-            case "ANNOUNCE_WINNER":
-
+            case "VICTORY":
+                controller.announceVictory(inputs[1]);
                 break;
             case "INDICATE_PLAYER":
                 controller.playerChoice();
@@ -75,6 +72,17 @@ public class ExplodingKittensClient implements Client{
             case "SEND_DECISION":
                 controller.makeDecision();
                 break;
+        }
+    }
+
+    public void closeClient() {
+        try {
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+                System.out.println("Client closed.");
+            }
+        } catch (IOException e) {
+            controller.getTUI().showMessage("Error while closing client: " + e.getMessage());
         }
     }
 

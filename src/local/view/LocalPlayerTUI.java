@@ -1,6 +1,5 @@
 package local.view;
 
-import exploding_kittens.Controller;
 import exploding_kittens.model.Card;
 import exploding_kittens.view.PlayerTUI;
 import exploding_kittens.model.BackInputException;

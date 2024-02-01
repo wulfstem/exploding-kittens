@@ -61,10 +61,9 @@ public class ExplodingKittensServer implements Server {
 
     @Override
     public void gameStart() {
-        // Wait for all usernames to be received
         while (usernames.size() < numberOfClients) {
             try {
-                Thread.sleep(1000); // Sleep for a short period before checking again
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return;
@@ -74,34 +73,42 @@ public class ExplodingKittensServer implements Server {
         broadcastMessage(ServerAction.GS.command);
     }
 
+
     @Override
     public void drawCard(ClientHandler client) {
-
+        // Functionality is done in ClientHandler
     }
 
     @Override
     public void diffuseCheck(ClientHandler client) {
-
+        // Functionality is done in ClientHandler
     }
 
     @Override
     public void explode(ClientHandler client) {
-
+        // Functionality is done in ClientHandler
     }
 
     @Override
     public void gameEnd() {
-        //Need to close the server
+        try {
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                serverSocket.close();
+                System.out.println("Server closed.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error while closing server: " + e.getMessage());
+        }
     }
 
     @Override
     public void gameWinner(ClientHandler client) {
-
+        // Functionality is done in ClientHandler
     }
 
     @Override
     public void informAdmin(String message) {
-
+        // Functionality is done in ClientHandler
     }
 
     @Override
@@ -113,12 +120,12 @@ public class ExplodingKittensServer implements Server {
 
     @Override
     public void roundStarted() {
-
+        // Functionality is done in ClientHandler
     }
 
     @Override
     public void cardPlayed(Card card) {
-
+        // Functionality is done in ClientHandler
     }
 
     public void addUsername(String username){

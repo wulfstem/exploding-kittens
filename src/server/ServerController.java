@@ -34,6 +34,7 @@ public class ServerController implements Controller {
         }
         this.clientHandlers = new ArrayList<>();
         server.establishConnections();
+        System.out.println(server);
     }
 
     @Override
@@ -83,7 +84,6 @@ public class ServerController implements Controller {
                 }
                 System.out.println(playerOfNope.getPlayerName() + " is playing NOPE");
                 playerOfNope.getPlayerHand().getCardsInHand().remove(nopeCard);
-                // IMPLEMENT SO THAT EVERYONE KNOWS WHO CANCELLED AND ETC.
                 if(validateMove(nopeCard, playerOfNope)){
                     return false;
                 }
@@ -323,7 +323,7 @@ public class ServerController implements Controller {
 
     @Override
     public void declareWinner(Player player) {
-        server.broadcastMessage("Player " + player.getPlayerName() + " has won the game!");
+        server.broadcastMessage("VICTORY|Player " + player.getPlayerName() + " has won the game!");
         for (ClientHandler clientHandler: clientHandlers){
             clientHandler.closeResources();
         }
@@ -438,6 +438,14 @@ public class ServerController implements Controller {
         }
     }
 
+    public void disconnection(String playerName){
+        for (Player player: game.getPlayers()){
+            if(player.getPlayerName().equals(playerName)){
+                player.die();
+            }
+        }
+    }
+
     public ClientHandler getCurrentClientHandler(){
         for (ClientHandler clientHandler: clientHandlers){
             if (clientHandler.getPlayerName().equals(getCurrentPlayer().getPlayerName())){
@@ -450,10 +458,9 @@ public class ServerController implements Controller {
     public static void main (String[] args){
         System.out.println( "\nWelcome to Exploding Kittens!" );
 
-        int port = 6744;
-
         int numberOfPlayers = Integer.parseInt(args[0]);
         boolean computerPlayer = (Integer.parseInt(args[1]) == 1);
+        int port = Integer.parseInt(args[2]);
         new ServerController(numberOfPlayers, port, computerPlayer);
     }
 }

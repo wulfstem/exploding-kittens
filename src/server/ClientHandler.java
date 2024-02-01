@@ -1,5 +1,7 @@
 package server;
 
+import server.ServerController;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -34,15 +36,13 @@ public class ClientHandler implements Runnable {
             while ((line = in.readLine()) != null) {
                 System.out.println(playerName + ">" + "Received from " + playerName + ": " + line);
 
-                // Create a new thread to process the client's request concurrently
                 ExecutorService executor = Executors.newCachedThreadPool();
                 String finalLine = line;
                 executor.execute(() -> processClientMessage(finalLine));
             }
         } catch (IOException e) {
-            // Handle exception
+            controller.disconnection(playerName);
         } finally {
-            // Clean up resources
             closeResources();
         }
     }
@@ -61,7 +61,7 @@ public class ClientHandler implements Runnable {
             if (out != null) out.close();
             if (clientSocket != null) clientSocket.close();
         } catch (IOException e) {
-            // Log or handle the exception
+            System.out.println("Resources could not be closed.");
         }
     }
 
@@ -124,7 +124,7 @@ public class ClientHandler implements Runnable {
             out.write(message + "\n");
             out.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Message could not be sent.");
         }
     }
 

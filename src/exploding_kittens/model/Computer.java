@@ -1,7 +1,6 @@
 package exploding_kittens.model;
 
 import exploding_kittens.Controller;
-import server.Server;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -11,7 +10,6 @@ public class Computer extends Player{
 
     public static final String COMPUTER_NAME = "RoboTukas";
     private final int RANDOMLY_PICKED_TRUE = 1;
-    private final int RANDOMLY_PICKED_FALSE = 0;
 
     public Computer(String playerName, Game game, int positionIndex, Controller controller) {
         super(playerName, game, positionIndex, controller);

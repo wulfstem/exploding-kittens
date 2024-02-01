@@ -2,7 +2,6 @@ package local;
 
 import exploding_kittens.Controller;
 import exploding_kittens.model.*;
-import exploding_kittens.view.PlayerTUI;
 import local.view.LocalPlayerTUI;
 import server.ClientHandler;
 import server.ExplodingKittensServer;
@@ -196,28 +195,31 @@ public class LocalController implements Controller {
 
     @Override
     public boolean validateByNope(Card card, Player player, Player otherPlayer) {
-        boolean result = false;
-        boolean answer = tui.askNope(card, player, otherPlayer);
-        if (answer) {
-            while(true) {
-                int index = tui.getCardChoice(otherPlayer, Card.cardType.NOPE);
-                if (index >= 0 && index < otherPlayer.getPlayerHand().getCardsInHand().size()) {
-                    Card temp = otherPlayer.getPlayerHand().getCardsInHand().get(index);
-                    otherPlayer.getPlayerHand().remove(otherPlayer.getPlayerHand().getCardsInHand().get(index));
-                    // THIS iS IMPORTANT
-                    if(validateMove(temp, otherPlayer)){
-                        moveCanceled(player);
-                        return true;
+        if(!(otherPlayer instanceof Computer)){
+            boolean result = false;
+            boolean answer = tui.askNope(card, player, otherPlayer);
+            if (answer) {
+                while(true) {
+                    int index = tui.getCardChoice(otherPlayer, Card.cardType.NOPE);
+                    if (index >= 0 && index < otherPlayer.getPlayerHand().getCardsInHand().size()) {
+                        Card temp = otherPlayer.getPlayerHand().getCardsInHand().get(index);
+                        otherPlayer.getPlayerHand().remove(otherPlayer.getPlayerHand().getCardsInHand().get(index));
+                        if(validateMove(temp, otherPlayer)){
+                            moveCanceled(player);
+                            return true;
+                        }
+                        else{
+                            moveCanceled(otherPlayer);
+                            return false;
+                        }
                     }
-                    else{
-                        moveCanceled(otherPlayer);
-                        return false;
-                    }
-                    // THIS IS IMPORTANT
                 }
             }
+            return result;
         }
-        return result;
+        else{
+            return false;
+        }
     }
 
     @Override
@@ -271,15 +273,15 @@ public class LocalController implements Controller {
     @Override
     public boolean validateMove(Card card, Player player) {
         for (Player otherPlayer : game.getPlayers()) {
-            if (otherPlayer != player) { // Check other players, not the current player
+            if (otherPlayer != player) {
                 if (otherPlayer.handContains(Card.cardType.NOPE)) {
-                    if (validateByNope(card, player, otherPlayer)) { // If a Nope card is used
-                        return false; // Stop checking further
+                    if (validateByNope(card, player, otherPlayer)) {
+                        return false;
                     }
                 }
             }
         }
-        return true; // No Nope card was used, proceed with the move
+        return true;
     }
 
     public Player getCurrentPlayer(){
@@ -327,7 +329,7 @@ public class LocalController implements Controller {
         System.out.println( "\nWelcome to Exploding Kittens!" );
         int numberOfPlayers = Integer.parseInt(args[0]);
         boolean computerPlayer = (Integer.parseInt(args[1]) == 1);
-        ArrayList<String> nicknames = new ArrayList<>(Arrays.asList(args).subList(1, numberOfPlayers + 1));
+        ArrayList<String> nicknames = new ArrayList<>(Arrays.asList(args).subList(2, numberOfPlayers + 1));
         new LocalController(new Game(numberOfPlayers, nicknames, computerPlayer), new LocalPlayerTUI());
     }
 }

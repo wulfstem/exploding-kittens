@@ -34,19 +34,6 @@ public class ClientTUI{
         }
     }
 
-    public boolean askNope(Card card, Player player, Player otherPlayer) {
-        showMessage(player.getPlayerName() + " is playing " + card.getCardName());
-        //printHand(otherPlayer);
-        while(true){
-            showMessage("Do you want to use your NOPE card?");
-            try {
-                return readInputBoolean();
-            } catch (BooleanReturnException e) {
-                showMessage("You cannot go back without making this decision.");
-            }
-        }
-    }
-
     public int readInputInt() {
         String line;
         try {
