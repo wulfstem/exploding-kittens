@@ -32,5 +32,6 @@ public interface Controller {
     void createGame(Game game);
     ExplodingKittensServer getServer();
     void getGameState(ClientHandler client);
+    void announceDeath(Player player);
     void startGame();
 }

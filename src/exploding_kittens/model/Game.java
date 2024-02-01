@@ -30,14 +30,9 @@ public class Game {
      * Class constructor
      * @param numberOfPlayers the number of players playing a game, not including the computer player.
      */
-    public Game(int numberOfPlayers, ArrayList<String> nicknames) {
-        if (numberOfPlayers == 1) {
-            this.numberOfPlayers = numberOfPlayers + 1;
-            computerPlayer = true;
-        } else {
-            this.numberOfPlayers = numberOfPlayers;
-            computerPlayer = false;
-        }
+    public Game(int numberOfPlayers, ArrayList<String> nicknames, boolean computerPlayer) {
+        this.numberOfPlayers = numberOfPlayers;
+        this.computerPlayer = computerPlayer;
         this.nicknames = nicknames;
         this.players = new ArrayList<>();
         turnCounter = 1;

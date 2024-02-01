@@ -7,7 +7,6 @@ import exploding_kittens.model.BooleanReturnException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 public class ClientController{
 
@@ -24,11 +23,9 @@ public class ClientController{
     private HashMap<String, Integer> infoOtherPlayers;
     private int playerIndex;
     private int turns;
-    private int indexOfPlayedRegular;
-    private boolean ready;
+    private String playedRegular;
 
     public ClientController(String serverAddress, int port){
-        ready = false;
         alivePlayers = new ArrayList<>();
         isCurrent = false;
         cardsInHand = new ArrayList<>();
@@ -72,16 +69,10 @@ public class ClientController{
         boolean valid = false;
         while(!valid){
             valid = true;
-            result = tui.getCardChoice(cardsInHand.get(indexOfPlayedRegular), cardsInHand);
+            result = tui.getCardChoice(playedRegular, cardsInHand);
             if (result == -10){
                 tui.showMessage("You cannot go back on this decision.");
                 valid = false;
-                continue;
-            }
-            if (result == indexOfPlayedRegular){
-                tui.showMessage("You cannot pick the same card.");
-                valid = false;
-
             }
         }
         client.sendMessage("MATCH|" + result);
@@ -242,13 +233,18 @@ public class ClientController{
         }
         endTurn();
     }
+
+    public void announceDeath(String name){
+        tui.showMessage("Player " + name + " has exploded!");
+        alivePlayers.remove(name);
+    }
+
     public void endTurn(){
         tui.showMessage("Your turn is over.");
         tui.showMessage("---------------------------------------------------------------------------------------------------------------------\n");
     }
 
     public void makeDecision(){
-        indexOfPlayedRegular = -1;
         tui.printHand(cardsInHand, sizeOfDrawPile, numberOfPlayers-1, turns);
         boolean result = false;
         boolean goBack = true;
@@ -265,7 +261,7 @@ public class ClientController{
         if (result){
             int index = whichCardIsBeingPlayed();
             if(cardsInHand.get(index).equals("Beard Cat") || cardsInHand.get(index).equals("Cattermelon") ||  cardsInHand.get(index).equals("Hairy Potato Cat") || cardsInHand.get(index).equals("Rainbow-Ralphing Cat") || cardsInHand.get(index).equals("Tacocat")){
-                indexOfPlayedRegular = index;
+                playedRegular = cardsInHand.get(index);
             }
             System.out.println("Decision yes about to be sent");
             client.sendMessage(Client.Command.PC.command + "|" + cardsInHand.get(index) + index);

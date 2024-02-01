@@ -51,6 +51,9 @@ public class ExplodingKittensClient implements Client{
             case "CANCELLED":
                 controller.cardCancelled();
                 break;
+            case "DEATH":
+                controller.announceDeath(inputs[1]);
+                break;
             case "END_GAME":
 
                 break;

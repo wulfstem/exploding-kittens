@@ -61,7 +61,7 @@ public class Player {
         ArrayList<Player> temp = getGame().getPlayers();
         temp.remove(this);
         getGame().setPlayers(temp);
-
+        controller.announceDeath(this);
     }
 
     public boolean handContains(Card.cardType cardType) {

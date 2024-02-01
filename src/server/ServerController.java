@@ -10,6 +10,7 @@ public class ServerController implements Controller {
 
     private ExplodingKittensServer server;
     private ArrayList<ClientHandler> clientHandlers;
+    private boolean computerPlayer;
     private volatile int draw;
     private volatile int defuseIndex;
     private volatile int indexOfPlayerPlayingNope;
@@ -21,10 +22,16 @@ public class ServerController implements Controller {
     private Game game;
     private int readyCounter;
 
-    public ServerController(int numberOfPlayers, int port) {
+    public ServerController(int numberOfPlayers, int port, boolean computerPlayer) {
+        this.computerPlayer = computerPlayer;
         readyCounter = 0;
         this.clientHandlers = new ArrayList<>();
-        this.server = new ExplodingKittensServer(numberOfPlayers, port, this);
+        if (computerPlayer){
+            this.server = new ExplodingKittensServer(numberOfPlayers - 1, port, this);
+        }
+        else{
+            this.server = new ExplodingKittensServer(numberOfPlayers, port, this);
+        }
         this.clientHandlers = new ArrayList<>();
         server.establishConnections();
     }
@@ -41,7 +48,9 @@ public class ServerController implements Controller {
         for (Player otherPlayer : game.getPlayers()) {
             if (otherPlayer != player) { // Check other players, not the current player
                 if (otherPlayer.handContains(Card.cardType.NOPE)) {
-                    playersWithNope.add(otherPlayer.getPlayerName());
+                    if(!(otherPlayer instanceof Computer)){
+                        playersWithNope.add(otherPlayer.getPlayerName());
+                    }
                 }
             }
         }
@@ -90,6 +99,11 @@ public class ServerController implements Controller {
         else{
             return true;
         }
+    }
+
+    @Override
+    public void announceDeath(Player player){
+        server.broadcastMessage("DEATH|" + player.getPlayerName());
     }
 
     @Override
@@ -221,7 +235,7 @@ public class ServerController implements Controller {
 
     @Override
     public void informStolenCard(Player player, Card card) {
-
+        server.broadcastMessage("STOLEN|" + player.getPlayerName());
     }
 
     @Override
@@ -351,7 +365,7 @@ public class ServerController implements Controller {
         }
         client.sendMessage(String.valueOf(result));
         readyCounter++;
-        if (readyCounter == game.getPlayers().size()){
+        if (readyCounter == game.getPlayers().size() - 1){
             startGame();
         }
     }
@@ -410,6 +424,10 @@ public class ServerController implements Controller {
         return this.server;
     }
 
+    public boolean getComputerPlayer(){
+        return this.computerPlayer;
+    }
+
     public void updateHandlersIndex(){
         for (ClientHandler clientHandler: clientHandlers){
             for (Player player: game.getPlayers()){
@@ -435,6 +453,7 @@ public class ServerController implements Controller {
         int port = 6744;
 
         int numberOfPlayers = Integer.parseInt(args[0]);
-        new ServerController(numberOfPlayers, port);
+        boolean computerPlayer = (Integer.parseInt(args[1]) == 1);
+        new ServerController(numberOfPlayers, port, computerPlayer);
     }
 }
