@@ -137,8 +137,9 @@ public class ClientTUI{
         return false;
     }
 
-    public void printHand(ArrayList<String> cards, int sizeOfDrawPile, int bombs) {
-        showMessage("Your turn");
+    public void printHand(ArrayList<String> cards, int sizeOfDrawPile, int bombs, int turns) {
+        showMessage("\nYour turn");
+        showMessage("You have to make " + turns + " turns");
         showMessage("Cards left in pile: " + sizeOfDrawPile);
         showMessage("Exploding Kittens left: " + bombs + "\n");
         cardsInHandAnimation(cards);

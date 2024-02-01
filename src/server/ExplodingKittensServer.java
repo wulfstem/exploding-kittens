@@ -17,9 +17,9 @@ public class ExplodingKittensServer implements Server {
     private ServerSocket serverSocket;
     private ServerController controller;
 
-    public ExplodingKittensServer(int numberOfClients, int port, ServerController controller){
+    public ExplodingKittensServer(int numberOfPlayers, int port, ServerController controller){
         this.port = port;
-        this.numberOfClients = numberOfClients;
+        this.numberOfClients = numberOfPlayers;
         this.controller = controller;
         this.usernames = new ArrayList<>();
     }
@@ -70,7 +70,7 @@ public class ExplodingKittensServer implements Server {
                 return;
             }
         }
-        controller.createGame(new Game(numberOfClients, usernames));
+        controller.createGame(new Game(numberOfClients + 1, usernames, controller.getComputerPlayer()));
         broadcastMessage(ServerAction.GS.command);
     }
 

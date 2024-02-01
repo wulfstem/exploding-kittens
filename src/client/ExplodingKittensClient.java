@@ -44,14 +44,33 @@ public class ExplodingKittensClient implements Client{
                 break;
             case "NOPE":
                 controller.askNope(inputs[1], inputs[2]);
+                break;
             case "ELIMINATE_CLIENT":
 
+                break;
+            case "CANCELLED":
+                controller.cardCancelled();
+                break;
+            case "DEATH":
+                controller.announceDeath(inputs[1]);
                 break;
             case "END_GAME":
 
                 break;
             case "ANNOUNCE_WINNER":
 
+                break;
+            case "INDICATE_PLAYER":
+                controller.playerChoice();
+                break;
+            case "FAVOR":
+                controller.cardToGiveUp(inputs[1]);
+                break;
+            case "MATCH":
+                controller.matchCard();
+                break;
+            case "FUTURE":
+                controller.showFuture(inputs[1]);
                 break;
             case "SEND_DECISION":
                 controller.makeDecision();

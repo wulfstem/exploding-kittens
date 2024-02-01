@@ -3,13 +3,10 @@ package client;
 import client.view.ClientTUI;
 import exploding_kittens.model.BackInputException;
 import exploding_kittens.model.BooleanReturnException;
-import exploding_kittens.model.Card;
-import exploding_kittens.view.PlayerTUI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 public class ClientController{
 
@@ -24,10 +21,11 @@ public class ClientController{
     private boolean isCurrent;
     private int numberOfPlayers;
     private HashMap<String, Integer> infoOtherPlayers;
-    private boolean ready;
+    private int playerIndex;
+    private int turns;
+    private String playedRegular;
 
     public ClientController(String serverAddress, int port){
-        ready = false;
         alivePlayers = new ArrayList<>();
         isCurrent = false;
         cardsInHand = new ArrayList<>();
@@ -57,36 +55,58 @@ public class ClientController{
         }
     }
 
+    public void showFuture(String cards){
+        tui.showMessage("The next cards in the draw pile are:");
+        String[] splitUp = cards.split(",");
+        for (int i = 0; i < splitUp.length; i++){
+            tui.showMessage(splitUp[i]);
+        }
+    }
+
+    public void matchCard(){
+        int result = 0;
+        tui.showMessage("Choose a duplicate card in your hand:");
+        boolean valid = false;
+        while(!valid){
+            valid = true;
+            result = tui.getCardChoice(playedRegular, cardsInHand);
+            if (result == -10){
+                tui.showMessage("You cannot go back on this decision.");
+                valid = false;
+            }
+        }
+        client.sendMessage("MATCH|" + result);
+    }
+
     public void handleGameState(String gameState){
         String[] splitUp = gameState.split("\\|");
-        this.numberOfPlayers = Integer.parseInt(splitUp[1]);
-        String[] info = splitUp[2].split(",");
+        this.playerIndex = Integer.parseInt(splitUp[1]);
+        this.turns = Integer.parseInt(splitUp[2]);
+        this.numberOfPlayers = Integer.parseInt(splitUp[3]);
+        String[] info = splitUp[4].split(",");
         alivePlayers = new ArrayList<>();
         for (int i = 0; i < (numberOfPlayers + numberOfPlayers); i += 2){
             alivePlayers.add(info[i]);
             infoOtherPlayers.put(info[i], Integer.parseInt(info[i+1]));
         }
-        this.current = splitUp[3];
+        this.current = splitUp[5];
         this.isCurrent = (current.equals(username));
-        this.sizeOfDrawPile = Integer.parseInt(splitUp[4]);
-        String[] cards = splitUp[5].split(",");
+        this.sizeOfDrawPile = Integer.parseInt(splitUp[6]);
+        String[] cards = splitUp[7].split(",");
         this.cardsInHand = new ArrayList<>();
         this.cardsInHand.addAll(Arrays.asList(cards));
         StringBuilder result = new StringBuilder();
         result.append("\nAlive players: ");
         for (int i = 0; i < alivePlayers.size(); i++){
             if(i == alivePlayers.size() - 1){
-                result.append(alivePlayers.get(i)).append("\n");
+                result.append("(index ").append(i).append(") ").append(alivePlayers.get(i)).append(" with ").append(infoOtherPlayers.get(alivePlayers.get(i))).append(" cards").append("\n");
             }
             else{
-                result.append(alivePlayers.get(i)).append(", ");
+                result.append("(index ").append(i).append(") ").append(alivePlayers.get(i)).append(" with ").append(infoOtherPlayers.get(alivePlayers.get(i))).append(" cards").append(", ");
             }
         }
         tui.showMessage(String.valueOf(result));
-        if (isCurrent){
-            yourTurn();
-        }
-        else{
+        if (!isCurrent){
             tui.showMessage("Player " + current + " is making his/her turn.");
         }
     }
@@ -97,9 +117,55 @@ public class ClientController{
         endTurn();
     }
 
+    public void playerChoice(){
+        int index = 0;
+        boolean goBack = true;
+        while(goBack){
+            goBack = false;
+            tui.showMessage("Which player? (index of other player)");
+            index = tui.readInputInt();
+            if (index == -10 || index == -1) {
+                tui.showMessage("You cannot go back on this decision.");
+                goBack = true;
+            }
+            if (index == playerIndex){
+                boolean valid = false;
+                while(!valid){
+                    tui.showMessage("You cannot pick yourself. Which player? (index of other player)");
+                    index = tui.readInputInt();
+                    if(index != playerIndex){
+                        valid = true;
+                    }
+                }
+            }
+        }
+        client.sendMessage("TARGET|" + index);
+    }
+
+    public void cardToGiveUp(String thief){
+        int result = 0;
+        tui.printHand(cardsInHand, sizeOfDrawPile, numberOfPlayers - 1, turns);
+        tui.showMessage("Choose a card to give as a favor to player " + thief + ":");
+        boolean goBack = true;
+        while(goBack){
+            goBack = false;
+            result = tui.readInputInt();
+            if (result == -10 || result == -1){
+                tui.showMessage("You cannot back out of this.");
+                goBack = true;
+            }
+            if (result < 0 || result >= cardsInHand.size()){
+                tui.showMessage("Invalid input. Chose a card to give as a favor:");
+                goBack = true;
+            }
+        }
+        client.sendMessage("FAVOR|" + result);
+        cardsInHand.remove(result);
+    }
+
     public void askNope(String player, String card){
         tui.showMessage(player + " is playing " + card);
-        tui.printHand(cardsInHand, sizeOfDrawPile, numberOfPlayers - 1);
+        tui.printHand(cardsInHand, sizeOfDrawPile, numberOfPlayers - 1, turns);
         boolean answer;
         while(true){
             tui.showMessage("Do you want to use your NOPE card?");
@@ -119,11 +185,15 @@ public class ClientController{
         }
     }
 
+    public void cardCancelled(){
+        tui.showMessage("Your card has been cancelled.");
+    }
+
     public void checkForDefuse(String sym){
         if (sym.equals("T")) {
             tui.showMessage("You have drawn an Exploding Kitten!");
             cardsInHand.add("BOMB");
-            tui.printHand(cardsInHand, sizeOfDrawPile - 1, numberOfPlayers - 2);
+            tui.printHand(cardsInHand, sizeOfDrawPile - 1, numberOfPlayers - 2, turns);
             boolean invalid = true;
             boolean answer = false;
             while (invalid) {
@@ -157,21 +227,25 @@ public class ClientController{
             }
         }
         else{
+            tui.showMessage("You have drawn an Exploding Kitten!");
             System.out.println("Better luck next time Champ!");
             //close client
         }
         endTurn();
     }
 
-    public void yourTurn(){
-        tui.printHand(cardsInHand, sizeOfDrawPile, (alivePlayers.size() - 1));
+    public void announceDeath(String name){
+        tui.showMessage("Player " + name + " has exploded!");
+        alivePlayers.remove(name);
     }
+
     public void endTurn(){
         tui.showMessage("Your turn is over.");
         tui.showMessage("---------------------------------------------------------------------------------------------------------------------\n");
     }
 
     public void makeDecision(){
+        tui.printHand(cardsInHand, sizeOfDrawPile, numberOfPlayers-1, turns);
         boolean result = false;
         boolean goBack = true;
         while(goBack){
@@ -186,8 +260,12 @@ public class ClientController{
         }
         if (result){
             int index = whichCardIsBeingPlayed();
+            if(cardsInHand.get(index).equals("Beard Cat") || cardsInHand.get(index).equals("Cattermelon") ||  cardsInHand.get(index).equals("Hairy Potato Cat") || cardsInHand.get(index).equals("Rainbow-Ralphing Cat") || cardsInHand.get(index).equals("Tacocat")){
+                playedRegular = cardsInHand.get(index);
+            }
             System.out.println("Decision yes about to be sent");
             client.sendMessage(Client.Command.PC.command + "|" + cardsInHand.get(index) + index);
+            cardsInHand.remove(index);
         }
         else{
             System.out.println("Decision no about to be sent");

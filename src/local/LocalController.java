@@ -148,6 +148,13 @@ public class LocalController implements Controller {
         if (temp.getCardType().equals(Card.cardType.BOMB)) {
             bombDrawn(player, temp);
         }
+        if (game.getTurns() == 1 && game.getCurrent() == player.getPositionIndex()) {
+            if (player.getPositionIndex() == (game.getPlayers().size() - 1)) {
+                game.setCurrent(0);
+            } else {
+                game.setCurrent((game.getCurrent() + 1));
+            }
+        }
         if (game.getTurns() != 1){
             game.setTurns(game.getTurns() - 1);
         }
@@ -307,6 +314,11 @@ public class LocalController implements Controller {
     }
 
     @Override
+    public void announceDeath(Player player) {
+        //Not used in local gameplay
+    }
+
+    @Override
     public void startGame() {
         //Not used in local gameplay
     }
@@ -314,7 +326,8 @@ public class LocalController implements Controller {
     public static void main (String[] args){
         System.out.println( "\nWelcome to Exploding Kittens!" );
         int numberOfPlayers = Integer.parseInt(args[0]);
+        boolean computerPlayer = (Integer.parseInt(args[1]) == 1);
         ArrayList<String> nicknames = new ArrayList<>(Arrays.asList(args).subList(1, numberOfPlayers + 1));
-        new LocalController(new Game(numberOfPlayers, nicknames), new LocalPlayerTUI());
+        new LocalController(new Game(numberOfPlayers, nicknames, computerPlayer), new LocalPlayerTUI());
     }
 }
