@@ -78,6 +78,11 @@ public class ClientController{
         client.sendMessage("MATCH|" + result);
     }
 
+    public void announceVictory(String line){
+        tui.showMessage(line);
+        client.closeClient();
+    }
+
     public void handleGameState(String gameState){
         String[] splitUp = gameState.split("\\|");
         this.playerIndex = Integer.parseInt(splitUp[1]);

@@ -2,6 +2,7 @@ package server;
 
 import exploding_kittens.Controller;
 import exploding_kittens.model.*;
+import server.chat.ClientHandler;
 
 import java.util.ArrayList;
 
@@ -83,7 +84,6 @@ public class ServerController implements Controller {
                 }
                 System.out.println(playerOfNope.getPlayerName() + " is playing NOPE");
                 playerOfNope.getPlayerHand().getCardsInHand().remove(nopeCard);
-                // IMPLEMENT SO THAT EVERYONE KNOWS WHO CANCELLED AND ETC.
                 if(validateMove(nopeCard, playerOfNope)){
                     return false;
                 }
@@ -323,7 +323,7 @@ public class ServerController implements Controller {
 
     @Override
     public void declareWinner(Player player) {
-        server.broadcastMessage("Player " + player.getPlayerName() + " has won the game!");
+        server.broadcastMessage("VICTORY|Player " + player.getPlayerName() + " has won the game!");
         for (ClientHandler clientHandler: clientHandlers){
             clientHandler.closeResources();
         }
@@ -434,6 +434,14 @@ public class ServerController implements Controller {
                 if (player.getPlayerName().equals(clientHandler.getPlayerName())){
                     clientHandler.setPlayerIndex(game.getPlayers().indexOf(player));
                 }
+            }
+        }
+    }
+
+    public void disconnection(String playerName){
+        for (Player player: game.getPlayers()){
+            if(player.getPlayerName().equals(playerName)){
+                player.die();
             }
         }
     }

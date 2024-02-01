@@ -8,6 +8,7 @@ import java.util.Random;
 
 /**
  * Class creating the game environment, responsible for game logic, computations in-game and back-end processes.
+ * This class represents the core of the Exploding Kittens game.
  * @author Ervinas Vilkaitis and Ugnius Tulaba.
  */
 
@@ -27,8 +28,11 @@ public class Game {
     private boolean isAttack;
 
     /**
-     * Class constructor
-     * @param numberOfPlayers the number of players playing a game, not including the computer player.
+     * Class constructor.
+     *
+     * @param numberOfPlayers the number of players playing a game, including the computer player.
+     * @param nicknames an ArrayList containing names that will be given to each created player accordingly.
+     * @param computerPlayer is true if one of the players is a computer player, is false if game should have no computer players.
      */
     public Game(int numberOfPlayers, ArrayList<String> nicknames, boolean computerPlayer) {
         this.numberOfPlayers = numberOfPlayers;
@@ -95,6 +99,7 @@ public class Game {
         setCurrent(selectRandomly(getPlayers().size()));
         turns = 1;
     }
+
     /**
      * Starts first turn by letting a randomly chosen player start and runs the whole game until there is a winner.
      */
@@ -125,68 +130,146 @@ public class Game {
         return randomly.nextInt(size);
     }
 
+    /**
+     * Checks if there is a winner in the game.
+     *
+     * @return true if there is only one player remaining, false otherwise.
+     */
     public boolean hasWinner(){
         return getPlayers().size() == 1;
     }
 
+    /**
+     * Returns the list of player instances.
+     *
+     * @return ArrayList containing player instances.
+     */
     public ArrayList<Player> getPlayers() {
         return players;
     }
 
+    /**
+     * Returns the number of players in the game.
+     *
+     * @return the number of players.
+     */
     public int getNumberOfPlayers() {
         return numberOfPlayers;
     }
 
+    /**
+     * Checks if a computer player is present in the game.
+     *
+     * @return true if a computer player is present, false otherwise.
+     */
     public boolean isComputerPlayer() {
         return computerPlayer;
     }
 
+    /**
+     * Returns the game's deck instance.
+     *
+     * @return the deck instance.
+     */
     public Deck getDeck() {
         return deck;
     }
 
+    /**
+     * Returns the current player's index.
+     *
+     * @return the current player's index.
+     */
     public int getCurrent() {
         return current;
     }
 
+    /**
+     * Sets the current player's index.
+     *
+     * @param current the current player's index to set.
+     */
     public void setCurrent(int current){
         this.current = current;
     }
 
+    /**
+     * Returns the current turn number.
+     *
+     * @return the current turn number.
+     */
     public int getTurns() {
         return turns;
     }
 
+    /**
+     * Sets the current turn number.
+     *
+     * @param turns the current turn number to set.
+     */
     public void setTurns(int turns) {
         this.turns = turns;
     }
 
+    /**
+     * Sets the list of player instances.
+     *
+     * @param players ArrayList containing player instances.
+     */
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
     }
 
+    /**
+     * Updates the positions of players in the game.
+     */
     public void updatePlayersPositions(){
         for (int i = 0; i < getPlayers().size(); i++){
             getPlayers().get(i).setPositionIndex(i);
         }
     }
 
+    /**
+     * Sets the controller for the game.
+     *
+     * @param controller the controller to set.
+     */
     public void setController(Controller controller){
         this.controller = controller;
     }
 
+    /**
+     * Returns the current turn counter.
+     *
+     * @return the current turn counter.
+     */
     public int getTurnCounter(){
         return turnCounter;
     }
 
+    /**
+     * Sets the current turn counter.
+     *
+     * @param number the current turn counter to set.
+     */
     public void setTurnCounter(int number){
         this.turnCounter = number;
     }
 
+    /**
+     * Checks if an attack is currently ongoing.
+     *
+     * @return true if there is an attack in progress, false otherwise.
+     */
     public boolean isAttack() {
         return isAttack;
     }
 
+    /**
+     * Sets the attack status.
+     *
+     * @param attack true to indicate an ongoing attack, false otherwise.
+     */
     public void setAttack(boolean attack) {
         isAttack = attack;
     }
