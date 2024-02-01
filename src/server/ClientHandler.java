@@ -1,4 +1,4 @@
-package server.chat;
+package server;
 
 import server.ServerController;
 

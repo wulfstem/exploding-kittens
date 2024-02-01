@@ -2,7 +2,6 @@ package server;
 
 import exploding_kittens.Controller;
 import exploding_kittens.model.*;
-import server.chat.ClientHandler;
 
 import java.util.ArrayList;
 
@@ -35,6 +34,7 @@ public class ServerController implements Controller {
         }
         this.clientHandlers = new ArrayList<>();
         server.establishConnections();
+        System.out.println(server);
     }
 
     @Override
@@ -458,10 +458,9 @@ public class ServerController implements Controller {
     public static void main (String[] args){
         System.out.println( "\nWelcome to Exploding Kittens!" );
 
-        int port = 6744;
-
         int numberOfPlayers = Integer.parseInt(args[0]);
         boolean computerPlayer = (Integer.parseInt(args[1]) == 1);
+        int port = Integer.parseInt(args[2]);
         new ServerController(numberOfPlayers, port, computerPlayer);
     }
 }

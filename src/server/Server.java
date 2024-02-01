@@ -1,7 +1,6 @@
 package server;
 
 import exploding_kittens.model.Card;
-import server.chat.ClientHandler;
 
 // methods for server side operations
 public interface Server {

@@ -1,92 +1,120 @@
 # ExplodingKittens61
 
+Hello from Team 61, Ervinas and Ugnius! We hope that you will have a smooth setup of Exploding Kittens and find this guide useful.
 
+---
 
-## Getting started
+## What can be found where?
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Our project is divided into 4 main directories, with the fifth one consisting of our few tests:
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- `client`
+- `exploding_kittens`
+- `local`
+- `server`
+- `tests`
 
-## Add your files
+**CLIENT:**
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+Includes all classes related to playing a game of Exploding Kittens through a network from the client's side. It has:
 
-```
-cd existing_repo
-git remote add origin https://gitlab.utwente.nl/s3251942/explodingkittens61.git
-git branch -M main
-git push -uf origin main
-```
+- `ExplodingKittensClient` - Direct connection to the server and is responsible for managing it.
+- `ClientController` - The main brains of a client, initializes through its main method to start a client.
+- Extra subclasses of `ClientController` for concurrent play with multiple players (clients).
+- `ClientTUI` - Responsible for textual user interface and receiving input from the user directly.
 
-## Integrate with your tools
+**EXPLODING_KITTENS:**
 
-- [ ] [Set up project integrations](https://gitlab.utwente.nl/s3251942/explodingkittens61/-/settings/integrations)
+Includes the basic game logic and all the resources used by different Controllers to run an Exploding Kittens game. It has:
 
-## Collaborate with your team
+- Interfaces for `PlayerTUI` and `Controller`.
+- Classes for game functionality, including custom Exception classes, `Card` class and its subclasses, `Player` class and its subclass `Computer`, `Game` class, `Deck` class, and `Hand` class.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+**LOCAL:**
 
-## tests.Test and Deploy
+Includes `LocalController` class, which is the control panel for running a game of Exploding Kittens locally (on the same terminal). It is a subclass of `Controller` and is adapted to work with the basic game logic from the `exploding_kittens` directory. This directory also includes `LocalPlayerTUI`, responsible for communication with the players.
 
-Use the built-in continuous integration in GitLab.
+**SERVER:**
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+Includes:
 
-***
+- `ServerTUI` - Responsible for any output shown on the server console.
+- `ExplodingKittensServer` - Initializes and accepts server connections, creating new threads to handle separate clients (players) through `ClientHandler`.
+- `ServerController` - The brains of hosting the server, starting the game, following the basic game logic, and controlling communication with different clients and taking their requests.
 
-# Editing this README
+**Chat functionality:** Our game includes the ability to chat among clients during gameplay, with a separate server called `ChatServer` and `ChatClientHandler` in the server's subdirectory `chat`. The client directory contains a subdirectory `chat`, where `ChatClient` class and its subclasses are located and should be run through their main methods to start the chat.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+---
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+## How to start a game
 
-## Name
-Choose a self-explaining name for your project.
+### 1. Local gameplay
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+To play a game locally:
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+1. Right-click on the `LocalController` class.
+2. Go to "More Run/Debug" and then to "Modify run configuration...".
+3. In the "Program arguments" field, type the arguments following this template: `<number of players> <'1' if one of the players is a computer player and '0' if not> <namePlayer1> <namePlayer2> <namePlayer3>`.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+	- Example: `3 1 Ervinas Matas` (game of 2 players with names Ervinas and Matas, and the third player is a computer player).
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+	- Be aware of the following rules for program arguments:
+		- `<number of players>`: The total number of players, should be between 2 and 5.
+		- `<'1' if one of the players is a computer player and '0' if not>`: 1 if one of the players is a computer player, 0 if not.
+		- `<namePlayer1> <namePlayer2> <namePlayer3>`: Names of the players, separated by spaces.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+4. Press "Apply" and "Okay".
+5. Right-click the `LocalController` class and press "Run LocalController.main()".
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### 2. Network gameplay
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+To play a game through a network:
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+1. Start a server:
+	- Right-click on the `ServerController` class.
+	- Go to "More Run/Debug" and then to "Modify run configuration...".
+	- In the "Program arguments" field, type the arguments following this template: `<number of players> <'1' if one of the players is a computer player and '0' if not> <port number>`.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+		- Example: `3 1 6744` (game of two players who will be connected through network on port 6744, and one local computer player).
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+		- Be aware of the following rules for program arguments:
+			- `<number of players>`: The total number of players, should be between 2 and 5.
+			- `<'1' if one of the players is a computer player and '0' if not>`: 1 if one of the players is a computer player, 0 if not.
+			- `<port number>`: A valid port number for the server.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+2. Press "Apply" and "Okay".
+3. Right-click the `ServerController` class and press "Run ServerController.main()".
 
-## License
-For open source projects, say how it is licensed.
+3. Modify the program arguments for the `ClientController` class:
+	- In the "Program arguments" field, type the arguments following this template: `<serverAddress> <portNumber>`.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+		- Example: `localhost 6744` (client is connecting to server with the address "localhost" on port 6744).
+
+	- Be aware of the following rules for program arguments:
+		- `<serverAddress>`: The address of the server.
+		- `<portNumber>`: The port number to connect to.
+
+4. Run the `ClientController` class.
+5. Type in your nickname.
+6. Repeat the process for each client/player you want to connect `Client2Controller`, `Client3Controller`, etc...
+
+### Chat functionality
+
+To use the chat functionality:
+
+1. Run `ChatServer` class with program arguments being only the valid port number.
+	- Examples: `6283`, `5422`.
+
+2. After running `ChatServer`, each player(client) can initialize their `ChatClient` classes with program arguments `<serverAddress> <portNumber>` (similar to the program arguments in `ClientController` class). Then run `ChatClient.main()` for each client `Chat2Client.main()`, `Chat3Client.main()` etc...
+3. Type in your nickname and start chatting with other clients connected to the chat server.
+
+---
+
+## References
+
+Authors:
+
+- Ervinas Vilkaitis | e.vilkaitis@student.utwente.nl
+- Ugnius Tulaba | u.tulaba@student.utwente.nl
+
+---

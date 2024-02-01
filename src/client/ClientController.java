@@ -292,8 +292,8 @@ public class ClientController{
     }
 
     public static void main(String[] args) {
-        String serverAddress = "localhost"; // Replace with the actual server address
-        int serverPort = 6744;
+        String serverAddress = args[0];
+        int serverPort = Integer.parseInt(args[1]);
         new ClientController(serverAddress, serverPort);
     }
 }

@@ -6,8 +6,7 @@ import java.io.*;
 import java.net.*;
 
 public class ChatClient {
-    private static final String SERVER_ADDRESS = "localhost";
-    private static final int SERVER_PORT = 4667;
+
     private static String username;
 
     public ChatClient(){
@@ -59,7 +58,7 @@ public class ChatClient {
         new ChatClient();
 
         try {
-            Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+            Socket socket = new Socket(args[0], Integer.parseInt(args[1]));
             BufferedReader serverReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter clientWriter = new PrintWriter(socket.getOutputStream(), true);
 

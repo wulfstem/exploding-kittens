@@ -5,12 +5,11 @@ import java.net.*;
 import java.util.*;
 
 public class ChatServer {
-    private static final int PORT = 4667;
     private static Set<PrintWriter> clientWriters = new HashSet<>();
 
     public static void main(String[] args) {
         System.out.println("Chat Server is running...");
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+        try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[0]))) {
             while (true) {
                 new ClientHandler(serverSocket.accept()).start();
             }

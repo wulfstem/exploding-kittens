@@ -3,7 +3,7 @@ package exploding_kittens;
 import exploding_kittens.model.Card;
 import exploding_kittens.model.Game;
 import exploding_kittens.model.Player;
-import server.chat.ClientHandler;
+import server.ClientHandler;
 import server.ExplodingKittensServer;
 
 import java.util.ArrayList;

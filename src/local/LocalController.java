@@ -3,7 +3,7 @@ package local;
 import exploding_kittens.Controller;
 import exploding_kittens.model.*;
 import local.view.LocalPlayerTUI;
-import server.chat.ClientHandler;
+import server.ClientHandler;
 import server.ExplodingKittensServer;
 
 import java.util.ArrayList;
@@ -329,7 +329,7 @@ public class LocalController implements Controller {
         System.out.println( "\nWelcome to Exploding Kittens!" );
         int numberOfPlayers = Integer.parseInt(args[0]);
         boolean computerPlayer = (Integer.parseInt(args[1]) == 1);
-        ArrayList<String> nicknames = new ArrayList<>(Arrays.asList(args).subList(1, numberOfPlayers + 1));
+        ArrayList<String> nicknames = new ArrayList<>(Arrays.asList(args).subList(2, numberOfPlayers + 1));
         new LocalController(new Game(numberOfPlayers, nicknames, computerPlayer), new LocalPlayerTUI());
     }
 }
