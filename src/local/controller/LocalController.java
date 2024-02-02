@@ -1,4 +1,4 @@
-package local;
+package local.controller;
 
 import exploding_kittens.Controller;
 import exploding_kittens.model.*;

@@ -14,6 +14,7 @@ public class ChatClient {
         askForUsername();
     }
 
+    // Used to ask client for username to be represented as in the chat
     public void askForUsername(){
         boolean valid = false;
         while(!valid){
@@ -35,6 +36,7 @@ public class ChatClient {
         }
     }
 
+    // Reads String input from console
     public String readInputString() throws BackInputException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String line;

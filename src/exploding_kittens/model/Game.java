@@ -108,6 +108,7 @@ public class Game {
         turnCounter++;
         while(!hasWinner()){
             updatePlayersPositions();
+            reCheckBombs();
             controller.doTurn(players.get(current), turns);
         }
         controller.declareWinner(getPlayers().get(0));
@@ -272,5 +273,16 @@ public class Game {
      */
     public void setAttack(boolean attack) {
         isAttack = attack;
+    }
+
+    public void reCheckBombs(){
+        if (numberOfPlayers != deck.getNumberOfActiveBombs() - 1){
+            for (Card card: deck.getDrawPile()){
+                if (card.getCardType().equals(Card.cardType.BOMB)){
+                    deck.getDrawPile().remove(card);
+                    return;
+                }
+            }
+        }
     }
 }

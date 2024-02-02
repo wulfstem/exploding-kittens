@@ -1,5 +1,7 @@
-package client;
+package client.controller;
 
+import client.Client;
+import client.ExplodingKittensClient;
 import client.view.ClientTUI;
 import exploding_kittens.model.BackInputException;
 import exploding_kittens.model.BooleanReturnException;
@@ -76,6 +78,8 @@ public class ClientController{
             }
         }
         client.sendMessage("MATCH|" + result);
+        cardsInHand.remove(result);
+        cardsInHand.remove(playedRegular);
     }
 
     public void announceVictory(String line){
@@ -270,7 +274,9 @@ public class ClientController{
             }
             System.out.println("Decision yes about to be sent");
             client.sendMessage(Client.Command.PC.command + "|" + cardsInHand.get(index) + index);
-            cardsInHand.remove(index);
+            if(!(cardsInHand.get(index).equals("Beard Cat") || cardsInHand.get(index).equals("Cattermelon") ||  cardsInHand.get(index).equals("Hairy Potato Cat") || cardsInHand.get(index).equals("Rainbow-Ralphing Cat") || cardsInHand.get(index).equals("Tacocat"))){
+                cardsInHand.remove(index);
+            }
         }
         else{
             System.out.println("Decision no about to be sent");

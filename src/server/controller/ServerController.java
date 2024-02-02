@@ -1,7 +1,10 @@
-package server;
+package server.controller;
 
 import exploding_kittens.Controller;
 import exploding_kittens.model.*;
+import server.ClientHandler;
+import server.ExplodingKittensServer;
+import server.Server;
 
 import java.util.ArrayList;
 
@@ -21,6 +24,7 @@ public class ServerController implements Controller {
     private  int expectedNopeAnswer;
     private Game game;
     private int readyCounter;
+    private boolean deathThisTurn;
 
     public ServerController(int numberOfPlayers, int port, boolean computerPlayer) {
         this.computerPlayer = computerPlayer;
@@ -66,6 +70,9 @@ public class ServerController implements Controller {
                 }
             }
             while(nopeAnswerCounter != expectedNopeAnswer){
+                if(deathThisTurn){
+                    break;
+                }
                 System.out.println(indexOfPlayerPlayingNope);
                 try {
                     wait(1000);
@@ -103,6 +110,7 @@ public class ServerController implements Controller {
 
     @Override
     public void announceDeath(Player player){
+        deathThisTurn = true;
         server.broadcastMessage("DEATH|" + player.getPlayerName());
     }
 
@@ -137,6 +145,9 @@ public class ServerController implements Controller {
         if (player.handContains(Card.cardType.DEFUSE)){
             getCurrentClientHandler().sendMessage("DIFFUSE_CHECK|T");
             while(defuseIndex == -1){
+                if(deathThisTurn){
+                    break;
+                }
                 System.out.println(defuseIndex);
                 try {
                     wait(1000);
@@ -147,7 +158,6 @@ public class ServerController implements Controller {
             System.out.println(defuseIndex);
             if (defuseIndex == -10){
                 player.die();
-                getCurrentClientHandler().closeResources();
             }
             else{
                 player.getPlayerHand().remove(bomb);
@@ -165,7 +175,6 @@ public class ServerController implements Controller {
         else{
             getCurrentClientHandler().sendMessage("DIFFUSE_CHECK|F");
             player.die();
-            getCurrentClientHandler().closeResources();
         }
     }
 
@@ -247,6 +256,9 @@ public class ServerController implements Controller {
         }
         matchingCard = -1;
         while(matchingCard == -1){
+            if(deathThisTurn){
+                break;
+            }
             try {
                 wait(1000);
             } catch (InterruptedException e) {
@@ -262,6 +274,9 @@ public class ServerController implements Controller {
         getCurrentClientHandler().sendMessage("INDICATE_PLAYER");
 
         while(targetPlayer == -1){
+            if(deathThisTurn){
+                break;
+            }
             System.out.println(targetPlayer);
             try {
                 wait(1000);
@@ -277,6 +292,9 @@ public class ServerController implements Controller {
         draw = -1;
         getCurrentClientHandler().sendMessage("SEND_DECISION");
         while(draw == -1){
+            if(deathThisTurn){
+                break;
+            }
             System.out.println(draw);
             try {
                 wait(1000);
@@ -299,6 +317,7 @@ public class ServerController implements Controller {
 
     @Override
     public void doTurn(Player player, int turns) {
+        deathThisTurn = false;
         updateHandlersIndex();
         for (ClientHandler clientHandler: clientHandlers){
             getGameState(clientHandler);
@@ -316,6 +335,9 @@ public class ServerController implements Controller {
                 }
             }
             if (game.isAttack()){
+                break;
+            }
+            if(deathThisTurn){
                 break;
             }
         }
@@ -442,6 +464,7 @@ public class ServerController implements Controller {
         for (Player player: game.getPlayers()){
             if(player.getPlayerName().equals(playerName)){
                 player.die();
+                return;
             }
         }
     }

@@ -2,6 +2,7 @@ package server;
 
 import exploding_kittens.model.Card;
 import exploding_kittens.model.Game;
+import server.controller.ServerController;
 
 import java.io.IOException;
 import java.net.ServerSocket;

@@ -9,6 +9,7 @@ public class FavorCard extends Card{
 
     @Override
     public void action(Player thief) {
+        // Asks a different player to give up one of his cards
         int index = 0;
         if (thief instanceof Computer){
             boolean valid = false;

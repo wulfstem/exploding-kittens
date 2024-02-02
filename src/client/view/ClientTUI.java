@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 public class ClientTUI{
 
+    // Prints text to the console
     public synchronized void showMessage(String text) {
         System.out.println(text);
     }
@@ -34,6 +35,7 @@ public class ClientTUI{
         }
     }
 
+    // Reads input integer and returns -1 or -10 if input is invalid to be handled with
     public int readInputInt() {
         String line;
         try {
@@ -49,6 +51,7 @@ public class ClientTUI{
         }
     }
 
+    // Asks a player to choose a card of any type, except if it is DEFUSE or NOPE, which cannot be played by themselves
     public int getAnyCardChoice(ArrayList<String> cardsInHand) {
         boolean isIndexValid = false;
         int input2 = 0;
@@ -75,6 +78,7 @@ public class ClientTUI{
         return input2;
     }
 
+    // Asks a player to give index of the card of a specific required type
     public int getCardChoice(String type, ArrayList<String> cards) {
         boolean isIndexValid = false;
         int input2 = 0;
@@ -101,6 +105,7 @@ public class ClientTUI{
         return input2;
     }
 
+    // Reads input boolean and also includes handling input 'b' if the player wants to go back on his decision
     public boolean readInputBoolean() throws BooleanReturnException {
         boolean invalid = true;
         while(invalid){
@@ -124,6 +129,7 @@ public class ClientTUI{
         return false;
     }
 
+    // prints the hand of a player
     public void printHand(ArrayList<String> cards, int sizeOfDrawPile, int bombs, int turns) {
         showMessage("\nYour turn");
         showMessage("You have to make " + turns + " turns");
@@ -133,6 +139,7 @@ public class ClientTUI{
         showMessage("");
     }
 
+    // Custom animation that presents the cards nicely
     public void cardsInHandAnimation(ArrayList<String> cards){
         for (int i = 0; i < cards.size(); i++){
             System.out.print("|--------------------|    ");
