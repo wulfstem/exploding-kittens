@@ -39,7 +39,7 @@ public class Game {
         this.computerPlayer = computerPlayer;
         this.nicknames = nicknames;
         this.players = new ArrayList<>();
-        turnCounter = 1;
+        turnCounter = 0;
         setAttack(false);
     }
 
@@ -97,7 +97,7 @@ public class Game {
         createHands();
         shuffle();
         setCurrent(selectRandomly(getPlayers().size()));
-        turns = 1;
+        turns = 0;
     }
 
     /**
