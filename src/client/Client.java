@@ -12,7 +12,7 @@ public interface Client {
         ET("DO_MOVE|END_TURN", "End the current turn"),
         RS("REQUEST_GAME_STATE", "Request the current game state");
 
-        final String command;
+        public final String command;
         private final String description;
 
         Command(String command, String description) {

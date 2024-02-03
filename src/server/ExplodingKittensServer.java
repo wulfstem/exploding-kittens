@@ -2,6 +2,7 @@ package server;
 
 import exploding_kittens.model.Card;
 import exploding_kittens.model.Game;
+import server.controller.ServerController;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -69,7 +70,12 @@ public class ExplodingKittensServer implements Server {
                 return;
             }
         }
-        controller.createGame(new Game(numberOfClients + 1, usernames, controller.getComputerPlayer()));
+        if (controller.getComputerPlayer()){
+            controller.createGame(new Game(numberOfClients + 1, usernames, controller.getComputerPlayer()));
+        }
+        else{
+            controller.createGame(new Game(numberOfClients, usernames, controller.getComputerPlayer()));
+        }
         broadcastMessage(ServerAction.GS.command);
     }
 

@@ -83,9 +83,15 @@ public class Player {
      * Removes the player from the game and announces their elimination.
      */
     public void die() {
+        System.out.println("Current player: " + game.getPlayers().get(game.getCurrent()).getPlayerName());
+        game.setTurns(1);
+        if(getPositionIndex() == (game.getPlayers().size() - 1)){
+            game.setCurrent(0);
+        }
         ArrayList<Player> temp = getGame().getPlayers();
         temp.remove(this);
         getGame().setPlayers(temp);
+        System.out.println("Current player: " + game.getPlayers().get(game.getCurrent()).getPlayerName());
         controller.announceDeath(this);
     }
 

@@ -57,6 +57,7 @@ public class Game {
         }
         if (!computerPlayer) {
             for (int i = 0; i < getNumberOfPlayers(); i++) {
+
                 String playerName = nicknames.get(i);
                 players.add(new Player(playerName, this, i, controller));
             }
@@ -82,7 +83,6 @@ public class Game {
      * method creates instances of class <code>Hand</code> and assigns every one of them to a different player.
      */
     public void createHands() {
-        System.out.println("Number of players: " + players.size());
         for (Player p : players) {
             p.setPlayerHand(new Hand(p, deck));
         }
@@ -108,6 +108,7 @@ public class Game {
         turnCounter++;
         while(!hasWinner()){
             updatePlayersPositions();
+            reCheckBombs();
             controller.doTurn(players.get(current), turns);
         }
         controller.declareWinner(getPlayers().get(0));
@@ -272,5 +273,16 @@ public class Game {
      */
     public void setAttack(boolean attack) {
         isAttack = attack;
+    }
+
+    public void reCheckBombs(){
+        if (numberOfPlayers != deck.getNumberOfActiveBombs() - 1){
+            for (Card card: deck.getDrawPile()){
+                if (card.getCardType().equals(Card.cardType.BOMB)){
+                    deck.getDrawPile().remove(card);
+                    return;
+                }
+            }
+        }
     }
 }

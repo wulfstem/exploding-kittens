@@ -1,4 +1,4 @@
-package client;
+package client.controller;
 
 public class Client2Controller extends ClientController{
     public Client2Controller(String serverAddress, int port) {

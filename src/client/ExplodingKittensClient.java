@@ -1,5 +1,7 @@
 package client;
 
+import client.controller.ClientController;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -25,6 +27,7 @@ public class ExplodingKittensClient implements Client{
         new Thread(new ServerMessageHandler()).start();
     }
 
+    // handles all the incoming messages from server and call appropriate Controller methods
     public synchronized void handleServerMessage(String message){
 
         String[] inputs = message.split("\\|");
@@ -44,9 +47,6 @@ public class ExplodingKittensClient implements Client{
                 break;
             case "NOPE":
                 controller.askNope(inputs[1], inputs[2]);
-                break;
-            case "ELIMINATE_CLIENT":
-
                 break;
             case "CANCELLED":
                 controller.cardCancelled();
@@ -75,6 +75,7 @@ public class ExplodingKittensClient implements Client{
         }
     }
 
+    // Closes the client connection
     public void closeClient() {
         try {
             if (socket != null && !socket.isClosed()) {
@@ -86,6 +87,7 @@ public class ExplodingKittensClient implements Client{
         }
     }
 
+    // Establishes connection and input and output streams
     @Override
     public void handshake() {
         try {
@@ -107,6 +109,7 @@ public class ExplodingKittensClient implements Client{
         }
     }
 
+    // Sends a specific command initiating handshake with the server
     @Override
     public void announces(String username) {
         sendMessage(Command.AN.command + "|" + username);
@@ -114,14 +117,15 @@ public class ExplodingKittensClient implements Client{
 
     @Override
     public void doMovePlayCard(String type, String name) {
-
+        // Not used. Functionality is done in ClientController
     }
 
     @Override
     public void doMoveEndTurn() {
-
+        // Not used. Functionality is done in ClientController
     }
 
+    // Sends specific command requesting for game state. Part of handshake
     @Override
     public void requestGameState() {
         sendMessage(Command.RS.command);
