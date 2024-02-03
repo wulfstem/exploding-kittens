@@ -276,7 +276,7 @@ public class Game {
     }
 
     public void reCheckBombs(){
-        if (numberOfPlayers != deck.getNumberOfActiveBombs() - 1){
+        if (numberOfPlayers - 1 != deck.getNumberOfActiveBombs()){
             for (Card card: deck.getDrawPile()){
                 if (card.getCardType().equals(Card.cardType.BOMB)){
                     deck.getDrawPile().remove(card);

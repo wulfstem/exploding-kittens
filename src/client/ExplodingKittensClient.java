@@ -69,6 +69,9 @@ public class ExplodingKittensClient implements Client{
             case "FUTURE":
                 controller.showFuture(inputs[1]);
                 break;
+            case "INFO":
+                controller.provideInfo(inputs[1]);
+                break;
             case "SEND_DECISION":
                 controller.makeDecision();
                 break;
@@ -101,7 +104,7 @@ public class ExplodingKittensClient implements Client{
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
             String serverActive = in.readLine();
-            controller.getTUI().showMessage("Received from server: " + serverActive);
+            //controller.getTUI().showMessage("Received from server: " + serverActive);
 
             announces(controller.getUsername());
         } catch (IOException e) {
@@ -133,7 +136,7 @@ public class ExplodingKittensClient implements Client{
 
     public synchronized void sendMessage(String message){
         try {
-            System.out.println("sending " + message);
+            //System.out.println("sending " + message);
             out.write(message + "\n");
             out.flush();
         } catch (IOException e) {
@@ -147,7 +150,7 @@ public class ExplodingKittensClient implements Client{
             try {
                 String message;
                 while ((message = in.readLine()) != null) {
-                    controller.getTUI().showMessage("Received from server: " + message);
+                    //controller.getTUI().showMessage("Received from server: " + message);
                     handleServerMessage(message);
                 }
             } catch (IOException e) {

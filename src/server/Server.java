@@ -1,6 +1,7 @@
 package server;
 
 import exploding_kittens.model.Card;
+import exploding_kittens.model.Player;
 
 // methods for server side operations
 public interface Server {
@@ -94,6 +95,8 @@ public interface Server {
      * Sends a global message to all clients
      */
     void broadcastMessage(String message);
+
+    void broadcastToOtherPlayers(String message, Player player);
 
     /**
      * Notifies that a new round has started

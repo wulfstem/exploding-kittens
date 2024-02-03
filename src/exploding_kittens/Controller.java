@@ -176,6 +176,19 @@ public interface Controller {
     void getGameState(ClientHandler client);
 
     /**
+     * Returns boolean value which is set to true if the current player has disconnected, false otherwise. (not used in local gameplay).
+     */
+    boolean getDeathThisTurn();
+
+    /**
+     * Informs all other clients about the move that current player is making. (not used in local gameplay).
+     *
+     * @param player The player that is making the move.
+     * @param card The card that is being played.
+     */
+    void informOfPlayerAction(Player player, Card card);
+
+    /**
      * Announces the death of a player (not used in local gameplay).
      *
      * @param player The player who has been eliminated.

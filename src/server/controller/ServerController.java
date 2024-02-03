@@ -38,7 +38,6 @@ public class ServerController implements Controller {
         }
         this.clientHandlers = new ArrayList<>();
         server.establishConnections();
-        System.out.println(server);
     }
 
     @Override
@@ -73,7 +72,6 @@ public class ServerController implements Controller {
                 if(deathThisTurn){
                     break;
                 }
-                System.out.println(indexOfPlayerPlayingNope);
                 try {
                     wait(1000);
                 } catch (InterruptedException e) {
@@ -89,7 +87,6 @@ public class ServerController implements Controller {
                         break;
                     }
                 }
-                System.out.println(playerOfNope.getPlayerName() + " is playing NOPE");
                 playerOfNope.getPlayerHand().getCardsInHand().remove(nopeCard);
                 if(validateMove(nopeCard, playerOfNope)){
                     return false;
@@ -148,14 +145,12 @@ public class ServerController implements Controller {
                 if(deathThisTurn){
                     break;
                 }
-                System.out.println(defuseIndex);
                 try {
                     wait(1000);
                 } catch (InterruptedException e) {
                     System.out.println("Error in wait");
                 }
             }
-            System.out.println(defuseIndex);
             if (defuseIndex == -10){
                 player.die();
             }
@@ -176,6 +171,10 @@ public class ServerController implements Controller {
             getCurrentClientHandler().sendMessage("DIFFUSE_CHECK|F");
             player.die();
         }
+    }
+    @Override
+    public void informOfPlayerAction(Player player, Card card){
+        server.broadcastToOtherPlayers("INFO|" + player.getPlayerName() + " is playing card " + card.getCardName(), player);
     }
 
     @Override
@@ -277,7 +276,6 @@ public class ServerController implements Controller {
             if(deathThisTurn){
                 break;
             }
-            System.out.println(targetPlayer);
             try {
                 wait(1000);
             } catch (InterruptedException e) {
@@ -295,23 +293,19 @@ public class ServerController implements Controller {
             if(deathThisTurn){
                 break;
             }
-            System.out.println(draw);
             try {
                 wait(1000);
             } catch (InterruptedException e) {
                 System.out.println("Error in wait");
             }
         }
-        System.out.println(draw);
         return (draw == 0);
     }
 
     @Override
     public int whichCardIsPlayed() {
         String card = getCurrentClientHandler().getCardBeingPlayed();
-        System.out.println(card + " is being played");
         char lastChar = card.charAt(card.length() - 1);
-        System.out.println(Integer.parseInt(String.valueOf(lastChar)));
         return (Integer.parseInt(String.valueOf(lastChar)));
     }
 
@@ -322,11 +316,9 @@ public class ServerController implements Controller {
         for (ClientHandler clientHandler: clientHandlers){
             getGameState(clientHandler);
         }
-        System.out.println("Starting doTurn for player " + player.getPlayerName() + " with turns: " + turns);
         draw = -1;
         game.setAttack(false);
         for (int i = turns; i > 0; i--){
-            System.out.println("Current player " + game.getPlayers().get(game.getCurrent()).getPlayerName());
             player.makeMove();
             game.setTurnCounter(game.getTurnCounter() + 1);
             if(turns > 1){
@@ -448,6 +440,10 @@ public class ServerController implements Controller {
 
     public boolean getComputerPlayer(){
         return this.computerPlayer;
+    }
+
+    public boolean getDeathThisTurn(){
+        return this.deathThisTurn;
     }
 
     public void updateHandlersIndex(){

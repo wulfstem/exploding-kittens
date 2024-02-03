@@ -44,11 +44,11 @@ public class LocalPlayerTUI implements PlayerTUI {
         showMessage(player.getPlayerName() + " is playing " + card.getCardName());
         printHand(other);
         while(true){
-            showMessage("Do you want to use your NOPE card?");
+            showMessage(other.getPlayerName() + "> Do you want to use your NOPE card?");
             try {
                 return readInputBoolean();
             } catch (BooleanReturnException e) {
-                showMessage("You cannot go back without making this decision.");
+                showMessage(other.getPlayerName() + "> You cannot go back without making this decision.");
             }
         }
     }
@@ -56,7 +56,7 @@ public class LocalPlayerTUI implements PlayerTUI {
     public int getCardChoice(Player player, Card.cardType type){
         boolean isIndexValid = false;
         int input2 = 0;
-        showMessage("Which card? (number between 0 and " + (player.getPlayerHand().getCardsInHand().size() - 1) + ")");
+        showMessage(player.getPlayerName() + "> Which card? (number between 0 and " + (player.getPlayerHand().getCardsInHand().size() - 1) + ")");
         while(!isIndexValid){
             input2 = readInputInt();
             if (input2 == -10){
@@ -66,14 +66,14 @@ public class LocalPlayerTUI implements PlayerTUI {
                 continue;
             }
             if (input2 < 0 || input2 >= player.getPlayerHand().getCardsInHand().size()){
-                showMessage("Invalid index, choose a number between 0 and" + (player.getPlayerHand().getCardsInHand().size() - 1));
+                showMessage(player.getPlayerName() + "> Invalid index, choose a number between 0 and" + (player.getPlayerHand().getCardsInHand().size() - 1));
                 continue;
             }
             if (player.getPlayerHand().getCardsInHand().get(input2).getCardType().equals(type)){
                 return input2;
             }
             else{
-                showMessage("Chosen card is not of type " + type);
+                showMessage(player.getPlayerName() + "> Chosen card is not of type " + type);
             }
         }
         return input2;
@@ -83,23 +83,23 @@ public class LocalPlayerTUI implements PlayerTUI {
         boolean isIndexValid = false;
         int input2 = 0;
         while(!isIndexValid){
-            showMessage("Which card would you like to play? (number between 0 and " + (player.getPlayerHand().getCardsInHand().size() - 1) + ")");
+            showMessage(player.getPlayerName() + "> Which card would you like to play? (number between 0 and " + (player.getPlayerHand().getCardsInHand().size() - 1) + ")");
             input2 = readInputInt();
             if (input2 == -10){
                 return -10;
             }
             if (input2 < 0 || input2 > player.getPlayerHand().getCardsInHand().size()){
-                showMessage("Invalid index, choose a number between 0 and" + (player.getPlayerHand().getCardsInHand().size() - 1));
+                showMessage(player.getPlayerName() + "> Invalid index, choose a number between 0 and" + (player.getPlayerHand().getCardsInHand().size() - 1));
                 continue;
             }
             isIndexValid = true;
         }
         if (player.getPlayerHand().getCardsInHand().get(input2).getCardType().equals(Card.cardType.DEFUSE)){
-            showMessage("Defuse card can only be played when a bomb has been drawn.");
+            showMessage(player.getPlayerName() + "> Defuse card can only be played when a bomb has been drawn.");
             return -1;
         }
         else if(player.getPlayerHand().getCardsInHand().get(input2).getCardType().equals(Card.cardType.NOPE)){
-            showMessage("Nope card cannot be played at the moment.");
+            showMessage(player.getPlayerName() + "> Nope card cannot be played at the moment.");
             return -1;
         }
         return input2;
@@ -125,7 +125,6 @@ public class LocalPlayerTUI implements PlayerTUI {
     public boolean readInputBoolean() throws BooleanReturnException {
         boolean invalid = true;
         while(invalid){
-            invalid = false;
             System.out.println("Write 'y' for yes, and write 'n' for no:");
             String line;
             try{

@@ -2,6 +2,7 @@ package server;
 
 import exploding_kittens.model.Card;
 import exploding_kittens.model.Game;
+import exploding_kittens.model.Player;
 import server.controller.ServerController;
 
 import java.io.IOException;
@@ -121,6 +122,15 @@ public class ExplodingKittensServer implements Server {
     public void broadcastMessage(String message) {
         for (ClientHandler client: controller.getClientHandlers()){
             client.sendMessage(message);
+        }
+    }
+
+    @Override
+    public void broadcastToOtherPlayers(String message, Player player){
+        for (ClientHandler client: controller.getClientHandlers()){
+            if (!client.getPlayerName().equals(player.getPlayerName())){
+                client.sendMessage(message);
+            }
         }
     }
 
