@@ -102,6 +102,7 @@ public class ExplodingKittensServer implements Server {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
                 System.out.println("Server closed.");
+                System.exit(0);
             }
         } catch (IOException e) {
             System.err.println("Error while closing server: " + e.getMessage());
