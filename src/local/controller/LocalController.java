@@ -329,7 +329,7 @@ public class LocalController implements Controller {
         System.out.println( "\nWelcome to Exploding Kittens!" );
         int numberOfPlayers = Integer.parseInt(args[0]);
         boolean computerPlayer = (Integer.parseInt(args[1]) == 1);
-        ArrayList<String> nicknames = new ArrayList<>(Arrays.asList(args).subList(2, numberOfPlayers + 1));
+        ArrayList<String> nicknames = new ArrayList<>(Arrays.asList(args).subList(2, args.length));
         new LocalController(new Game(numberOfPlayers, nicknames, computerPlayer), new LocalPlayerTUI());
     }
 }

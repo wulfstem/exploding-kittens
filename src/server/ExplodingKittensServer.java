@@ -70,7 +70,12 @@ public class ExplodingKittensServer implements Server {
                 return;
             }
         }
-        controller.createGame(new Game(numberOfClients + 1, usernames, controller.getComputerPlayer()));
+        if (controller.getComputerPlayer()){
+            controller.createGame(new Game(numberOfClients + 1, usernames, controller.getComputerPlayer()));
+        }
+        else{
+            controller.createGame(new Game(numberOfClients, usernames, controller.getComputerPlayer()));
+        }
         broadcastMessage(ServerAction.GS.command);
     }
 
