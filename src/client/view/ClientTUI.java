@@ -122,7 +122,7 @@ public class ClientTUI{
                 case "n":
                     return false;
             }
-            System.out.println("Invalid input, decide ('y' or 'n'");
+            System.out.println("Invalid input, decide ('y' or 'n')");
             invalid = true;
         }
         return false;
