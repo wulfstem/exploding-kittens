@@ -209,7 +209,6 @@ public class LocalController implements Controller {
                         Card temp = otherPlayer.getPlayerHand().getCardsInHand().get(index);
                         otherPlayer.getPlayerHand().remove(otherPlayer.getPlayerHand().getCardsInHand().get(index));
                         if(validateMove(temp, otherPlayer)){
-                            moveCanceled(player);
                             return true;
                         }
                         else{
