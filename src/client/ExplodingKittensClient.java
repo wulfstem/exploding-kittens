@@ -69,6 +69,9 @@ public class ExplodingKittensClient implements Client{
             case "FUTURE":
                 controller.showFuture(inputs[1]);
                 break;
+            case "INFO":
+                controller.provideInfo(inputs[1]);
+                break;
             case "SEND_DECISION":
                 controller.makeDecision();
                 break;

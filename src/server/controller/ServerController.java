@@ -38,7 +38,6 @@ public class ServerController implements Controller {
         }
         this.clientHandlers = new ArrayList<>();
         server.establishConnections();
-        System.out.println(server);
     }
 
     @Override
@@ -73,7 +72,6 @@ public class ServerController implements Controller {
                 if(deathThisTurn){
                     break;
                 }
-                System.out.println(indexOfPlayerPlayingNope);
                 try {
                     wait(1000);
                 } catch (InterruptedException e) {
@@ -173,6 +171,10 @@ public class ServerController implements Controller {
             getCurrentClientHandler().sendMessage("DIFFUSE_CHECK|F");
             player.die();
         }
+    }
+    @Override
+    public void informOfPlayerAction(Player player, Card card){
+        server.broadcastToOtherPlayers("INFO|" + player.getPlayerName() + " is playing card " + card.getCardName(), player);
     }
 
     @Override
@@ -438,6 +440,10 @@ public class ServerController implements Controller {
 
     public boolean getComputerPlayer(){
         return this.computerPlayer;
+    }
+
+    public boolean getDeathThisTurn(){
+        return this.deathThisTurn;
     }
 
     public void updateHandlersIndex(){

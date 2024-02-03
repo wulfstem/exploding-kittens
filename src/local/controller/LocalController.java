@@ -320,6 +320,17 @@ public class LocalController implements Controller {
     }
 
     @Override
+    public boolean getDeathThisTurn() {
+        //Not used in local gameplay
+        return false;
+    }
+
+    @Override
+    public void informOfPlayerAction(Player player, Card card) {
+        //Not used in local gameplay
+    }
+
+    @Override
     public void announceDeath(Player player) {
         //Not used in local gameplay
     }

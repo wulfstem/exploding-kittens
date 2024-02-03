@@ -176,6 +176,10 @@ public class ClientController{
         cardsInHand.remove(result);
     }
 
+    public void provideInfo(String message){
+        tui.showMessage(message);
+    }
+
     public void askNope(String player, String card){
         tui.showMessage(player + " is playing " + card);
         tui.printHand(cardsInHand, sizeOfDrawPile, numberOfPlayers - 1, turns);

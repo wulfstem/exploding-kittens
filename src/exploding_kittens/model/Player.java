@@ -57,6 +57,7 @@ public class Player {
                 return;
             }
             if(controller.validateMove(getPlayerHand().getCardsInHand().get(index), this)){
+                controller.informOfPlayerAction(this, getPlayerHand().getCardsInHand().get(index));
                 getPlayerHand().getCardsInHand().get(index).action(this);
                 getPlayerHand().remove(getPlayerHand().getCardsInHand().get(index));
                 if (!isSkipTurn()) {
@@ -69,7 +70,9 @@ public class Player {
                 playOrDraw();
             }
         } else {
-            controller.draw(this);
+            if (!controller.getDeathThisTurn()){
+                controller.draw(this);
+            }
         }
     }
 
