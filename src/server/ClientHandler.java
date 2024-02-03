@@ -34,7 +34,7 @@ public class ClientHandler implements Runnable {
         try {
             String line;
             while ((line = in.readLine()) != null) {
-                System.out.println(playerName + ">" + "Received from " + playerName + ": " + line);
+                //System.out.println(playerName + ">" + "Received from " + playerName + ": " + line);
 
                 ExecutorService executor = Executors.newCachedThreadPool();
                 String finalLine = line;

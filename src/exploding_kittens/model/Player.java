@@ -40,8 +40,6 @@ public class Player {
      * The player's actions are determined by the controller.
      */
     public void makeMove() {
-        System.out.println("Current player " + game.getPlayers().get(game.getCurrent()).getPlayerName());
-        System.out.println("makeMove called for player " + getPlayerName());
         playOrDraw();
     }
 
@@ -50,8 +48,6 @@ public class Player {
      * The player's actions are determined by the controller.
      */
     public void playOrDraw() {
-        System.out.println("Current player " + game.getPlayers().get(game.getCurrent()));
-        System.out.println("Starting playOrDraw");
         setSkipTurn(false);
         controller.showHand(this);
         if (controller.isCardBeingPlayed()) {
@@ -63,13 +59,11 @@ public class Player {
             if(controller.validateMove(getPlayerHand().getCardsInHand().get(index), this)){
                 getPlayerHand().getCardsInHand().get(index).action(this);
                 getPlayerHand().remove(getPlayerHand().getCardsInHand().get(index));
-                System.out.println("validate True");
                 if (!isSkipTurn()) {
                     playOrDraw();
                 }
             }
             else {
-                System.out.println("validate False");
                 controller.moveCanceled(this);
                 getPlayerHand().remove(getPlayerHand().getCardsInHand().get(index));
                 playOrDraw();
@@ -83,7 +77,6 @@ public class Player {
      * Removes the player from the game and announces their elimination.
      */
     public void die() {
-        System.out.println("Current player: " + game.getPlayers().get(game.getCurrent()).getPlayerName());
         game.setTurns(1);
         if(getPositionIndex() == (game.getPlayers().size() - 1)){
             game.setCurrent(0);
@@ -91,7 +84,6 @@ public class Player {
         ArrayList<Player> temp = getGame().getPlayers();
         temp.remove(this);
         getGame().setPlayers(temp);
-        System.out.println("Current player: " + game.getPlayers().get(game.getCurrent()).getPlayerName());
         controller.announceDeath(this);
     }
 

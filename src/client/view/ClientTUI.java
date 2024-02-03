@@ -109,7 +109,6 @@ public class ClientTUI{
     public boolean readInputBoolean() throws BooleanReturnException {
         boolean invalid = true;
         while(invalid){
-            invalid = false;
             System.out.println("Write 'y' for yes, and write 'n' for no:");
             String line;
             try{
@@ -123,7 +122,7 @@ public class ClientTUI{
                 case "n":
                     return false;
             }
-            System.out.println("Invalid input, decide ('y', 'n', or 'b'");
+            System.out.println("Invalid input, decide ('y' or 'n'");
             invalid = true;
         }
         return false;

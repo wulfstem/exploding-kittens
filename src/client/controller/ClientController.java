@@ -147,6 +147,10 @@ public class ClientController{
                     }
                 }
             }
+            if(index < 0 || index >= alivePlayers.size()){
+                tui.showMessage("That is not a valid index. Choose an index between 0 and " + (alivePlayers.size() -1));
+                goBack = true;
+            }
         }
         client.sendMessage("TARGET|" + index);
     }
@@ -272,14 +276,12 @@ public class ClientController{
             if(cardsInHand.get(index).equals("Beard Cat") || cardsInHand.get(index).equals("Cattermelon") ||  cardsInHand.get(index).equals("Hairy Potato Cat") || cardsInHand.get(index).equals("Rainbow-Ralphing Cat") || cardsInHand.get(index).equals("Tacocat")){
                 playedRegular = cardsInHand.get(index);
             }
-            System.out.println("Decision yes about to be sent");
             client.sendMessage(Client.Command.PC.command + "|" + cardsInHand.get(index) + index);
             if(!(cardsInHand.get(index).equals("Beard Cat") || cardsInHand.get(index).equals("Cattermelon") ||  cardsInHand.get(index).equals("Hairy Potato Cat") || cardsInHand.get(index).equals("Rainbow-Ralphing Cat") || cardsInHand.get(index).equals("Tacocat"))){
                 cardsInHand.remove(index);
             }
         }
         else{
-            System.out.println("Decision no about to be sent");
             client.sendMessage(Client.Command.ET.command);
         }
         System.out.println("Decision sent");
