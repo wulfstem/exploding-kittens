@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * Each player has a name, a hand of cards, and can take actions during their turn.
  * Players can play or draw cards, and their actions affect the game's state.
  *
- * @author Ervinas Vilkaitis and Ugnius Tulaba
+ * @author Ervinas Vilkaitis and Ugnius Tulaba.
  */
 public class Player {
 
