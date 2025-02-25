@@ -1,7 +1,8 @@
 # ExplodingKittens61
 
 Hello from Team 61, Ervinas and Ugnius! We hope that you will have a smooth setup of Exploding Kittens and find this guide useful.
-*<span style="color:red;">This project was created using IntelliJ IDEA, and works best when run on this platform. For VSCode you will need to add .json files for configuration.</span>
+
+*This project was created using IntelliJ IDEA, and works best when run on this platform. For VSCode you will need to add .json files for configuration.
 
 ---
 
